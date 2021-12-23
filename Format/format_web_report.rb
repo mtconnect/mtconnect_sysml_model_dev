@@ -102,7 +102,7 @@ def convert_markdown(doc)
   when Hash
     doc.each do |k, v|
       if k =~ /col[1-9]/o and v !~ /^<div/o
-        data = v.gsub(%r{<(/)?br[ ]*(/)?>}, "\n")
+        data = v.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
         kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
         doc[k] = kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')
       else
