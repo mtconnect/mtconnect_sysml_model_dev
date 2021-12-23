@@ -1,0 +1,4 @@
+*~
+Format/vendor
+Format/Gemfile.lock
+.ruby-version
