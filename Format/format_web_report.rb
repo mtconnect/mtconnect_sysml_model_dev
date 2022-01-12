@@ -41,18 +41,6 @@ module Kramdown
         super
       end
       
-      def add_label(label)
-        @@labels.add(label)
-      end 
-      
-      def self.reset_labels
-        @@labels = Set.new
-      end
-
-      def includes_label?(label)
-        return @@labels.include?(label)
-      end
-      
       def convert_macro(el, _opts)
         el.value.sub(/\{\{([a-zA-Z0-9_]+)(\(([^\)]+)\))?\}\}/) do |s|
           command = $1
