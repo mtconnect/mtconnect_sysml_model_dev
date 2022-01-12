@@ -115,18 +115,13 @@ class Hash
   def path(*args)
     o = self
     args.each do |v|
-      case v
-      when Integer
+      if Hash === o or (Array === o and Integer === v)
         o = o[v]
-        
-      when String
-        o = Hash === o ? o[v] : nil
-        
       else
-        o = nil
+        return nil
       end
       
-      break unless o
+      return nil if o.nil?
     end
 
     return o
