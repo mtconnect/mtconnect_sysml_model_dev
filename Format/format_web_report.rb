@@ -70,7 +70,7 @@ module Kramdown
 
           when 'def'
             ent, elem = args.split(':')
-            if @@definitions[ent][elem]
+            if @@definitions.include?(ent) and @@definitions[ent].include?(elem)
               @@definitions[ent][elem]
             else
               "<code>#{args}</code>"
