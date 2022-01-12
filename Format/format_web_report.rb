@@ -149,7 +149,7 @@ def convert_markdown(doc)
 
   when Hash
     doc.each do |k, v|
-      if k =~ /col[1-9]/o and v !~ /^<div/o
+      if k =~ /col[1-9]/o and v !~ /^</o
         doc[k] = convert_markdown_to_html(v)
       else
         convert_markdown(v)
