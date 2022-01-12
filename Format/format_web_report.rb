@@ -136,21 +136,24 @@ end
 
 def collect_enumerations(doc)
   doc.each do |k, v|
-    if k =~ /^Architecture/ and Hash === v and v.include?('title') and v['title'] =~ /Enum$/
+    if k =~ /^Architecture/ and Hash === v and v.include?('title')
       name = v['title']
 
-      list = v.path('grid_panel', 1, 'data_store', 'data')
-      if list
-        enum = Hash.new
-        
-        list.each do |e|
-          if e['col1'] =~ /title="([^"]+)"/
-            entry = $1
-            enum[entry] = convert_markdown_to_html(e['col2'])
+      data = v.path('grid_panel', 1)
+      if data and data.include?('title') and data['title'] == 'Enumeration Literals'
+        list = data.path('data_store', 'data')
+        if list
+          enum = Hash.new
+          
+          list.each do |e|
+            if e['col1'] =~ /title="([^"]+)"/
+              entry = $1
+              enum[entry] = convert_markdown_to_html(e['col2'])
+            end
           end
+          
+          Kramdown::Converter::MtcHtml.add_definitions(name, enum)
         end
-        
-        Kramdown::Converter::MtcHtml.add_definitions(name, enum)
       end
     end
   end
