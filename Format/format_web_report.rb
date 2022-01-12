@@ -111,6 +111,11 @@ module Kramdown
   end
 end
 
+def convert_markdown_to_html(content)
+  data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
+  kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
+  kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
+end
 
 def collect_enumerations(doc, parents = [])
   case doc
@@ -128,9 +133,7 @@ def collect_enumerations(doc, parents = [])
           list.each do |e|
             if e['col1'] =~ /title="([^"]+)"/
               entry = $1
-              data = e['col2'].gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
-              kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
-              enum[entry] = kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')
+              enum[entry] = convert_markdown_to_html(e['col2'])
             end
           end
           
@@ -151,9 +154,7 @@ def convert_markdown(doc)
   when Hash
     doc.each do |k, v|
       if k =~ /col[1-9]/o and v !~ /^<div/o
-        data = v.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
-        kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
-        doc[k] = kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')
+        doc[k] = convert_markdown_to_html(v)
       else
         convert_markdown(v)
       end
