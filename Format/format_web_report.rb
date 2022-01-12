@@ -58,11 +58,7 @@ module Kramdown
             "<code>#{args}s</code>"
 
           when 'def'
-            if doc = @@definitions.path(*args.split(':'))
-              doc
-            else
-              "<code>#{args}</code>"
-            end
+            @@definitions.path(*args.split(':')) || "<code>#{args}</code>"
 
           when 'latex'
             args
