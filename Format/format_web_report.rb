@@ -28,8 +28,9 @@ module Kramdown
 
   module Converter
     class MtcHtml < Html
+      @@definitions = Hash.new
+      
       def self.add_definitions(name, values)
-        @@definitions = Hash.new unless defined? @@definitions
         @@definitions[name] = values
       end
 
