@@ -117,10 +117,10 @@ class Hash
     args.each do |v|
       case v
       when Integer
-        o =  Array === o ? o[v] : nil
+        o = o[v]
         
       when String
-        o =  Hash === o ? o[v] : nil
+        o = Hash === o ? o[v] : nil
         
       else
         o = nil
@@ -129,7 +129,7 @@ class Hash
       break unless o
     end
 
-    o
+    return o
   end
 end
 
