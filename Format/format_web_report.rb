@@ -117,19 +117,17 @@ def convert_markdown_to_html(content)
   kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
 end
 
-def collect_enumerations(doc, parents = [])
-  case doc
-  when Array
-    doc.each { |child| collect_enumerations(child, parents) }
+def collect_enumerations(doc)
+  doc.each do |k, v|
+    if k =~ /^Architecture/ and Hash === v and v.include?('title') and v['title'] =~ /Enum$/
+      name = v['title']
 
-  when Hash
-    doc.each do |k, v|
-      if k == 'grid_panel' and v[1] and v[1]['title'] == 'Enumeration Literals'
-        if v[0]['data_store']['data'][0]['col1'] =~ /title="([^"]+)"/
-          name = $1
+      if v.include?('grid_panel')
+        grid = v['grid_panel'][1]
+        if grid and grid.include?('data_store') and grid['data_store'].include?('data')
           enum = Hash.new
-
-          list = v[1]['data_store']['data']
+          
+          list = grid['data_store']['data']
           list.each do |e|
             if e['col1'] =~ /title="([^"]+)"/
               entry = $1
@@ -139,9 +137,7 @@ def collect_enumerations(doc, parents = [])
           
           Kramdown::Converter::MtcHtml.add_definitions(name, enum)
         end
-      else
-        collect_enumerations(v, parents + [k])
-      end      
+      end
     end
   end
 end
@@ -193,7 +189,7 @@ if __FILE__ == $PROGRAM_NAME
   end
 
   puts "Collecting enumerations"
-  collect_enumerations(doc)
+  collect_enumerations(doc['window.content_data_json'])
 
   puts "Converting markdown" 
   convert_markdown(doc)
