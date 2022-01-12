@@ -3,6 +3,22 @@ require 'fileutils'
 require 'json'
 require 'fileutils'
 
+class Hash
+  def path(*args)
+    o = self
+    args.each do |v|
+      if Hash === o or (Array === o and Integer === v)
+        o = o[v]
+      else
+        return nil
+      end
+      
+      return nil if o.nil?
+    end
+
+    return o
+  end
+end
 
 module Kramdown
   module Parser
@@ -95,23 +111,6 @@ module Kramdown
   end
 end
 
-class Hash
-  def path(*args)
-    o = self
-    args.each do |v|
-      if Hash === o or (Array === o and Integer === v)
-        o = o[v]
-      else
-        return nil
-      end
-      
-      return nil if o.nil?
-    end
-
-    return o
-  end
-end
-
 def convert_markdown_to_html(content)
   data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
   kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
@@ -135,9 +134,11 @@ def collect_enumerations(doc)
               enum[entry] = convert_markdown_to_html(e['col2'])
             end
           end
-          
+
           Kramdown::Converter::MtcHtml.add_definitions(name, enum)
         end
+
+        list.sort_by! { |e| e['col1'] =~ /title="([^"]+)"/ ? $1 : '' }
       end
     end
   end
