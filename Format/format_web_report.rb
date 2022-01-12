@@ -193,14 +193,16 @@ end
 
 
 if __FILE__ == $PROGRAM_NAME
+  index = File.expand_path('../WebReport/index.html', File.dirname(__FILE__))
   file = File.expand_path('../WebReport/data.js', File.dirname(__FILE__))
-  orig = File.expand_path('data.orig.js', File.dirname(__FILE__))
-  if !File.exist?('data.orig.js')
-    FileUtils.copy(file, orig, verbose: true)
-  end
+  output = File.expand_path('../WebReport/data.formatted.js', File.dirname(__FILE__))
 
-  puts "Reading #{orig}"
-  data = File.read(orig)
+  text = File.open(index).read
+  text.sub!(/src="data\.js"/, 'src="data.formatted.js"')
+  File.open(index, 'w') { |f| f.write(text) }
+  
+  puts "Reading #{file}"
+  data = File.read(file)
 
   data.gsub!(/^\};/, '},')
   data.gsub!(/;$/, ',')
@@ -212,7 +214,7 @@ if __FILE__ == $PROGRAM_NAME
   data.sub!(/,\Z/, "}\n")
 
   begin
-    puts "Parsing #{orig}"
+    puts "Parsing #{file}"
     doc = JSON.parse(data)
   rescue
     p $!
@@ -226,8 +228,8 @@ if __FILE__ == $PROGRAM_NAME
   puts "Converting markdown" 
   convert_markdown(content)
 
-  puts "Writing out #{file}"
-  File.open(file, 'w') do |f|
+  puts "Writing out #{output}"
+  File.open(output, 'w') do |f|
     doc.each do |k, v|
       f.write("#{k} = ");
       f.write(JSON.fast_generate(v, indent: '  ', array_nl: "\n", object_nl: "\n", space: ' ' ))
