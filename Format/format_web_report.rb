@@ -111,6 +111,28 @@ module Kramdown
   end
 end
 
+class Hash
+  def path(*args)
+    o = self
+    args.each do |v|
+      case v
+      when Integer
+        o =  Array === o ? o[v] : nil
+        
+      when String
+        o =  Hash === o ? o[v] : nil
+        
+      else
+        o = nil
+      end
+      
+      break unless o
+    end
+
+    o
+  end
+end
+
 def convert_markdown_to_html(content)
   data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
   kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
@@ -122,42 +144,50 @@ def collect_enumerations(doc)
     if k =~ /^Architecture/ and Hash === v and v.include?('title') and v['title'] =~ /Enum$/
       name = v['title']
 
-      if v.include?('grid_panel')
-        grid = v['grid_panel'][1]
-        if grid and grid.include?('data_store') and grid['data_store'].include?('data')
-          enum = Hash.new
-          
-          list = grid['data_store']['data']
-          list.each do |e|
-            if e['col1'] =~ /title="([^"]+)"/
-              entry = $1
-              enum[entry] = convert_markdown_to_html(e['col2'])
-            end
+      list = v.path('grid_panel', 1, 'data_store', 'data')
+      if list
+        enum = Hash.new
+        
+        list.each do |e|
+          if e['col1'] =~ /title="([^"]+)"/
+            entry = $1
+            enum[entry] = convert_markdown_to_html(e['col2'])
           end
-          
-          Kramdown::Converter::MtcHtml.add_definitions(name, enum)
         end
+        
+        Kramdown::Converter::MtcHtml.add_definitions(name, enum)
       end
     end
   end
 end
 
-def convert_markdown(doc)
-  case doc
-  when Array
-    doc.each { |child| convert_markdown(child) }
+def convert_markdown(doc)  
+  doc.each do |k, v|
+    if k =~ /^Architecture/
+      docs = v.path('grid_panel', 0, 'data_store', 'data', 1)
+      if docs and docs['col0'] =~ /^Documentation/
+        docs['col1'] = convert_markdown_to_html(docs['col1'])
+      end
 
-  when Hash
-    doc.each do |k, v|
-      if k =~ /col[1-9]/o and v !~ /^</o
-        doc[k] = convert_markdown_to_html(v)
-      else
-        convert_markdown(v)
+      data = v.path('grid_panel', 1)
+      if data and data.include?('title')
+        title = data['title']
+        if title == 'Attributes'
+          col = 'col5'
+        elsif title == 'Enumeration Literals'
+          col = 'col2'
+        end
+        
+        if col
+          list = data.path('data_store', 'data')
+          list.each do |row|
+            if row.include?(col) and row[col] !~ /^[ ]*</
+              row[col] = convert_markdown_to_html(row[col])
+            end
+          end
+        end
       end
     end
-
-  else
-    # Do nothing
   end
 end
 
@@ -188,11 +218,13 @@ if __FILE__ == $PROGRAM_NAME
     p $!
   end
 
+  content = doc['window.content_data_json']
+  
   puts "Collecting enumerations"
-  collect_enumerations(doc['window.content_data_json'])
+  collect_enumerations(content)
 
   puts "Converting markdown" 
-  convert_markdown(doc)
+  convert_markdown(content)
 
   puts "Writing out #{file}"
   File.open(file, 'w') do |f|
