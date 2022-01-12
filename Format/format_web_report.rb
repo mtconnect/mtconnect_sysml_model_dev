@@ -58,9 +58,8 @@ module Kramdown
             "<code>#{args}s</code>"
 
           when 'def'
-            ent, elem = args.split(':')
-            if @@definitions.include?(ent) and @@definitions[ent].include?(elem)
-              @@definitions[ent][elem]
+            if doc = @@definitions.path(*args.split(':'))
+              doc
             else
               "<code>#{args}</code>"
             end
