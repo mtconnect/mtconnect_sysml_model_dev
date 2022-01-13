@@ -140,7 +140,8 @@ def collect_enumerations(doc)
           Kramdown::Converter::MtcHtml.add_definitions(name, enum)
         end
 
-        list.sort_by! { |e| e['col1'] =~ /title="([^"]+)"/ ? $1 : '' }
+        list.sort_by! { |e| e['col1'] =~ /title="([^"]+)"/ ? $1 : '' }.
+          each_with_index { |e, i| e['col0'].sub!(/^[0-9]+/, (i + 1).to_s) }
       end
     end
   end
@@ -148,18 +149,30 @@ end
 
 def convert_markdown(doc)  
   doc.each do |k, v|
-    if k =~ /^Architecture/
+    if k =~ /^(Architecture|Glossary|Diagram)/
+      type = $1
+      title = v['title']
+      
       docs = v.path('grid_panel', 0, 'data_store', 'data', 1)
       if docs and docs['col0'] =~ /^Documentation/
         docs['col1'] = convert_markdown_to_html(docs['col1'])
       end
 
-      data = v.path('grid_panel', 1)
+      if type == 'Glossary' or type == 'Diagram'
+        data = v.path('grid_panel', 0)
+      else
+        data = v.path('grid_panel', 1)
+      end
       if data and data.include?('title')
-        title = data['title']
+        if type != 'Diagram'
+          title = data['title']
+        end
+        
         if title == 'Attributes'
           col = 'col5'
-        elsif title == 'Enumeration Literals'
+        elsif type == 'Glossary' and title =~ /Characteristics/
+          col = 'col1'
+        elsif title == 'Enumeration Literals' or type == 'Glossary' or (type == 'Diagram' and title =~ /Glossary/)
           col = 'col2'
         end
         
