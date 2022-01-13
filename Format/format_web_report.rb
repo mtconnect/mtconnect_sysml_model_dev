@@ -2,6 +2,7 @@ require 'kramdown'
 require 'fileutils'
 require 'json'
 require 'fileutils'
+require 'active_support/inflector'
 
 class Hash
   def path(*args)
@@ -68,10 +69,11 @@ module Kramdown
             "<em>#{args}</em>"
             
           when 'termplural'
-            "<em>#{args}s</em>"
+            plural = ActiveSupport::Inflector.pluralize(args)
+            "<em>#{plural}</em>"
 
           when 'block', 'property'
-            "<code>#{args}s</code>"
+            "<code>#{args}</code>"
 
           when 'def'
             @@definitions.path(*args.split(':')) || "<code>#{args}</code>"
