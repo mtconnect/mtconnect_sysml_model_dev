@@ -3,6 +3,7 @@ require 'fileutils'
 require 'json'
 require 'fileutils'
 require 'active_support/inflector'
+require 'pp'
 
 class Hash
   def path(*args)
@@ -124,24 +125,61 @@ def collect_enumerations(doc)
     if k =~ /^Architecture/ and Hash === v and v.include?('title')
       name = v['title']
 
+      # Get the interesting pieces of the doc and skip entry if they don't exist
       data = v.path('grid_panel', 1)
-      if data and data.include?('title') and data['title'] == 'Enumeration Literals'
-        list = data.path('data_store', 'data')
-        if list
-          enum = Hash.new
-          
-          list.each do |e|
-            if e['col1'] =~ /title="([^"]+)"/
-              entry = $1
-              enum[entry] = convert_markdown_to_html(e['col2'])
-            end
-          end
+      next unless data
+      title = data['title']
+      next unless title
+      list = data.path('data_store', 'data')
+      next unless list
+      
+      if title == 'Enumeration Literals'
+        enum = Hash.new
 
-          Kramdown::Converter::MtcHtml.add_definitions(name, enum)
+        # Same the converted docs for each entry in the enums
+        list.each do |e|
+          if e['col1'] =~ /title="([^"]+)"/
+            entry = $1
+            enum[entry] = convert_markdown_to_html(e['col2'])
+          end
         end
+        
+        Kramdown::Converter::MtcHtml.add_definitions(name, enum)
 
         list.sort_by! { |e| e['col1'] =~ /title="([^"]+)"/ ? $1 : '' }.
           each_with_index { |e, i| e['col0'].sub!(/^[0-9]+/, (i + 1).to_s) }
+      elsif title == 'Attributes'
+        attributes = Hash.new { |h, k| h[k] = [] }
+        
+        list.each_with_index do |e, i|
+          # Check if the icon is icon_1 (the bullet icon). These are relationships and should remain
+          # Otherwise, if it is named property, remove dups
+          match = /title="([^"]+)".+?img[ ]+src='([^']+)'?/.match(e['col1'])
+          if match
+            prop, type = match[1].split(/[ ]*:[ ]*/)
+            icon = match[2]            
+            attributes[prop] << e unless prop.empty? or icon =~ /icon_1\.png/
+          end
+        end
+
+        # Cleanup and remove the dups
+        attributes.each do |k, v|
+          if v.length > 1
+            # Preserve the last one
+            last = v.pop
+            # Check if there are docs for the final value, if so keep them
+            if last['col5'] =~ %r{^[ ]*</br>$}
+              # Otherwise, find the last set of docs and replace the current docs
+              docs = v.map { |e| e['col5'] if e['col5'] !~ %r{^[ ]*</br>$} }.compact.last
+              last['col5'] = docs if docs
+            end
+
+            # Remove the other entries.
+            v.each do |e|
+              list.delete_if { |i| i['col0'] == e['col0'] }
+            end
+          end
+        end
       end
     end
   end
@@ -218,6 +256,19 @@ if __FILE__ == $PROGRAM_NAME
     p $!
   end
 
+  # Add the legal docs to the landing page
+  File.open('legal.md') do |f|
+    legal = ::Kramdown::Document.new(f.read, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
+    panel = doc.path('window.index_page_json', 'html_panel', 0)
+
+    # Clean up the styling
+    panel['html'].sub!(%r{margin-top:300px}, 'margin-top:100px')
+    panel['html'].sub!(%r{height: 500px}, 'height: 800px')
+    # Add the legal content
+    panel['html'].
+      sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal.to_mtc_html}</div></div>")
+  end
+  
   content = doc['window.content_data_json']
   
   puts "Collecting enumerations"
