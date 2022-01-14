@@ -232,6 +232,11 @@ if __FILE__ == $PROGRAM_NAME
   index = File.expand_path('../WebReport/index.html', File.dirname(__FILE__))
   file = File.expand_path('../WebReport/data.js', File.dirname(__FILE__))
   output = File.expand_path('../WebReport/data.formatted.js', File.dirname(__FILE__))
+  logo = File.expand_path('../WebReport/images/logo.png', File.dirname(__FILE__))
+  mtconnect = File.expand_path('./MTConnect.png', File.dirname(__FILE__))
+
+  # Install our logo
+  FileUtils.cp(mtconnect, logo)
 
   text = File.open(index).read
   text.sub!(/src="data\.js"/, 'src="data.formatted.js"')
