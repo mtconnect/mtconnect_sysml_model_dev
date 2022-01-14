@@ -120,6 +120,10 @@ def convert_markdown_to_html(content)
   kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
 end
 
+def renumber(list)
+  list.each_with_index { |e, i| e['col0'].sub!(/^[0-9]+/, (i + 1).to_s) }
+end
+
 def collect_enumerations(doc)
   doc.each do |k, v|
     if k =~ /^Architecture/ and Hash === v and v.include?('title')
@@ -145,9 +149,9 @@ def collect_enumerations(doc)
         end
         
         Kramdown::Converter::MtcHtml.add_definitions(name, enum)
+        list.sort_by! { |e| e['col1'] =~ /title="([^"]+)"/ ? $1 : '' }
+        renumber(list)
 
-        list.sort_by! { |e| e['col1'] =~ /title="([^"]+)"/ ? $1 : '' }.
-          each_with_index { |e, i| e['col0'].sub!(/^[0-9]+/, (i + 1).to_s) }
       elsif title == 'Attributes'
         attributes = Hash.new { |h, k| h[k] = [] }
         
@@ -180,6 +184,8 @@ def collect_enumerations(doc)
             end
           end
         end
+
+        renumber(list)
       end
     end
   end
