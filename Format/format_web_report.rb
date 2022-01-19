@@ -254,27 +254,13 @@ def document_packages(content, model)
                     "<img src='images/icon_3.png' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span><a>" +
                     "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{k}');return false;\">#{name}<a></div>"
           
-          grid[0] = { 'title' => "Characteristics ",
-                      'hideHeaders' => true,
-                      'data_store' => { 'fields' => ['col0', 'col1'],
-                                        'data' => [ { 'col0' => 'Name', 'col1' => display },
-                                                    { 'col0' => 'Documentation ',
-                                                      'col1' => convert_markdown_to_html(text) }
-                                                  ]
-                                      },
-                      "columns" => [ {
-                                       "text" => "col0",
-                                       "dataIndex" => "col0",
-                                       "flex" => 0,
-                                       "width" => 192
-                                     }, {
-                                       "text" => "col1",
-                                       "dataIndex" => "col1",
-                                       "flex" => 1,
-                                       "width" => -1
-                                     } ],
-                      "collapsible" => false
-                    }
+          grid[0] = { title: "Characteristics ", hideHeaders: true,
+                      data_store: { fields: ['col0', 'col1'],
+                                    data: [ { col0: 'Name ', col1: display },
+                                            { col0: 'Documentation ', col1: convert_markdown_to_html(text) } ] },
+                      columns:[ { text: "col0", dataIndex: "col0", flex: 0, width: 192 },
+                                { text: "col1", dataIndex: "col1", flex: 1, width: -1 } ],
+                      collapsible: false }
         end
       end
     end
