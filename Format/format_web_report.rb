@@ -249,9 +249,9 @@ def collect_associations(model, name)
         link = e.parent.memberEnd.map do |v|
           id = v['xmi:idref']
           me = model.xpath("//ownedAttribute[@xmi:id='#{id}']").first
-          me['name'] if me
-        end.compact.join(' <-> ')
-        "#### `#{link}`: #{comment}"
+          "`#{me['name']}`" if me
+        end.compact.join(' {::nomarkdown}&harr;{:/} ')
+        "#{link}:\n\n: #{comment.split("\n").join("\n  ")}"
       end
     end.compact
     unless assocs.empty?
