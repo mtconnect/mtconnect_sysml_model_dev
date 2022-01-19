@@ -279,8 +279,12 @@ if __FILE__ == $PROGRAM_NAME
     panel['html'].
       sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal.to_mtc_html}</div></div>")
   end
+
+  # Remove the glossary
+  doc['window.navigation_json'].delete_if { |e| e['title'] == 'Glossary' }
   
   content = doc['window.content_data_json']
+  
   
   puts "Collecting enumerations"
   collect_enumerations(content)
