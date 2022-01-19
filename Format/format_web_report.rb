@@ -60,6 +60,10 @@ module Kramdown
       def initialize(root, options)
         super
       end
+
+      def convert_img(el, indent)
+        "<blockquote>See <em>#{el.attr['alt']} Diagram</em></blockquote>"
+      end
       
       def convert_macro(el, _opts)
         el.value.sub(/\{\{([a-zA-Z0-9_]+)(\(([^\)]+)\))?\}\}/) do |s|
@@ -274,11 +278,10 @@ def document_packages(content, model)
                     "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{k}');return false;\">#{name}<a></div>"
           
           # Check for associations
-          docs = "### Package\n\n#{text}" + collect_associations(model, name).to_s
           grid[0] = { title: "Characteristics ", hideHeaders: true,
                       data_store: { fields: ['col0', 'col1'],
                                     data: [ { col0: 'Name ', col1: display },
-                                            { col0: 'Documentation ', col1: convert_markdown_to_html(docs) } ] },
+                                            { col0: 'Documentation ', col1: convert_markdown_to_html(text) } ] },
                       columns:[ { text: "col0", dataIndex: "col0", flex: 0, width: 192 },
                                 { text: "col1", dataIndex: "col1", flex: 1, width: -1 } ],
                       collapsible: false }
