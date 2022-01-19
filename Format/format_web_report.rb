@@ -4,6 +4,7 @@ require 'json'
 require 'fileutils'
 require 'active_support/inflector'
 require 'pp'
+require 'nokogiri'
 
 class Hash
   def path(*args)
@@ -233,6 +234,49 @@ def convert_markdown(doc)
   end
 end
 
+def document_packages(content, model)
+  content.each do |k, v|
+    if k =~ /^Package__/
+      name = v['title']
+      grid = v['grid_panel']
+      if grid and grid.empty?        
+        comment = lambda do |ele|
+          comments = [ele['body'], ele.xpath('./ownedComment').map do |e2|
+                        comment.call(e2)
+                      end].flatten.compact
+          comments
+        end
+        comments = model.xpath("//packagedElement[@name='#{name}']")
+        text = comments.map do |ele|
+          comment.call(ele)
+        end.flatten.compact.join("\n\n")
+
+        unless text.empty?
+          grid[0] = { 'title' => "Characteristics ",
+                      'hideHeaders' => true,
+                      'data_store' => { 'fields' => ['col0', 'col1'],
+                                        'data' => [ {'col0' => 'Documentation ',
+                                                     'col1' => convert_markdown_to_html(text) } ]
+                                      },
+                      "columns" => [ {
+                                       "text" => "col0",
+                                       "dataIndex" => "col0",
+                                       "flex" => 0,
+                                       "width" => 192
+                                     }, {
+                                       "text" => "col1",
+                                       "dataIndex" => "col1",
+                                       "flex" => 1,
+                                       "width" => -1
+                                     } ],
+                      "collapsible" => false
+                    }
+        end
+      end
+    end
+  end
+end
+
 
 if __FILE__ == $PROGRAM_NAME
   index = File.expand_path('../WebReport/index.html', File.dirname(__FILE__))
@@ -240,6 +284,14 @@ if __FILE__ == $PROGRAM_NAME
   output = File.expand_path('../WebReport/data.formatted.js', File.dirname(__FILE__))
   logo = File.expand_path('../WebReport/images/logo.png', File.dirname(__FILE__))
   mtconnect = File.expand_path('./MTConnect.png', File.dirname(__FILE__))
+  xmi = File.expand_path('../MTConnect SysML Model.xml', File.dirname(__FILE__))
+  
+  # Reading XMI model
+  model = nil
+  File.open(xmi) do |xml|
+    xmiDoc = Nokogiri::XML(xml).slop!
+    model = xmiDoc.at('//uml:Model')
+  end
 
   # Install our logo
   FileUtils.cp(mtconnect, logo)
@@ -284,7 +336,9 @@ if __FILE__ == $PROGRAM_NAME
   doc['window.navigation_json'].delete_if { |e| e['title'] == 'Glossary' }
   
   content = doc['window.content_data_json']
-  
+
+  puts "Document packages"
+  document_packages(content, model)
   
   puts "Collecting enumerations"
   collect_enumerations(content)
