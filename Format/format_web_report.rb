@@ -249,15 +249,13 @@ def collect_associations(model, name)
         link = e.parent.memberEnd.map do |v|
           id = v['xmi:idref']
           me = model.xpath("//ownedAttribute[@xmi:id='#{id}']").first
-          if me
-            me['name']
-          end
+          me['name'] if me
         end.compact.join(' <-> ')
         "#### `#{link}`: #{comment}"
       end
     end.compact
     unless assocs.empty?
-      text = "\n\n### Associations\n\n" + assocs.join("\n\n");
+      "\n\n### Associations\n\n" + assocs.join("\n\n");
     end
   end   
 end
