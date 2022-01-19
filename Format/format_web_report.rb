@@ -236,8 +236,8 @@ end
 
 def collect_comments(model, name)
   comments = model.xpath("//packagedElement[@name='#{name}']")
-  comment = lambda { |ele| [ ele['body'], ele.xpath('./ownedComment').map { |e2| comment.call(e2) } ] }
-  comments.map { |ele|  comment.call(ele) }.flatten.compact.join("\n\n")
+  recurse = lambda { |ele| [ ele['body'], ele.xpath('./ownedComment').map { |e2| recurse.call(e2) } ] }
+  comments.map { |ele| recurse.call(ele) }.flatten.compact.join("\n\n")
 end
 
 def document_packages(content, model)
