@@ -241,10 +241,7 @@ def document_packages(content, model)
       grid = v['grid_panel']
       if grid and grid.empty?        
         comment = lambda do |ele|
-          comments = [ele['body'], ele.xpath('./ownedComment').map do |e2|
-                        comment.call(e2)
-                      end].flatten.compact
-          comments
+          [ ele['body'], ele.xpath('./ownedComment').map { |e2| comment.call(e2) } ]
         end
         comments = model.xpath("//packagedElement[@name='#{name}']")
         text = comments.map do |ele|
@@ -252,11 +249,18 @@ def document_packages(content, model)
         end.flatten.compact.join("\n\n")
 
         unless text.empty?
+          display = "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
+                    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{k}');return false;\"><span style=\"vertical-align: middle;\">" +
+                    "<img src='images/icon_3.png' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span><a>" +
+                    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{k}');return false;\">#{name}<a></div>"
+          
           grid[0] = { 'title' => "Characteristics ",
                       'hideHeaders' => true,
                       'data_store' => { 'fields' => ['col0', 'col1'],
-                                        'data' => [ {'col0' => 'Documentation ',
-                                                     'col1' => convert_markdown_to_html(text) } ]
+                                        'data' => [ { 'col0' => 'Name', 'col1' => display },
+                                                    { 'col0' => 'Documentation ',
+                                                      'col1' => convert_markdown_to_html(text) }
+                                                  ]
                                       },
                       "columns" => [ {
                                        "text" => "col0",
