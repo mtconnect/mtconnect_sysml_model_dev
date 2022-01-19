@@ -234,20 +234,19 @@ def convert_markdown(doc)
   end
 end
 
+def collect_comments(model, name)
+  comments = model.xpath("//packagedElement[@name='#{name}']")
+  comment = lambda { |ele| [ ele['body'], ele.xpath('./ownedComment').map { |e2| comment.call(e2) } ] }
+  comments.map { |ele|  comment.call(ele) }.flatten.compact.join("\n\n")
+end
+
 def document_packages(content, model)
   content.each do |k, v|
     if k =~ /^Package__/
       name = v['title']
       grid = v['grid_panel']
-      if grid and grid.empty?        
-        comment = lambda do |ele|
-          [ ele['body'], ele.xpath('./ownedComment').map { |e2| comment.call(e2) } ]
-        end
-        comments = model.xpath("//packagedElement[@name='#{name}']")
-        text = comments.map do |ele|
-          comment.call(ele)
-        end.flatten.compact.join("\n\n")
-
+      if grid and grid.empty?
+        text = collect_comments(model, name)
         unless text.empty?
           display = "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
                     "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{k}');return false;\"><span style=\"vertical-align: middle;\">" +
