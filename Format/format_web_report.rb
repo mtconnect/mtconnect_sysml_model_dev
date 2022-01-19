@@ -235,7 +235,7 @@ def convert_markdown(doc)
 end
 
 def collect_comments(model, name)
-  comments = model.xpath("//packagedElement[@name='#{name}']")
+  comments = model.xpath("//packagedElement[@name='#{name}' and @xmi:type='uml:Package']")
   recurse = lambda { |ele| [ ele['body'], ele.xpath('./ownedComment').map { |e2| recurse.call(e2) } ] }
   comments.map { |ele| recurse.call(ele) }.flatten.compact.join("\n\n")
 end
