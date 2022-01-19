@@ -240,6 +240,28 @@ def collect_comments(model, name)
   comments.map { |ele| recurse.call(ele) }.flatten.compact.join("\n\n")
 end
 
+def collect_associations(model, name)
+  associations = model.xpath("//packagedElement[@name='#{name}' and @xmi:type='uml:Association']/ownedComment")
+  unless associations.empty?
+    assocs = associations.map do |e|
+      comment = e['body'].to_s
+      unless comment.empty?
+        link = e.parent.memberEnd.map do |v|
+          id = v['xmi:idref']
+          me = model.xpath("//ownedAttribute[@xmi:id='#{id}']").first
+          if me
+            me['name']
+          end
+        end.compact.join(' <-> ')
+        "#### `#{link}`: #{comment}"
+      end
+    end.compact
+    unless assocs.empty?
+      text = "\n\n### Associations\n\n" + assocs.join("\n\n");
+    end
+  end   
+end
+
 def document_packages(content, model)
   content.each do |k, v|
     if k =~ /^Package__/
@@ -254,32 +276,11 @@ def document_packages(content, model)
                     "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{k}');return false;\">#{name}<a></div>"
           
           # Check for associations
-          text = "### Package\n\n#{text}"
-          
-          associations = model.xpath("//packagedElement[@name='#{name}' and @xmi:type='uml:Association']/ownedComment")
-          unless associations.empty?
-            assocs = associations.map do |e|
-              comment = e['body'].to_s
-              unless comment.empty?
-                link = e.parent.memberEnd.map do |v|
-                  id = v['xmi:idref']
-                  me = model.xpath("//ownedAttribute[@xmi:id='#{id}']").first
-                  if me
-                    me['name']
-                  end
-                end.compact.join(' <-> ')
-                "#### `#{link}`: #{comment}"
-              end
-            end.compact
-            unless assocs.empty?
-              text << "\n\n### Associations\n\n" << assocs.join("\n\n");
-            end
-          end
-          
+          docs = "### Package\n\n#{text}" + collect_associations(model, name).to_s
           grid[0] = { title: "Characteristics ", hideHeaders: true,
                       data_store: { fields: ['col0', 'col1'],
                                     data: [ { col0: 'Name ', col1: display },
-                                            { col0: 'Documentation ', col1: convert_markdown_to_html(text) } ] },
+                                            { col0: 'Documentation ', col1: convert_markdown_to_html(docs) } ] },
                       columns:[ { text: "col0", dataIndex: "col0", flex: 0, width: 192 },
                                 { text: "col1", dataIndex: "col1", flex: 1, width: -1 } ],
                       collapsible: false }
