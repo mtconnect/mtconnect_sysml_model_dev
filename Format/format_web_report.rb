@@ -291,12 +291,83 @@ def document_packages(content, model)
   end
 end
 
+def generate_enumerations(doc, model)
+  package = 'Package__9f1dc926-575b-4c4d-bc3e-f0b64d617dfc'
+  
+  tree = doc.path('window.navigation_json', 0, 'data')
+  loc = tree.index { |e| e['text'] > 'DataTypes' }
+  
+  list = model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").sort_by { |ele| ele['name'] }.map do |ele|
+    { text: ele['name'], qtitle: "Enumeration__#{ele['xmi:id']}", icon: 'images/icon_140.png', expanded: false, leaf: true }
+  end
+
+  content = doc['window.content_data_json']
+  search = doc['window.search_data_json']
+  model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").map do |ele|
+    name = ele['name']
+    enum = "Enumeration__#{ele['xmi:id']}"
+    path= "<div title=\"DataTypes\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
+          "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{package}');return false;\">" +
+          "<span style=\"vertical-align: middle;\"><img src='images/icon_1.png' width='16' height='16' title='' style=\"vertical-align: bottom;\">" +
+          "</span><a> <a href=\"\" target=\"_blank\" onclick=\"navigate('#{package}');return false;\">DataTypes<a>" +
+          "</div> / <div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
+          "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{enum}');return false;\">" +
+          "<span style=\"vertical-align: middle;\"><img src='images/icon_140.png' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span>" +
+          "<a> <a href=\"\" target=\"_blank\" onclick=\"navigate('#{enum}');return false;\">#{name}<a></div>"
+
+      col1 = "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
+             "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{enum}');return false;\">" +
+             "<span style=\"vertical-align: middle;\"><img src='images/icon_140.png' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span>" +
+             "<a> <a href=\"\" target=\"_blank\" onclick=\"navigate('#{enum}');return false;\">#{name}<a></div>"
+      
+      characteristics = { title: 'Characteristics', hideHeaders: true, collapsible: true,
+                          data_store: { fields: ['col0', 'col1'], data: [{ col0: 'Name', col1: col1 }] },
+                          columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
+                                     { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }
+
+      i = 0
+      rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').sort_by { |value| value['name'] }.map do |value|
+        i += 1
+        lit = "<div title=\"#{value['name']}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
+              "<span style=\"vertical-align: middle;\"><img src='images/icon_69.png' width='16' height='16' title='' style=\"vertical-align: bottom;\">" +
+              "</span>#{value['name']}</div></br>"
+
+        comment, = value.xpath('./ownedComment')
+        text = comment['body'] if comment
+        
+        { col0: "#{i} </br>", col1: lit, col2: convert_markdown_to_html(text.to_s) }
+      end
+      literals = { title: 'Enumeration Literals', hideHeaders: false, collapsible: true,
+                   data_store: { fields: ['col0', 'col1', 'col2'],
+                                 data: rows },
+                   columns: [ { text: '#', dataIndex: 'col0', flex: 0, width: 84 },
+                              { text: 'Name', dataIndex: 'col1', flex: 0, width: 300 },
+                              { text: 'Documentation', dataIndex: 'col2', flex: 1, width: -1 } ] }
+
+      entry = { id: enum, name: "#{name} : <i>Block</i>", type: "block" }
+      search['all'] << entry
+      search['block'] << entry
+      
+      [ enum, { title: name, path: path, html_panel: [], grid_panel: [characteristics, literals], image_panel: [] }]
+  end.each do |id, value|
+    content[id] = value
+  end
+  
+  dt = { text: 'DataTypes', qtitle: package, icon: 'images/icon_1.png',
+         children: list, leaf: false, expanded: false }
+  tree.insert(loc, dt)
+end
+
 
 if __FILE__ == $PROGRAM_NAME
-  index = File.expand_path('../WebReport/index.html', File.dirname(__FILE__))
-  file = File.expand_path('../WebReport/data.js', File.dirname(__FILE__))
-  output = File.expand_path('../WebReport/data.formatted.js', File.dirname(__FILE__))
-  logo = File.expand_path('../WebReport/images/logo.png', File.dirname(__FILE__))
+  dir = ARGV[0] || "../WebReport"
+
+  puts "Working on directory #{dir}"
+  
+  index = File.expand_path("#{dir}/index.html", File.dirname(__FILE__))
+  file = File.expand_path("#{dir}/data.js", File.dirname(__FILE__))
+  output = File.expand_path("#{dir}/data.formatted.js", File.dirname(__FILE__))
+  logo = File.expand_path("#{dir}/images/logo.png", File.dirname(__FILE__))
   mtconnect = File.expand_path('./MTConnect.png', File.dirname(__FILE__))
   xmi = File.expand_path('../MTConnect SysML Model.xml', File.dirname(__FILE__))
   
@@ -347,7 +418,9 @@ if __FILE__ == $PROGRAM_NAME
   end
 
   # Remove the glossary
-  doc['window.navigation_json'].delete_if { |e| e['title'] == 'Glossary' }
+  # doc['window.navigation_json'].delete_if { |e| e['title'] == 'Glossary' }
+
+  generate_enumerations(doc, model)
   
   content = doc['window.content_data_json']
 
