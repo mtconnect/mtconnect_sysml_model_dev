@@ -6,6 +6,11 @@ require 'active_support/inflector'
 require 'pp'
 require 'nokogiri'
 
+# Icon constants here
+EnumTypeIcon = 'images/icon_140.png'.freeze
+EnumLiteralIcon = 'images/icon_69.png'.freeze
+PackageIcon = 'images/icon_1.png'.freeze
+  
 class Hash
   def path(*args)
     o = self
@@ -157,22 +162,20 @@ def convert_markdown(doc)
           name, = panel['columns'].select { |col| col['text'].start_with?('Name') }
           type, = panel['columns'].select { |col| col['text'].start_with?('Type') }
 
-          if desc            
-            dc = desc['dataIndex'] if desc
-            nc = name['dataIndex'] if name
-            tc = type['dataIndex'] if type
-            panel.path('data_store', 'data').each do |row|
-              if dc and row[dc] != " </br>"
-                if nc and row[dc] =~ /deprecated/i
-                  row[nc] = deprecate(row[nc])
-                end
-
-                row[dc] = convert_markdown_to_html(row[dc])
+          dc = desc['dataIndex'] if desc
+          nc = name['dataIndex'] if name
+          tc = type['dataIndex'] if type
+          panel.path('data_store', 'data').each do |row|
+            if dc and row[dc] != " </br>"
+              if nc and row[dc] =~ /deprecated/i
+                row[nc] = deprecate(row[nc])
               end
-
-              if tc and row[tc] =~ /([A-Za-z]+Enum)</ and Enumerations.include?($1)
-                row[tc] = format_target(Enumerations[$1], $1, 'icon_177')
-              end
+              
+              row[dc] = convert_markdown_to_html(row[dc])
+            end
+            
+            if tc and row[tc] =~ /([A-Za-z]+Enum)</ and Enumerations.include?($1)
+              row[tc] = format_target(Enumerations[$1], $1, EnumTypeIcon)
             end
           end
         end
@@ -187,14 +190,14 @@ end
 
 def format_name(name, icon)
   "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
-    "<span style=\"vertical-align: middle;\"><img src='images/#{icon}.png' width='16' height='16' title='' style=\"vertical-align: bottom;\">" +
+    "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" +
     "</span>#{name}</div></br>"
 end
 
 def format_target(id, name, icon)
   "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
   "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" +
-  "<img src='images/#{icon}.png' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span><a>" +
+  "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span><a>" +
   "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\">#{name}<a></div>"            
 end
 
@@ -212,7 +215,7 @@ def document_packages(content, model)
       if grid and grid.empty?
         text = collect_comments(model, name)
         unless text.empty?
-          display = format_target(k, name, 'icon_3')
+          display = format_target(k, name, PackageIcon)
           
           # Check for associations
           grid[0] = { title: "Characteristics ", hideHeaders: true,
@@ -235,7 +238,7 @@ def generate_enumerations(doc, model)
   loc = tree.index { |e| e['text'] > 'DataTypes' }
   
   list = model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").sort_by { |ele| ele['name'] }.map do |ele|
-    { text: ele['name'], qtitle: "Enumeration__#{ele['xmi:id']}", icon: 'images/icon_140.png', expanded: false, leaf: true }
+    { text: ele['name'], qtitle: "Enumeration__#{ele['xmi:id']}", icon: EnumTypeIcon, expanded: false, leaf: true }
   end
 
   content = doc['window.content_data_json']
@@ -244,8 +247,8 @@ def generate_enumerations(doc, model)
     name = ele['name']
     enum = "Enumeration__#{ele['xmi:id']}"
     
-    col1 = format_target(enum, name, 'icon_140')
-    path = "#{format_target(package, 'DataTypes', 'icon_1')} / #{col1}"
+    col1 = format_target(enum, name, EnumTypeIcon)
+    path = "#{format_target(package, 'DataTypes', PackageIcon)} / #{col1}"
     
     characteristics = { title: 'Characteristics', hideHeaders: true, collapsible: true,
                         data_store: { fields: ['col0', 'col1'], data: [{ col0: 'Name', col1: col1 }] },
@@ -258,7 +261,7 @@ def generate_enumerations(doc, model)
     rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').sort_by { |value| value['name'] }.map do |value|
       i += 1
       vname = value['name']
-      lit = format_name(vname, 'icon_69')
+      lit = format_name(vname, EnumLiteralIcon)
       comment, = value.xpath('./ownedComment')
       if comment
         text = convert_markdown_to_html(comment['body'])
@@ -290,7 +293,7 @@ def generate_enumerations(doc, model)
     content[id] = value
   end
   
-  dt = { text: 'DataTypes', qtitle: package, icon: 'images/icon_1.png',
+  dt = { text: 'DataTypes', qtitle: package, icon: PackageIcon,
          children: list, leaf: false, expanded: false }
   tree.insert(loc, dt)
 end
@@ -380,7 +383,8 @@ if __FILE__ == $PROGRAM_NAME
   lp = res.path(:logo_panel, :logo)
   lp['height'] = '60px'
   lp['width'] = '205px'
-  
+
+  puts "Rewriting the resource file: #{res_formatted}"
   File.open(res_formatted, 'w') do |f|
     f.write "window.resource = "
     f.write(JSON.fast_generate(res, indent: '  ', array_nl: "\n", object_nl: "\n", space: ' ' ))
