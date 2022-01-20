@@ -10,6 +10,7 @@ require 'nokogiri'
 EnumTypeIcon = 'images/icon_140.png'.freeze
 EnumLiteralIcon = 'images/icon_69.png'.freeze
 PackageIcon = 'images/icon_1.png'.freeze
+BlockIcon = 'images/icon_117.png'.freeze
   
 class Hash
   def path(*args)
@@ -191,14 +192,14 @@ end
 def format_name(name, icon)
   "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
     "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" +
-    "</span>#{name}</div></br>"
+    "</span> #{name}</div></br>"
 end
 
 def format_target(id, name, icon)
   "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
   "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" +
   "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span><a>" +
-  "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\">#{name}<a></div>"            
+  "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> #{name}<a></div>"            
 end
 
 def collect_comments(model, name)
@@ -298,6 +299,43 @@ def generate_enumerations(doc, model)
   tree.insert(loc, dt)
 end
 
+def is_term(ent)
+  !ent.ancestors.map { |a| a['name'] =~ /Glossary/ }.compact.empty?
+end
+
+def add_superclasses(content, model)
+  blocks = Hash.new
+  content.each do |k, v|
+    if k =~ /^Structure/
+      blocks[v['title']] = k
+    end
+  end
+  
+  content.each do |k, v|
+    if k =~ /^Structure/
+      title = v['title']
+      
+      # Find model
+      gens = model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization")
+      gen, = gens.select { |g| !is_term(g) }
+      if gen
+        id = gen['general']
+        parent, = model.xpath("//packagedElement[@xmi:id='#{id}']")
+        if parent and !is_term(parent)
+          name = parent['name']
+          rel = blocks[name]
+          if rel
+            characteristics = v.path('grid_panel', 0)
+            if characteristics['title'].start_with?('Characteristics')
+              characteristics.path('data_store', 'data').unshift({ col0: 'Parent', col1: format_target(rel, name, BlockIcon) })
+            end
+          end
+        end
+      end
+    end
+  end
+end
+
 def js_to_json(file)
   data = File.read(file)
   
@@ -359,6 +397,7 @@ if __FILE__ == $PROGRAM_NAME
       sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal.to_mtc_html}</div></div>")
   end
 
+  puts "Generating enumerations"
   generate_enumerations(doc, model)
   
   content = doc['window.content_data_json']
@@ -368,6 +407,9 @@ if __FILE__ == $PROGRAM_NAME
   
   puts "Converting markdown" 
   convert_markdown(content)
+
+  puts "Adding superclasses"
+  add_superclasses(content, model)
 
   puts "Writing out #{output}"
   File.open(output, 'w') do |f|
