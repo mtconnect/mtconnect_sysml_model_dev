@@ -126,15 +126,12 @@ module Kramdown
 end
 
 Enumerations = Hash.new
+Deprecated = Set.new
 
 def convert_markdown_to_html(content)
   data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
   kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
   kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
-end
-
-def renumber(list)
-  list.each_with_index { |e, i| e['col0'].sub!(/^[0-9]+/, (i + 1).to_s) }
 end
 
 def convert_markdown(doc)  
@@ -179,10 +176,11 @@ def convert_markdown(doc)
       end
 
       if deprecated
+        Deprecated << k
         v['title'] = "<strike>#{title}</strike>"
       end
     end
-  end
+  end  
 end
 
 def format_name(name, icon)
@@ -364,6 +362,22 @@ def add_superclasses(content, model)
   end
 end
 
+def deprecate_tree(model)
+  tree = model.path('window.navigation_json', 0, 'data')
+  recurse = lambda do |node|
+    if Deprecated.include?(node['qtitle'])
+      node['text'] = "<strike>#{node['text']}</strike>"
+    end
+    if node['children']
+      node['children'].each { |c| recurse.call(c) }
+    end
+  end
+
+  tree.each do |node|
+    recurse.call(node)
+  end
+end
+
 def js_to_json(file)
   data = File.read(file)
   
@@ -438,6 +452,9 @@ if __FILE__ == $PROGRAM_NAME
 
   puts "Adding superclasses"
   add_superclasses(content, model)
+
+  puts "Deprecating classes in tree"
+  deprecate_tree(doc)
 
   puts "Writing out #{output}"
   File.open(output, 'w') do |f|
