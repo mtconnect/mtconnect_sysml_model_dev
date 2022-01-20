@@ -357,7 +357,7 @@ class WebReportConverter
   end
 
   def xmi_path(node)
-    node.ancestors.map { |a| a['name'] unless a['name'] == 'MTConnect' }.compact
+    node.ancestors.reverse.map { |a| a['name'] }.compact[1..-1]
   end
 
   def add_superclasses
@@ -383,6 +383,8 @@ class WebReportConverter
           gens = @model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization")
 
           gen, = gens.select do |g|
+            p target
+            p xmi_path(g)
             xmi_path(g) == target
           end
 
@@ -406,7 +408,7 @@ class WebReportConverter
   
   def deprecate_tree
     recurse = lambda do |node, path|
-      path = path.dup.unshift(node['text'])
+      path = path.dup << node['text']
       @paths[node['qtitle']] = path.freeze
       
       if @deprecated.include?(node['qtitle'])
