@@ -387,6 +387,23 @@ class WebReportConverter
       recurse.call(node, [])
     end
   end
+
+  def convert
+    puts "Generating enumerations"
+    generate_enumerations
+
+    puts "Document packages"
+    document_packages
+  
+    puts "Converting markdown" 
+    convert_markdown
+
+    puts "Deprecating classes in tree"
+    deprecate_tree
+
+    puts "Adding superclasses"
+    add_superclasses
+  end
 end
 
 def js_to_json(file)
@@ -451,21 +468,7 @@ if __FILE__ == $PROGRAM_NAME
   end
 
   converter = WebReportConverter.new(doc, model)
-
-  puts "Generating enumerations"
-  converter.generate_enumerations
-
-  puts "Document packages"
-  converter.document_packages
-  
-  puts "Converting markdown" 
-  converter.convert_markdown
-
-  puts "Deprecating classes in tree"
-  converter.deprecate_tree
-
-  puts "Adding superclasses"
-  converter.add_superclasses
+  converter.convert
 
   puts "Writing out #{output}"
   File.open(output, 'w') do |f|
