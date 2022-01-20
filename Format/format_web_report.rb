@@ -93,7 +93,7 @@ module Kramdown
             "<em>#{plural}</em>"
 
           when 'block', 'property'
-            "<code>#{args}</code>"
+            @@converter.format_block(args)
 
           when 'def'
             @@definitions.path(*args.split(':')) || "<code>#{args}</code>"
@@ -141,12 +141,7 @@ module Kramdown
                          "MTConnect Part #{$1}"
                        end
 
-              b = @@blocks[target]
-              if b
-                @@converter.format_target(b, target, PackageIcon)
-              else
-                "<em>#{target}</em>"                
-              end                
+              @@converter.format_package(target)
             else
               "<em>#{args}</em>"
             end
@@ -310,6 +305,22 @@ class WebReportConverter
     text.sub(%r{> (.+?)</div></br>$}, '> <strike>\1</strike>\2</div>')
   end
 
+  def format_block(block)
+    if b = @blocks[block]
+      format_target(b, block, BlockIcon)
+    else
+      "<code>#{block}</code>"                
+    end                    
+  end
+
+  def format_package(package)
+    if b = @blocks[package]
+      format_target(b, package, PackageIcon)
+    else
+      "<em>#{package}</em>"                
+    end                    
+  end
+
   def collect_comments(model, name)
     comments = model.xpath("//packagedElement[@name='#{name}' and @xmi:type='uml:Package']")
     recurse = lambda { |ele| [ ele['body'], ele.xpath('./ownedComment').map { |e2| recurse.call(e2) } ] }
@@ -448,10 +459,9 @@ class WebReportConverter
           if parent
             # Find the parent in the content
             name = parent['name']
-            if (rel = @blocks[name])
-              # Insert a row at the beginning
-              characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_target(rel, name, BlockIcon) })
-            end
+            
+            # Insert a row at the beginning
+            characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_block(name) })
           end
         end
       end
