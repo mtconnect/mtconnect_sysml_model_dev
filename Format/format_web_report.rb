@@ -295,6 +295,21 @@ def generate_enumerations(doc, model)
   tree.insert(loc, dt)
 end
 
+def js_to_json(file)
+  data = File.read(file)
+  
+  data.gsub!(/^\};/, '},')
+  data.gsub!(/;$/, ',')
+
+  data.gsub!(/^(window\.[a-z_]+) = '([^']+)'/i, '"\1": "\2"')
+  data.gsub!(/^(window\.[a-z_]+) =/i, '"\1": ')
+
+  data.insert(0, '{')
+  data.sub!(/,\Z/, "}\n")
+
+    puts "Parsing #{file}"
+    JSON.parse(data)
+end
 
 if __FILE__ == $PROGRAM_NAME
   dir = ARGV[0] || "../WebReport"
@@ -303,6 +318,8 @@ if __FILE__ == $PROGRAM_NAME
   
   index = File.expand_path("#{dir}/index.html", File.dirname(__FILE__))
   file = File.expand_path("#{dir}/data.js", File.dirname(__FILE__))
+  resource = File.expand_path("#{dir}/resource.js", File.dirname(__FILE__))
+  res_formatted = File.expand_path("#{dir}/resource.formatted.js", File.dirname(__FILE__))
   output = File.expand_path("#{dir}/data.formatted.js", File.dirname(__FILE__))
   logo = File.expand_path("#{dir}/images/logo.png", File.dirname(__FILE__))
   mtconnect = File.expand_path('./MTConnect.png', File.dirname(__FILE__))
@@ -320,26 +337,11 @@ if __FILE__ == $PROGRAM_NAME
 
   text = File.open(index).read
   text.sub!(/src="data\.js"/, 'src="data.formatted.js"')
+  text.sub!(/src="resource\.js"/, 'src="resource.formatted.js"')
   File.open(index, 'w') { |f| f.write(text) }
   
   puts "Reading #{file}"
-  data = File.read(file)
-
-  data.gsub!(/^\};/, '},')
-  data.gsub!(/;$/, ',')
-
-  data.gsub!(/^(window\.[a-z_]+) = '([^']+)'/i, '"\1": "\2"')
-  data.gsub!(/^(window\.[a-z_]+) =/i, '"\1": ')
-
-  data.insert(0, '{')
-  data.sub!(/,\Z/, "}\n")
-
-  begin
-    puts "Parsing #{file}"
-    doc = JSON.parse(data)
-  rescue
-    p $!
-  end
+  doc = js_to_json(file)
 
   # Add the legal docs to the landing page
   File.open('legal.md') do |f|
@@ -353,9 +355,6 @@ if __FILE__ == $PROGRAM_NAME
     panel['html'].
       sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal.to_mtc_html}</div></div>")
   end
-
-  # Remove the glossary
-  # doc['window.navigation_json'].delete_if { |e| e['title'] == 'Glossary' }
 
   generate_enumerations(doc, model)
   
@@ -374,5 +373,16 @@ if __FILE__ == $PROGRAM_NAME
       f.write(JSON.fast_generate(v, indent: '  ', array_nl: "\n", object_nl: "\n", space: ' ' ))
       f.write(";\n")
     end
+  end
+
+  data = File.read(resource).sub(/^window\.resource =/, '').gsub(/^([ \t]+[a-z_]+)[ ]+:/, '\1:')
+  res = eval(data)
+  lp = res.path(:logo_panel, :logo)
+  lp['height'] = '60px'
+  lp['width'] = '205px'
+  
+  File.open(res_formatted, 'w') do |f|
+    f.write "window.resource = "
+    f.write(JSON.fast_generate(res, indent: '  ', array_nl: "\n", object_nl: "\n", space: ' ' ))
   end
 end
