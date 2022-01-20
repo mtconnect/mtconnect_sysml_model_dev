@@ -59,10 +59,6 @@ module Kramdown
         @@definitions[name] = values
       end
 
-      def self.blocks=(value)
-        @@blocks = value
-      end
-
       def self.converter=(value)
         @@converter = value
       end
@@ -179,7 +175,6 @@ class WebReportConverter
     @deprecated = Set.new
     @paths = Hash.new
 
-
     # Collect all the structures so we can relate them later
     @blocks = Hash.new
     @content.each do |k, v|
@@ -189,7 +184,6 @@ class WebReportConverter
     end
 
     Kramdown::Converter::MtcHtml.converter = self
-    Kramdown::Converter::MtcHtml.blocks = @blocks
   end
 
   def js_to_json(file)
@@ -250,9 +244,9 @@ class WebReportConverter
               end
             end
           else
-            desc, = panel['columns'].select { |col| col['text'].start_with?('Documentation') or col['text'].start_with?('Description') }
-            name, = panel['columns'].select { |col| col['text'].start_with?('Name') }
-            type, = panel['columns'].select { |col| col['text'].start_with?('Type') }
+            desc = panel['columns'].detect { |col| col['text'].start_with?('Documentation') or col['text'].start_with?('Description') }
+            name = panel['columns'].detect { |col| col['text'].start_with?('Name') }
+            type = panel['columns'].detect { |col| col['text'].start_with?('Type') }
             
             dc = desc['dataIndex'] if desc
             nc = name['dataIndex'] if name
@@ -442,7 +436,7 @@ class WebReportConverter
         characteristics = v.path('grid_panel', 0)
         if characteristics and characteristics['title'].start_with?('Characteristics')
           # Find model
-          parents = @model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization").select do |g|
+          parent, = @model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization").select do |g|
             target == xmi_path(g)
           end.map do |g|
             if id = g['general']
@@ -451,9 +445,7 @@ class WebReportConverter
             else
               nil
             end
-          end.compact.select { |node, m| m > 0 }.sort_by { |node, m| -m }
-
-          parent, = parents[0]
+          end.compact.select { |node, m| m > 0 }.sort_by { |node, m| -m }.first
 
           # If there is a superclass and it is not a term
           if parent
