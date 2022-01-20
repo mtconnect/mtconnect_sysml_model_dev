@@ -250,15 +250,17 @@ def generate_enumerations(doc, model)
     
     col1 = format_target(enum, name, EnumTypeIcon)
     path = "#{format_target(package, 'DataTypes', PackageIcon)} / #{col1}"
+
     
-    characteristics = { title: 'Characteristics', hideHeaders: true, collapsible: true,
-                        data_store: { fields: ['col0', 'col1'], data: [{ col0: 'Name', col1: col1 }] },
+    # Create characteristics section of the page
+    characteristics = { title: 'Characteristics ', hideHeaders: true, collapsible: true,
+                        data_store: { fields: ['col0', 'col1'], data: [{ col0: 'Name ', col1: col1 }] },
                         columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
                                    { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }
-    
+
+    # Collect all the literals and build the table. Also collect them for {{def(...)}} dereferencing
     i = 0
-    definitions = Hash.new
-    
+    definitions = Hash.new    
     rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').sort_by { |value| value['name'] }.map do |value|
       i += 1
       vname = value['name']
@@ -274,18 +276,20 @@ def generate_enumerations(doc, model)
       
       { col0: "#{i} </br>", col1: lit, col2: text.to_s }
     end
-    
+
+    # Add the definitions to the markdown converter
     Kramdown::Converter::MtcHtml.add_definitions(name, definitions)
     Enumerations[name] = enum
-    
+
+    # Create the grid of literals
     literals = { title: 'Enumeration Literals', hideHeaders: false, collapsible: true,
-                 data_store: { fields: ['col0', 'col1', 'col2'],
-                               data: rows },
-                 columns: [ { text: '#', dataIndex: 'col0', flex: 0, width: 84 },
-                            { text: 'Name', dataIndex: 'col1', flex: 0, width: 300 },
-                            { text: 'Documentation', dataIndex: 'col2', flex: 1, width: -1 } ] }
-    
-    entry = { id: enum, name: "#{name} : <i>Block</i>", type: "block" }
+                 data_store: { fields: ['col0', 'col1', 'col2'], data: rows },
+                 columns: [ { text: '# ', dataIndex: 'col0', flex: 0, width: 84 },
+                            { text: 'Name ', dataIndex: 'col1', flex: 0, width: 300 },
+                            { text: 'Documentation ', dataIndex: 'col2', flex: 1, width: -1 } ] }
+
+    # Add the items to the search
+    entry = { id: enum, 'name' => "#{name} : <i>Block</i>", type: "block" }
     search['all'] << entry
     search['block'] << entry
     
@@ -297,37 +301,49 @@ def generate_enumerations(doc, model)
   dt = { text: 'DataTypes', qtitle: package, icon: PackageIcon,
          children: list, leaf: false, expanded: false }
   tree.insert(loc, dt)
+
+  # Sort the search items
+  search['all'].sort_by! { |e| e['name'] }
+  search['block'].sort_by! { |e| e['name'] }
 end
 
+# Check up the package hierarchy por a packages with Glossary in the name
 def is_term(ent)
-  !ent.ancestors.map { |a| a['name'] =~ /Glossary/ }.compact.empty?
+  ent.ancestors.each { |a| return true if a['name'] =~ /Glossary/ }
+  false
 end
 
 def add_superclasses(content, model)
+  # Collect all the structures so we can relate them later
   blocks = Hash.new
   content.each do |k, v|
     if k =~ /^Structure/
       blocks[v['title']] = k
     end
   end
-  
+
+  # Second pass
   content.each do |k, v|
     if k =~ /^Structure/
       title = v['title']
-      
-      # Find model
-      gens = model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization")
-      gen, = gens.select { |g| !is_term(g) }
-      if gen
-        id = gen['general']
-        parent, = model.xpath("//packagedElement[@xmi:id='#{id}']")
-        if parent and !is_term(parent)
-          name = parent['name']
-          rel = blocks[name]
-          if rel
-            characteristics = v.path('grid_panel', 0)
-            if characteristics['title'].start_with?('Characteristics')
-              characteristics.path('data_store', 'data').unshift({ col0: 'Parent', col1: format_target(rel, name, BlockIcon) })
+
+      characteristics = v.path('grid_panel', 0)
+      if characteristics and characteristics['title'].start_with?('Characteristics')
+        # Find model
+        gens = model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization")
+        
+        # Filter out the terms
+        gen, = gens.select { |g| !is_term(g) }
+        if gen and (id = gen['general'])
+          parent, = model.xpath("//packagedElement[@xmi:id='#{id}']")
+          
+          # If there is a superclass and it is not a term
+          if parent and !is_term(parent)
+            # Find the parent in the content
+            name = parent['name']
+            if (rel = blocks[name])
+              # Insert a row at the beginning
+              characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_target(rel, name, BlockIcon) })
             end
           end
         end
