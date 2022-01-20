@@ -119,6 +119,8 @@ module Kramdown
   end
 end
 
+Enumerations = Hash.new
+
 def convert_markdown_to_html(content)
   data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
   kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
@@ -129,139 +131,77 @@ def renumber(list)
   list.each_with_index { |e, i| e['col0'].sub!(/^[0-9]+/, (i + 1).to_s) }
 end
 
-def collect_enumerations(doc)
+def deprecate(text)
+  "&lt;&lt;deprecated&gt;&gt; #{text}"
+end
+
+def convert_markdown(doc)  
   doc.each do |k, v|
-    if k =~ /^Architecture/ and Hash === v and v.include?('title')
-      name = v['title']
+    if k =~ /^(Architecture|Glossary|Diagram|Structure)/
+      title = v['title']
+      deprecated = false
 
-      # Get the interesting pieces of the doc and skip entry if they don't exist
-      data = v.path('grid_panel', 1)
-      next unless data
-      title = data['title']
-      next unless title
-      list = data.path('data_store', 'data')
-      next unless list
-      
-      if title == 'Enumeration Literals'
-        enum = Hash.new
-
-        # Same the converted docs for each entry in the enums
-        list.each do |e|
-          if e['col1'] =~ /title="([^"]+)"/
-            entry = $1
-            enum[entry] = convert_markdown_to_html(e['col2'])
-          end
-        end
-        
-        Kramdown::Converter::MtcHtml.add_definitions(name, enum)
-        list.sort_by! { |e| e['col1'] =~ /title="([^"]+)"/ ? $1 : '' }
-        renumber(list)
-
-      elsif title == 'Attributes'
-        attributes = Hash.new { |h, k| h[k] = [] }
-        
-        list.each_with_index do |e, i|
-          # Check if the icon is icon_1 (the bullet icon). These are relationships and should remain
-          # Otherwise, if it is named property, remove dups
-          match = /title="([^"]+)".+?img[ ]+src='([^']+)'?/.match(e['col1'])
-          if match
-            prop, type = match[1].split(/[ ]*:[ ]*/)
-            icon = match[2]            
-            attributes[prop] << e unless prop.empty? or icon =~ /icon_1\.png/
-          end
-        end
-
-        # Cleanup and remove the dups
-        attributes.each do |k, v|
-          if v.length > 1
-            # Preserve the last one
-            last = v.pop
-            # Check if there are docs for the final value, if so keep them
-            if last['col5'] =~ %r{^[ ]*</br>$}
-              # Otherwise, find the last set of docs and replace the current docs
-              docs = v.map { |e| e['col5'] if e['col5'] !~ %r{^[ ]*</br>$} }.compact.last
-              last['col5'] = docs if docs
+      # Scan the grid panel looking for content
+      panels = v['grid_panel']
+      panels.each do |panel|
+        if panel['hideHeaders'] and panel.path('data_store', 'fields').length == 2
+          # Look for documentation
+          panel.path('data_store', 'data').each do |row|
+            if row['col0'].start_with?('Documentation')
+              row['col1'] = convert_markdown_to_html(row['col1'])
+              deprecated = row['col1'] =~ /deprecated/i
             end
+          end
+        else
+          desc, = panel['columns'].select { |col| col['text'].start_with?('Documentation') or col['text'].start_with?('Description') }
+          name, = panel['columns'].select { |col| col['text'].start_with?('Name') }
+          type, = panel['columns'].select { |col| col['text'].start_with?('Type') }
 
-            # Remove the other entries.
-            v.each do |e|
-              list.delete_if { |i| i['col0'] == e['col0'] }
+          if desc            
+            dc = desc['dataIndex'] if desc
+            nc = name['dataIndex'] if name
+            tc = type['dataIndex'] if type
+            panel.path('data_store', 'data').each do |row|
+              if dc and row[dc] != " </br>"
+                if nc and row[dc] =~ /deprecated/i
+                  row[nc] = deprecate(row[nc])
+                end
+
+                row[dc] = convert_markdown_to_html(row[dc])
+              end
+
+              if tc and row[tc] =~ /([A-Za-z]+Enum)</ and Enumerations.include?($1)
+                row[tc] = format_target(Enumerations[$1], $1, 'icon_177')
+              end
             end
           end
         end
+      end
 
-        renumber(list)
+      if deprecated
+        v['title'] = deprecate(title)
       end
     end
   end
 end
 
-def convert_markdown(doc)  
-  doc.each do |k, v|
-    if k =~ /^(Architecture|Glossary|Diagram)/
-      type = $1
-      title = v['title']
-      
-      docs = v.path('grid_panel', 0, 'data_store', 'data', 1)
-      if docs and docs['col0'] =~ /^Documentation/
-        docs['col1'] = convert_markdown_to_html(docs['col1'])
-      end
+def format_name(name, icon)
+  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
+    "<span style=\"vertical-align: middle;\"><img src='images/#{icon}.png' width='16' height='16' title='' style=\"vertical-align: bottom;\">" +
+    "</span>#{name}</div></br>"
+end
 
-      if type == 'Glossary' or type == 'Diagram'
-        data = v.path('grid_panel', 0)
-      else
-        data = v.path('grid_panel', 1)
-      end
-      if data and data.include?('title')
-        if type != 'Diagram'
-          title = data['title']
-        end
-        
-        if title == 'Attributes'
-          col = 'col5'
-        elsif type == 'Glossary' and title =~ /Characteristics/
-          col = 'col1'
-        elsif title == 'Enumeration Literals' or type == 'Glossary' or (type == 'Diagram' and title =~ /Glossary/)
-          col = 'col2'
-        end
-        
-        if col
-          list = data.path('data_store', 'data')
-          list.each do |row|
-            if row.include?(col) and row[col] !~ /^[ ]*</
-              row[col] = convert_markdown_to_html(row[col])
-            end
-          end
-        end
-      end
-    end
-  end
+def format_target(id, name, icon)
+  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
+  "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" +
+  "<img src='images/#{icon}.png' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span><a>" +
+  "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\">#{name}<a></div>"            
 end
 
 def collect_comments(model, name)
   comments = model.xpath("//packagedElement[@name='#{name}' and @xmi:type='uml:Package']")
   recurse = lambda { |ele| [ ele['body'], ele.xpath('./ownedComment').map { |e2| recurse.call(e2) } ] }
   comments.map { |ele| recurse.call(ele) }.flatten.compact.join("\n\n")
-end
-
-def collect_associations(model, name)
-  associations = model.xpath("//packagedElement[@name='#{name}' and @xmi:type='uml:Association']/ownedComment")
-  unless associations.empty?
-    assocs = associations.map do |e|
-      comment = e['body'].to_s
-      unless comment.empty?
-        link = e.parent.memberEnd.map do |v|
-          id = v['xmi:idref']
-          me = model.xpath("//ownedAttribute[@xmi:id='#{id}']").first
-          "`#{me['name']}`" if me
-        end.compact.join(' {::nomarkdown}&harr;{:/} ')
-        "#{link}:\n\n: #{comment.split("\n").join("\n  ")}"
-      end
-    end.compact
-    unless assocs.empty?
-      "\n\n### Associations\n\n" + assocs.join("\n\n");
-    end
-  end   
 end
 
 def document_packages(content, model)
@@ -272,10 +212,7 @@ def document_packages(content, model)
       if grid and grid.empty?
         text = collect_comments(model, name)
         unless text.empty?
-          display = "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
-                    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{k}');return false;\"><span style=\"vertical-align: middle;\">" +
-                    "<img src='images/icon_3.png' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span><a>" +
-                    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{k}');return false;\">#{name}<a></div>"
+          display = format_target(k, name, 'icon_3')
           
           # Check for associations
           grid[0] = { title: "Characteristics ", hideHeaders: true,
@@ -306,49 +243,49 @@ def generate_enumerations(doc, model)
   model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").map do |ele|
     name = ele['name']
     enum = "Enumeration__#{ele['xmi:id']}"
-    path= "<div title=\"DataTypes\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
-          "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{package}');return false;\">" +
-          "<span style=\"vertical-align: middle;\"><img src='images/icon_1.png' width='16' height='16' title='' style=\"vertical-align: bottom;\">" +
-          "</span><a> <a href=\"\" target=\"_blank\" onclick=\"navigate('#{package}');return false;\">DataTypes<a>" +
-          "</div> / <div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
-          "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{enum}');return false;\">" +
-          "<span style=\"vertical-align: middle;\"><img src='images/icon_140.png' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span>" +
-          "<a> <a href=\"\" target=\"_blank\" onclick=\"navigate('#{enum}');return false;\">#{name}<a></div>"
-
-      col1 = "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
-             "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{enum}');return false;\">" +
-             "<span style=\"vertical-align: middle;\"><img src='images/icon_140.png' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span>" +
-             "<a> <a href=\"\" target=\"_blank\" onclick=\"navigate('#{enum}');return false;\">#{name}<a></div>"
-      
-      characteristics = { title: 'Characteristics', hideHeaders: true, collapsible: true,
-                          data_store: { fields: ['col0', 'col1'], data: [{ col0: 'Name', col1: col1 }] },
-                          columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
-                                     { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }
-
-      i = 0
-      rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').sort_by { |value| value['name'] }.map do |value|
-        i += 1
-        lit = "<div title=\"#{value['name']}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
-              "<span style=\"vertical-align: middle;\"><img src='images/icon_69.png' width='16' height='16' title='' style=\"vertical-align: bottom;\">" +
-              "</span>#{value['name']}</div></br>"
-
-        comment, = value.xpath('./ownedComment')
-        text = comment['body'] if comment
-        
-        { col0: "#{i} </br>", col1: lit, col2: convert_markdown_to_html(text.to_s) }
+    
+    col1 = format_target(enum, name, 'icon_140')
+    path = "#{format_target(package, 'DataTypes', 'icon_1')} / #{col1}"
+    
+    characteristics = { title: 'Characteristics', hideHeaders: true, collapsible: true,
+                        data_store: { fields: ['col0', 'col1'], data: [{ col0: 'Name', col1: col1 }] },
+                        columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
+                                   { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }
+    
+    i = 0
+    definitions = Hash.new
+    
+    rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').sort_by { |value| value['name'] }.map do |value|
+      i += 1
+      vname = value['name']
+      lit = format_name(vname, 'icon_69')
+      comment, = value.xpath('./ownedComment')
+      if comment
+        text = convert_markdown_to_html(comment['body'])
+        definitions[vname] = text
+        if text =~ /deprecated/i
+          lit = deprecate(lit)
+        end
       end
-      literals = { title: 'Enumeration Literals', hideHeaders: false, collapsible: true,
-                   data_store: { fields: ['col0', 'col1', 'col2'],
-                                 data: rows },
-                   columns: [ { text: '#', dataIndex: 'col0', flex: 0, width: 84 },
-                              { text: 'Name', dataIndex: 'col1', flex: 0, width: 300 },
-                              { text: 'Documentation', dataIndex: 'col2', flex: 1, width: -1 } ] }
-
-      entry = { id: enum, name: "#{name} : <i>Block</i>", type: "block" }
-      search['all'] << entry
-      search['block'] << entry
       
-      [ enum, { title: name, path: path, html_panel: [], grid_panel: [characteristics, literals], image_panel: [] }]
+      { col0: "#{i} </br>", col1: lit, col2: text.to_s }
+    end
+    
+    Kramdown::Converter::MtcHtml.add_definitions(name, definitions)
+    Enumerations[name] = enum
+    
+    literals = { title: 'Enumeration Literals', hideHeaders: false, collapsible: true,
+                 data_store: { fields: ['col0', 'col1', 'col2'],
+                               data: rows },
+                 columns: [ { text: '#', dataIndex: 'col0', flex: 0, width: 84 },
+                            { text: 'Name', dataIndex: 'col1', flex: 0, width: 300 },
+                            { text: 'Documentation', dataIndex: 'col2', flex: 1, width: -1 } ] }
+    
+    entry = { id: enum, name: "#{name} : <i>Block</i>", type: "block" }
+    search['all'] << entry
+    search['block'] << entry
+    
+    [ enum, { title: name, path: path, html_panel: [], grid_panel: [characteristics, literals], image_panel: [] }]
   end.each do |id, value|
     content[id] = value
   end
@@ -427,9 +364,6 @@ if __FILE__ == $PROGRAM_NAME
   puts "Document packages"
   document_packages(content, model)
   
-  puts "Collecting enumerations"
-  collect_enumerations(content)
-
   puts "Converting markdown" 
   convert_markdown(content)
 
