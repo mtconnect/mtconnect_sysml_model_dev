@@ -98,10 +98,10 @@ module Kramdown
             args
 
           when 'table'
-            "Table #{args}"
+            "<em>Table #{args}</em>"
 
           when 'figure'
-            "Figure #{args}"
+            "<em>Figure #{args}</em>"
 
           when "span", "colspan"
             ''
@@ -110,7 +110,7 @@ module Kramdown
             ''
 
           when "sect"
-            "Section #{args}"
+            "<em>Section #{args}</em>"
 
           when "input"
             ''
