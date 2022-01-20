@@ -126,9 +126,14 @@ module Kramdown
 end
 
 class WebReportConverter
-  def initialize(doc, model)
-    @model = model
-    @doc = doc
+  def initialize(js, xmi)
+    # Reading XMI model
+    File.open(xmi) do |xml|
+      xmiDoc = Nokogiri::XML(xml).slop!
+      @model = xmiDoc.at('//uml:Model')
+    end
+
+    @doc = js_to_json(js)
     @content = @doc['window.content_data_json']
     @search = @doc['window.search_data_json']
     @tree = @doc.path('window.navigation_json', 0, 'data')
@@ -137,6 +142,40 @@ class WebReportConverter
     @deprecated = Set.new
     @paths = Hash.new
   end
+
+  def js_to_json(file)
+    puts "Reading #{file}"
+    data = File.read(file)
+    
+    data.gsub!(/^\};/, '},')
+    data.gsub!(/;$/, ',')
+    
+    data.gsub!(/^(window\.[a-z_]+) = '([^']+)'/i, '"\1": "\2"')
+    data.gsub!(/^(window\.[a-z_]+) =/i, '"\1": ')
+    
+    data.insert(0, '{')
+    data.sub!(/,\Z/, "}\n")
+    
+    puts "Parsing #{file}"
+    JSON.parse(data)
+  end
+
+  def add_license(file)
+    # Add the legal docs to the landing page
+    puts "Adding licesnse #{file}"
+    File.open(file) do |f|
+      legal = ::Kramdown::Document.new(f.read, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
+      panel = @doc.path('window.index_page_json', 'html_panel', 0)
+      
+      # Clean up the styling
+      panel['html'].sub!(%r{margin-top:300px}, 'margin-top:100px')
+      panel['html'].sub!(%r{height: 500px}, 'height: 800px')
+      # Add the legal content
+      panel['html'].
+        sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal.to_mtc_html}</div></div>")
+    end
+  end
+    
 
   def convert_markdown_to_html(content)
     data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
@@ -192,30 +231,25 @@ class WebReportConverter
     end  
   end
   
-  def format_name(name, icon)
+  def format_name(name, icon, text = name)
     "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
-    "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
-    "</span> #{name}</div></br>"
+      "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
+      "</span> #{text}</div></br>"
   end
 
   def deprecated_format_name(name, icon)
-    "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
-    "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
-    "</span> <strike>#{name}</strike></div></br>"
+    format_name(name, icon, "<strike>#{name}</strike>")
   end
 
-  def format_target(id, name, icon)
+  def format_target(id, name, icon, text = name)
     "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
-    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
-    "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
-    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> #{name}</a></div>"            
+      "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
+      "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
+      "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> #{text}</a></div>"            
   end
   
   def deprecated_format_target(id, name, icon)
-    "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
-    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
-    "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
-    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> <strike>#{name}</strike></a></div>"            
+    format_target(id, name, icon, "<strike>#{name}</strike>")
   end
   
   def deprecate(text)
@@ -404,22 +438,17 @@ class WebReportConverter
     puts "Adding superclasses"
     add_superclasses
   end
-end
 
-def js_to_json(file)
-  data = File.read(file)
-  
-  data.gsub!(/^\};/, '},')
-  data.gsub!(/;$/, ',')
-
-  data.gsub!(/^(window\.[a-z_]+) = '([^']+)'/i, '"\1": "\2"')
-  data.gsub!(/^(window\.[a-z_]+) =/i, '"\1": ')
-
-  data.insert(0, '{')
-  data.sub!(/,\Z/, "}\n")
-
-    puts "Parsing #{file}"
-    JSON.parse(data)
+  def write(file)
+    puts "Writing out #{file}"
+    File.open(file, 'w') do |f|
+      @doc.each do |k, v|
+        f.write("#{k} = ");
+        f.write(JSON.fast_generate(v, indent: '  ', array_nl: "\n", object_nl: "\n", space: ' ' ))
+        f.write(";\n")
+      end
+    end    
+  end
 end
 
 if __FILE__ == $PROGRAM_NAME
@@ -435,14 +464,8 @@ if __FILE__ == $PROGRAM_NAME
   logo = File.expand_path("#{dir}/images/logo.png", File.dirname(__FILE__))
   mtconnect = File.expand_path('./MTConnect.png', File.dirname(__FILE__))
   xmi = File.expand_path('../MTConnect SysML Model.xml', File.dirname(__FILE__))
+  legal = File.expand_path('./legal.md', File.dirname(__FILE__))
   
-  # Reading XMI model
-  model = nil
-  File.open(xmi) do |xml|
-    xmiDoc = Nokogiri::XML(xml).slop!
-    model = xmiDoc.at('//uml:Model')
-  end
-
   # Install our logo
   FileUtils.cp(mtconnect, logo)
 
@@ -451,33 +474,10 @@ if __FILE__ == $PROGRAM_NAME
   text.sub!(/src="resource\.js"/, 'src="resource.formatted.js"')
   File.open(index, 'w') { |f| f.write(text) }
   
-  puts "Reading #{file}"
-  doc = js_to_json(file)
-
-  # Add the legal docs to the landing page
-  File.open('legal.md') do |f|
-    legal = ::Kramdown::Document.new(f.read, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
-    panel = doc.path('window.index_page_json', 'html_panel', 0)
-
-    # Clean up the styling
-    panel['html'].sub!(%r{margin-top:300px}, 'margin-top:100px')
-    panel['html'].sub!(%r{height: 500px}, 'height: 800px')
-    # Add the legal content
-    panel['html'].
-      sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal.to_mtc_html}</div></div>")
-  end
-
-  converter = WebReportConverter.new(doc, model)
+  converter = WebReportConverter.new(file, xmi)
+  converter.add_license(legal)
   converter.convert
-
-  puts "Writing out #{output}"
-  File.open(output, 'w') do |f|
-    doc.each do |k, v|
-      f.write("#{k} = ");
-      f.write(JSON.fast_generate(v, indent: '  ', array_nl: "\n", object_nl: "\n", space: ' ' ))
-      f.write(";\n")
-    end
-  end
+  converter.write(output)
 
   data = File.read(resource).sub(/^window\.resource =/, '').gsub(/^([ \t]+[a-z_]+)[ ]+:/, '\1:')
   res = eval(data)
