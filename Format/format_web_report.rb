@@ -59,6 +59,14 @@ module Kramdown
         @@definitions[name] = values
       end
 
+      def self.blocks=(value)
+        @@blocks = value
+      end
+
+      def self.converter=(value)
+        @@converter = value
+      end
+
       def self.definitions
         @@definitions
       end
@@ -110,6 +118,38 @@ module Kramdown
 
           when "input"
             ''
+
+          when 'cite', 'citetitle'
+            if args =~ /MTCPart([0-9])/
+              target = case $1
+                       when '1'
+                         'Protocols'
+                         
+                       when '2'
+                         'Device Information Model'
+
+                       when '3'
+                         'Observation Information Model'
+
+                       when '4'
+                         'Asset Information Model'
+
+                       when '5'
+                         'Interface Interaction Model'
+
+                       else
+                         "MTConnect Part #{$1}"
+                       end
+
+              b = @@blocks[target]
+              if b
+                @@converter.format_target(b, target, PackageIcon)
+              else
+                "<em>#{target}</em>"                
+              end                
+            else
+              "<em>#{args}</em>"
+            end
             
           when 'markdown'
             kd = ::Kramdown::Document.new(args.gsub(/<br\/?>/, "\n"), input: 'MTCKramdown')
@@ -143,6 +183,18 @@ class WebReportConverter
     @enumerations = Hash.new
     @deprecated = Set.new
     @paths = Hash.new
+
+
+    # Collect all the structures so we can relate them later
+    @blocks = Hash.new
+    @content.each do |k, v|
+      if k =~ /^(Structure|Package)/
+        @blocks[v['title']] = k
+      end
+    end
+
+    Kramdown::Converter::MtcHtml.converter = self
+    Kramdown::Converter::MtcHtml.blocks = @blocks
   end
 
   def js_to_json(file)
@@ -368,14 +420,6 @@ class WebReportConverter
   end
 
   def add_superclasses
-    # Collect all the structures so we can relate them later
-    blocks = Hash.new
-    @content.each do |k, v|
-      if k =~ /^Structure/
-        blocks[v['title']] = k
-      end
-    end
-    
     # Second pass
     @content.each do |k, v|
       if k =~ /^Structure/
@@ -404,7 +448,7 @@ class WebReportConverter
           if parent
             # Find the parent in the content
             name = parent['name']
-            if (rel = blocks[name])
+            if (rel = @blocks[name])
               # Insert a row at the beginning
               characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_target(rel, name, BlockIcon) })
             end
@@ -481,10 +525,9 @@ if __FILE__ == $PROGRAM_NAME
   # Install our logo
   FileUtils.cp(mtconnect, logo)
 
-  Dir["#{src_images}/*"].each do |f|
-    puts "Copying #{f} to #{dest_images}"
-    FileUtils.cp(f, dest_images)
-  end
+  puts "Copying images to #{dest_images}"
+  FileUtils.cp_r(Dir.glob("#{src_images}/*"), dest_images)
+    
 
   text = File.open(index).read
   text.sub!(/src="data\.js"/, 'src="data.formatted.js"')
