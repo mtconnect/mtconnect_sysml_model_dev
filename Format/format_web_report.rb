@@ -360,6 +360,11 @@ class WebReportConverter
     node.ancestors.reverse.map { |a| a['name'] }.compact[1..-1]
   end
 
+  def match_count(p1, p2)
+    p1.zip(p2).each_with_index { |a, i| return i unless a[0] == a[1] }
+    return [p1.length, p2.length].min
+  end
+
   def add_superclasses
     # Collect all the structures so we can relate them later
     blocks = Hash.new
@@ -380,25 +385,30 @@ class WebReportConverter
         characteristics = v.path('grid_panel', 0)
         if characteristics and characteristics['title'].start_with?('Characteristics')
           # Find model
-          gens = @model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization")
-
-          gen, = gens.select do |g|
-            p target
-            p xmi_path(g)
-            xmi_path(g) == target
-          end
-
-          if gen and (id = gen['general'])
-            parent, = @model.xpath("//packagedElement[@xmi:id='#{id}']")
-
-            # If there is a superclass and it is not a term
-            if parent and target.last == xmi_path(parent).last
-              # Find the parent in the content
-              name = parent['name']
-              if (rel = blocks[name])
-                # Insert a row at the beginning
-                characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_target(rel, name, BlockIcon) })
+          parents = @model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization").select do |g|
+            target == xmi_path(g)
+          end.map do |g|
+            if id = g['general']
+              parent, = @model.xpath("//packagedElement[@xmi:id='#{id}']")
+              if parent
+                [parent, match_count(target, xmi_path(parent))]
+              else
+                nil
               end
+            else
+              nil
+            end
+          end.compact.select { |node, m| m > 0 }.sort_by { |node, m| -m }
+
+          parent, = parents[0]
+
+          # If there is a superclass and it is not a term
+          if parent
+            # Find the parent in the content
+            name = parent['name']
+            if (rel = blocks[name])
+              # Insert a row at the beginning
+              characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_target(rel, name, BlockIcon) })
             end
           end
         end
