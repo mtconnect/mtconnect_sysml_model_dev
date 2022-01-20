@@ -72,7 +72,7 @@ module Kramdown
       end
       
       def convert_macro(el, _opts)
-        el.value.sub(/\{\{([a-zA-Z0-9_]+)(\(([^\)]+)\))?\}\}/) do |s|
+        if el.value =~ /\{\{([a-zA-Z0-9_]+)(\(([^\)]+)\))?\}\}/
           command = $1
           args = $3.gsub(/\\([<>])/, '\1') if $3
           
@@ -119,6 +119,8 @@ module Kramdown
             args
             
           end
+        else
+          ''
         end
       end
     end
