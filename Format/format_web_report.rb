@@ -137,10 +137,6 @@ def renumber(list)
   list.each_with_index { |e, i| e['col0'].sub!(/^[0-9]+/, (i + 1).to_s) }
 end
 
-def deprecate(text)
-  "&lt;&lt;deprecated&gt;&gt; #{text}"
-end
-
 def convert_markdown(doc)  
   doc.each do |k, v|
     if k =~ /^(Architecture|Glossary|Diagram|Structure)/
@@ -183,23 +179,40 @@ def convert_markdown(doc)
       end
 
       if deprecated
-        v['title'] = deprecate(title)
+        v['title'] = "<strike>#{title}</strike>"
       end
     end
   end
 end
 
 def format_name(name, icon)
-  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
-    "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" +
+  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
+    "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
     "</span> #{name}</div></br>"
 end
 
+def deprecated_format_name(name, icon)
+  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
+    "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
+    "</span> <strike>#{name}</strike></div></br>"
+end
+
 def format_target(id, name, icon)
-  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" +
-  "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" +
-  "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span><a>" +
-  "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> #{name}<a></div>"            
+  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
+    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
+    "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
+    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> #{name}</a></div>"            
+end
+
+def deprecated_format_target(id, name, icon)
+  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
+    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
+    "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
+    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> <strike>#{name}</strike></a></div>"            
+end
+
+def deprecate(text)
+  text.sub(%r{> (.+?)</div></br>$}, '> <strike>\1</strike>\2</div>')
 end
 
 def collect_comments(model, name)
@@ -216,12 +229,10 @@ def document_packages(content, model)
       if grid and grid.empty?
         text = collect_comments(model, name)
         unless text.empty?
-          display = format_target(k, name, PackageIcon)
-          
-          # Check for associations
+          # Create documentation w/ characteristics section
           grid[0] = { title: "Characteristics ", hideHeaders: true,
                       data_store: { fields: ['col0', 'col1'],
-                                    data: [ { col0: 'Name ', col1: display },
+                                    data: [ { col0: 'Name ', col1: format_target(k, name, PackageIcon) },
                                             { col0: 'Documentation ', col1: convert_markdown_to_html(text) } ] },
                       columns:[ { text: "col0", dataIndex: "col0", flex: 0, width: 192 },
                                 { text: "col1", dataIndex: "col1", flex: 1, width: -1 } ],
@@ -233,6 +244,7 @@ def document_packages(content, model)
 end
 
 def generate_enumerations(doc, model)
+  # The static package id of 'DataTypes'
   package = 'Package__9f1dc926-575b-4c4d-bc3e-f0b64d617dfc'
   
   tree = doc.path('window.navigation_json', 0, 'data')
@@ -270,7 +282,7 @@ def generate_enumerations(doc, model)
         text = convert_markdown_to_html(comment['body'])
         definitions[vname] = text
         if text =~ /deprecated/i
-          lit = deprecate(lit)
+          lit = deprecated_format_name(vname, EnumLiteralIcon)
         end
       end
       
