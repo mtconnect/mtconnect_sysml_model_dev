@@ -7,10 +7,10 @@ require 'pp'
 require 'nokogiri'
 
 # Icon constants here
-EnumTypeIcon = 'images/icon_140.png'.freeze
-EnumLiteralIcon = 'images/icon_69.png'.freeze
-PackageIcon = 'images/icon_1.png'.freeze
-BlockIcon = 'images/icon_117.png'.freeze
+EnumTypeIcon = 'images/enum_type_icon.png'.freeze
+EnumLiteralIcon = 'images/enum_literal_icon.png'.freeze
+PackageIcon = 'images/package_icon.png'.freeze
+BlockIcon = 'images/block_class_icon.png'.freeze
   
 class Hash
   def path(*args)
@@ -390,11 +390,7 @@ class WebReportConverter
           end.map do |g|
             if id = g['general']
               parent, = @model.xpath("//packagedElement[@xmi:id='#{id}']")
-              if parent
-                [parent, match_count(target, xmi_path(parent))]
-              else
-                nil
-              end
+              [parent, match_count(target, xmi_path(parent))] if parent
             else
               nil
             end
@@ -477,9 +473,16 @@ if __FILE__ == $PROGRAM_NAME
   mtconnect = File.expand_path('./MTConnect.png', File.dirname(__FILE__))
   xmi = File.expand_path('../MTConnect SysML Model.xml', File.dirname(__FILE__))
   legal = File.expand_path('./legal.md', File.dirname(__FILE__))
+  src_images = File.expand_path('./images', File.dirname(__FILE__))
+  dest_images = File.expand_path("#{dir}/images", File.dirname(__FILE__))
   
   # Install our logo
   FileUtils.cp(mtconnect, logo)
+
+  Dir["#{src_images}/*"].each do |f|
+    puts "Copying #{f} to #{dest_images}"
+    FileUtils.cp(f, dest_images)
+  end
 
   text = File.open(index).read
   text.sub!(/src="data\.js"/, 'src="data.formatted.js"')
