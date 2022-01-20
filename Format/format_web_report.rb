@@ -125,256 +125,267 @@ module Kramdown
   end
 end
 
-Enumerations = Hash.new
-Deprecated = Set.new
+class WebReportConverter
+  def initialize(doc, model)
+    @model = model
+    @doc = doc
+    @content = @doc['window.content_data_json']
+    @search = @doc['window.search_data_json']
+    @tree = @doc.path('window.navigation_json', 0, 'data')
 
-def convert_markdown_to_html(content)
-  data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
-  kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
-  kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
-end
+    @enumerations = Hash.new
+    @deprecated = Set.new
+    @paths = Hash.new
+  end
 
-def convert_markdown(doc)  
-  doc.each do |k, v|
-    if k =~ /^(Architecture|Glossary|Diagram|Structure)/
-      title = v['title']
-      deprecated = false
+  def convert_markdown_to_html(content)
+    data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
+    kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
+    kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
+  end
 
-      # Scan the grid panel looking for content
-      panels = v['grid_panel']
-      panels.each do |panel|
-        if panel['hideHeaders'] and panel.path('data_store', 'fields').length == 2
-          # Look for documentation
-          panel.path('data_store', 'data').each do |row|
-            if row['col0'].start_with?('Documentation')
-              row['col1'] = convert_markdown_to_html(row['col1'])
-              deprecated = row['col1'] =~ /deprecated/i
+  def convert_markdown
+    @content.each do |k, v|
+      if k =~ /^(Architecture|Glossary|Diagram|Structure)/
+        title = v['title']
+        deprecated = false
+        
+        # Scan the grid panel looking for content
+        panels = v['grid_panel']
+        panels.each do |panel|
+          if panel['hideHeaders'] and panel.path('data_store', 'fields').length == 2
+            # Look for documentation
+            panel.path('data_store', 'data').each do |row|
+              if row['col0'].start_with?('Documentation')
+                row['col1'] = convert_markdown_to_html(row['col1'])
+                deprecated = row['col1'] =~ /deprecated/i
+              end
             end
-          end
-        else
-          desc, = panel['columns'].select { |col| col['text'].start_with?('Documentation') or col['text'].start_with?('Description') }
-          name, = panel['columns'].select { |col| col['text'].start_with?('Name') }
-          type, = panel['columns'].select { |col| col['text'].start_with?('Type') }
-
-          dc = desc['dataIndex'] if desc
-          nc = name['dataIndex'] if name
-          tc = type['dataIndex'] if type
-          panel.path('data_store', 'data').each do |row|
-            if dc and row[dc] != " </br>"
-              if nc and row[dc] =~ /deprecated/i
-                row[nc] = deprecate(row[nc])
+          else
+            desc, = panel['columns'].select { |col| col['text'].start_with?('Documentation') or col['text'].start_with?('Description') }
+            name, = panel['columns'].select { |col| col['text'].start_with?('Name') }
+            type, = panel['columns'].select { |col| col['text'].start_with?('Type') }
+            
+            dc = desc['dataIndex'] if desc
+            nc = name['dataIndex'] if name
+            tc = type['dataIndex'] if type
+            panel.path('data_store', 'data').each do |row|
+              if dc and row[dc] != " </br>"
+                row[dc] = convert_markdown_to_html(row[dc])
+                if nc and row[dc] =~ /deprecated/i
+                  row[nc] = deprecate(row[nc])
+                end              
               end
               
-              row[dc] = convert_markdown_to_html(row[dc])
-            end
-            
-            if tc and row[tc] =~ /([A-Za-z]+Enum)</ and Enumerations.include?($1)
-              row[tc] = format_target(Enumerations[$1], $1, EnumTypeIcon)
+              if tc and row[tc] =~ /([A-Za-z]+Enum)</ and @enumerations.include?($1)
+                row[tc] = format_target(@enumerations[$1], $1, EnumTypeIcon)
+              end
             end
           end
         end
+        
+        if deprecated
+          @deprecated << k
+          v['title'] = "<strike>#{title}</strike>"
+        end
       end
-
-      if deprecated
-        Deprecated << k
-        v['title'] = "<strike>#{title}</strike>"
-      end
-    end
-  end  
-end
-
-def format_name(name, icon)
-  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
+    end  
+  end
+  
+  def format_name(name, icon)
+    "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
     "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
     "</span> #{name}</div></br>"
-end
+  end
 
-def deprecated_format_name(name, icon)
-  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
+  def deprecated_format_name(name, icon)
+    "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
     "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
     "</span> <strike>#{name}</strike></div></br>"
-end
+  end
 
-def format_target(id, name, icon)
-  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
+  def format_target(id, name, icon)
+    "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
     "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
     "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
     "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> #{name}</a></div>"            
-end
-
-def deprecated_format_target(id, name, icon)
-  "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
+  end
+  
+  def deprecated_format_target(id, name, icon)
+    "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
     "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
     "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
     "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> <strike>#{name}</strike></a></div>"            
-end
+  end
+  
+  def deprecate(text)
+    text.sub(%r{> (.+?)</div></br>$}, '> <strike>\1</strike>\2</div>')
+  end
 
-def deprecate(text)
-  text.sub(%r{> (.+?)</div></br>$}, '> <strike>\1</strike>\2</div>')
-end
+  def collect_comments(model, name)
+    comments = model.xpath("//packagedElement[@name='#{name}' and @xmi:type='uml:Package']")
+    recurse = lambda { |ele| [ ele['body'], ele.xpath('./ownedComment').map { |e2| recurse.call(e2) } ] }
+    comments.map { |ele| recurse.call(ele) }.flatten.compact.join("\n\n")
+  end
 
-def collect_comments(model, name)
-  comments = model.xpath("//packagedElement[@name='#{name}' and @xmi:type='uml:Package']")
-  recurse = lambda { |ele| [ ele['body'], ele.xpath('./ownedComment').map { |e2| recurse.call(e2) } ] }
-  comments.map { |ele| recurse.call(ele) }.flatten.compact.join("\n\n")
-end
-
-def document_packages(content, model)
-  content.each do |k, v|
-    if k =~ /^Package__/
-      name = v['title']
-      grid = v['grid_panel']
-      if grid and grid.empty?
-        text = collect_comments(model, name)
-        unless text.empty?
-          # Create documentation w/ characteristics section
-          grid[0] = { title: "Characteristics ", hideHeaders: true,
-                      data_store: { fields: ['col0', 'col1'],
-                                    data: [ { col0: 'Name ', col1: format_target(k, name, PackageIcon) },
-                                            { col0: 'Documentation ', col1: convert_markdown_to_html(text) } ] },
-                      columns:[ { text: "col0", dataIndex: "col0", flex: 0, width: 192 },
-                                { text: "col1", dataIndex: "col1", flex: 1, width: -1 } ],
-                      collapsible: false }
+  def document_packages
+    @content.each do |k, v|
+      if k =~ /^Package__/
+        name = v['title']
+        grid = v['grid_panel']
+        if grid and grid.empty?
+          text = collect_comments(@model, name)
+          unless text.empty?
+            # Create documentation w/ characteristics section
+            grid[0] = { title: "Characteristics ", hideHeaders: true,
+                        data_store: { fields: ['col0', 'col1'],
+                                      data: [ { col0: 'Name ', col1: format_target(k, name, PackageIcon) },
+                                              { col0: 'Documentation ', col1: convert_markdown_to_html(text) } ] },
+                        columns:[ { text: "col0", dataIndex: "col0", flex: 0, width: 192 },
+                                  { text: "col1", dataIndex: "col1", flex: 1, width: -1 } ],
+                        collapsible: false }
+          end
         end
       end
     end
   end
-end
 
-def generate_enumerations(doc, model)
-  # The static package id of 'DataTypes'
-  package = 'Package__9f1dc926-575b-4c4d-bc3e-f0b64d617dfc'
-  
-  tree = doc.path('window.navigation_json', 0, 'data')
-  loc = tree.index { |e| e['text'] > 'DataTypes' }
-  
-  list = model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").sort_by { |ele| ele['name'] }.map do |ele|
-    { text: ele['name'], qtitle: "Enumeration__#{ele['xmi:id']}", icon: EnumTypeIcon, expanded: false, leaf: true }
-  end
-
-  content = doc['window.content_data_json']
-  search = doc['window.search_data_json']
-  model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").map do |ele|
-    name = ele['name']
-    enum = "Enumeration__#{ele['xmi:id']}"
+  def generate_enumerations
+    # The static package id of 'DataTypes'
+    package = 'Package__9f1dc926-575b-4c4d-bc3e-f0b64d617dfc'
     
-    col1 = format_target(enum, name, EnumTypeIcon)
-    path = "#{format_target(package, 'DataTypes', PackageIcon)} / #{col1}"
-
+    loc = @tree.index { |e| e['text'] > 'DataTypes' }
     
-    # Create characteristics section of the page
-    characteristics = { title: 'Characteristics ', hideHeaders: true, collapsible: true,
-                        data_store: { fields: ['col0', 'col1'], data: [{ col0: 'Name ', col1: col1 }] },
-                        columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
-                                   { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }
-
-    # Collect all the literals and build the table. Also collect them for {{def(...)}} dereferencing
-    i = 0
-    definitions = Hash.new    
-    rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').sort_by { |value| value['name'] }.map do |value|
-      i += 1
-      vname = value['name']
-      lit = format_name(vname, EnumLiteralIcon)
-      comment, = value.xpath('./ownedComment')
-      if comment
-        text = convert_markdown_to_html(comment['body'])
-        definitions[vname] = text
-        if text =~ /deprecated/i
-          lit = deprecated_format_name(vname, EnumLiteralIcon)
+    list = @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").sort_by { |ele| ele['name'] }.map do |ele|
+      { text: ele['name'], qtitle: "Enumeration__#{ele['xmi:id']}", icon: EnumTypeIcon, expanded: false, leaf: true }
+    end
+    
+    @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").map do |ele|
+      name = ele['name']
+      enum = "Enumeration__#{ele['xmi:id']}"
+      
+      col1 = format_target(enum, name, EnumTypeIcon)
+      path = "#{format_target(package, 'DataTypes', PackageIcon)} / #{col1}"      
+      
+      # Create characteristics section of the page
+      characteristics = { title: 'Characteristics ', hideHeaders: true, collapsible: true,
+                          data_store: { fields: ['col0', 'col1'], data: [{ col0: 'Name ', col1: col1 }] },
+                          columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
+                                     { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }
+      
+      # Collect all the literals and build the table. Also collect them for {{def(...)}} dereferencing
+      i = 0
+      definitions = Hash.new    
+      rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').sort_by { |value| value['name'] }.map do |value|
+        i += 1
+        vname = value['name']
+        lit = format_name(vname, EnumLiteralIcon)
+        comment, = value.xpath('./ownedComment')
+        if comment
+          text = convert_markdown_to_html(comment['body'])
+          definitions[vname] = text
+          if text =~ /deprecated/i
+            lit = deprecated_format_name(vname, EnumLiteralIcon)
+          end
         end
+        
+        { col0: "#{i} </br>", col1: lit, col2: text.to_s }
       end
       
-      { col0: "#{i} </br>", col1: lit, col2: text.to_s }
+      # Add the definitions to the markdown converter
+      Kramdown::Converter::MtcHtml.add_definitions(name, definitions)
+      @enumerations[name] = enum
+      
+      # Create the grid of literals
+      literals = { title: 'Enumeration Literals', hideHeaders: false, collapsible: true,
+                   data_store: { fields: ['col0', 'col1', 'col2'], data: rows },
+                   columns: [ { text: '# ', dataIndex: 'col0', flex: 0, width: 84 },
+                              { text: 'Name ', dataIndex: 'col1', flex: 0, width: 300 },
+                              { text: 'Documentation ', dataIndex: 'col2', flex: 1, width: -1 } ] }
+      
+      # Add the items to the search
+      entry = { id: enum, 'name' => "#{name} : <i>Block</i>", type: "block" }
+      @search['all'] << entry
+      @search['block'] << entry
+      
+      [ enum, { title: name, path: path, html_panel: [], grid_panel: [characteristics, literals], image_panel: [] }]
+    end.each do |id, value|
+      @content[id] = value
     end
-
-    # Add the definitions to the markdown converter
-    Kramdown::Converter::MtcHtml.add_definitions(name, definitions)
-    Enumerations[name] = enum
-
-    # Create the grid of literals
-    literals = { title: 'Enumeration Literals', hideHeaders: false, collapsible: true,
-                 data_store: { fields: ['col0', 'col1', 'col2'], data: rows },
-                 columns: [ { text: '# ', dataIndex: 'col0', flex: 0, width: 84 },
-                            { text: 'Name ', dataIndex: 'col1', flex: 0, width: 300 },
-                            { text: 'Documentation ', dataIndex: 'col2', flex: 1, width: -1 } ] }
-
-    # Add the items to the search
-    entry = { id: enum, 'name' => "#{name} : <i>Block</i>", type: "block" }
-    search['all'] << entry
-    search['block'] << entry
     
-    [ enum, { title: name, path: path, html_panel: [], grid_panel: [characteristics, literals], image_panel: [] }]
-  end.each do |id, value|
-    content[id] = value
+    dt = { text: 'DataTypes', qtitle: package, icon: PackageIcon,
+           children: list, leaf: false, expanded: false }
+    @tree.insert(loc, dt)
+    
+    # Sort the search items
+    @search['all'].sort_by! { |e| e['name'] }
+    @search['block'].sort_by! { |e| e['name'] }
   end
-  
-  dt = { text: 'DataTypes', qtitle: package, icon: PackageIcon,
-         children: list, leaf: false, expanded: false }
-  tree.insert(loc, dt)
 
-  # Sort the search items
-  search['all'].sort_by! { |e| e['name'] }
-  search['block'].sort_by! { |e| e['name'] }
-end
+  def xmi_path(node)
+    node.ancestors.map { |a| a['name'] unless a['name'] == 'MTConnect' }.compact
+  end
 
-# Check up the package hierarchy por a packages with Glossary in the name
-def is_term(ent)
-  ent.ancestors.each { |a| return true if a['name'] =~ /Glossary/ }
-  false
-end
-
-def add_superclasses(content, model)
-  # Collect all the structures so we can relate them later
-  blocks = Hash.new
-  content.each do |k, v|
-    if k =~ /^Structure/
-      blocks[v['title']] = k
+  def add_superclasses
+    # Collect all the structures so we can relate them later
+    blocks = Hash.new
+    @content.each do |k, v|
+      if k =~ /^Structure/
+        blocks[v['title']] = k
+      end
     end
-  end
+    
+    # Second pass
+    @content.each do |k, v|
+      if k =~ /^Structure/
+        title = v['title']
+        target = @paths[k]
 
-  # Second pass
-  content.each do |k, v|
-    if k =~ /^Structure/
-      title = v['title']
-
-      characteristics = v.path('grid_panel', 0)
-      if characteristics and characteristics['title'].start_with?('Characteristics')
-        # Find model
-        gens = model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization")
+        next unless target
         
-        # Filter out the terms
-        gen, = gens.select { |g| !is_term(g) }
-        if gen and (id = gen['general'])
-          parent, = model.xpath("//packagedElement[@xmi:id='#{id}']")
-          
-          # If there is a superclass and it is not a term
-          if parent and !is_term(parent)
-            # Find the parent in the content
-            name = parent['name']
-            if (rel = blocks[name])
-              # Insert a row at the beginning
-              characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_target(rel, name, BlockIcon) })
+        characteristics = v.path('grid_panel', 0)
+        if characteristics and characteristics['title'].start_with?('Characteristics')
+          # Find model
+          gens = @model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization")
+
+          gen, = gens.select do |g|
+            xmi_path(g) == target
+          end
+
+          if gen and (id = gen['general'])
+            parent, = @model.xpath("//packagedElement[@xmi:id='#{id}']")
+
+            # If there is a superclass and it is not a term
+            if parent and target.last == xmi_path(parent).last
+              # Find the parent in the content
+              name = parent['name']
+              if (rel = blocks[name])
+                # Insert a row at the beginning
+                characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_target(rel, name, BlockIcon) })
+              end
             end
           end
         end
       end
     end
   end
-end
-
-def deprecate_tree(model)
-  tree = model.path('window.navigation_json', 0, 'data')
-  recurse = lambda do |node|
-    if Deprecated.include?(node['qtitle'])
-      node['text'] = "<strike>#{node['text']}</strike>"
+  
+  def deprecate_tree
+    recurse = lambda do |node, path|
+      path = path.dup.unshift(node['text'])
+      @paths[node['qtitle']] = path.freeze
+      
+      if @deprecated.include?(node['qtitle'])
+        node['text'] = "<strike>#{node['text']}</strike>"
+      end
+      if node['children']
+        node['children'].each { |c| recurse.call(c, path) }
+      end
     end
-    if node['children']
-      node['children'].each { |c| recurse.call(c) }
+    
+    @tree.each do |node|
+      recurse.call(node, [])
     end
-  end
-
-  tree.each do |node|
-    recurse.call(node)
   end
 end
 
@@ -439,22 +450,22 @@ if __FILE__ == $PROGRAM_NAME
       sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal.to_mtc_html}</div></div>")
   end
 
+  converter = WebReportConverter.new(doc, model)
+
   puts "Generating enumerations"
-  generate_enumerations(doc, model)
-  
-  content = doc['window.content_data_json']
+  converter.generate_enumerations
 
   puts "Document packages"
-  document_packages(content, model)
+  converter.document_packages
   
   puts "Converting markdown" 
-  convert_markdown(content)
-
-  puts "Adding superclasses"
-  add_superclasses(content, model)
+  converter.convert_markdown
 
   puts "Deprecating classes in tree"
-  deprecate_tree(doc)
+  converter.deprecate_tree
+
+  puts "Adding superclasses"
+  converter.add_superclasses
 
   puts "Writing out #{output}"
   File.open(output, 'w') do |f|
