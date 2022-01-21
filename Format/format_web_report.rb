@@ -336,13 +336,18 @@ class WebReportConverter
           text = collect_comments(@model, name)
           unless text.empty?
             # Create documentation w/ characteristics section
+            content = convert_markdown_to_html(text)
+            puts "\n\n-------------------- #{name} -----------------------"
+            puts content
+            
             grid[0] = { title: "Characteristics ", hideHeaders: true,
                         data_store: { fields: ['col0', 'col1'],
                                       data: [ { col0: 'Name ', col1: format_target(k, name, PackageIcon) },
-                                              { col0: 'Documentation ', col1: convert_markdown_to_html(text) } ] },
+                                              { col0: 'Documentation ', col1: content } ] },
                         columns:[ { text: "col0", dataIndex: "col0", flex: 0, width: 192 },
                                   { text: "col1", dataIndex: "col1", flex: 1, width: -1 } ],
                         collapsible: false }
+            puts "-------------------- #{name} -----------------------\n\n"
           end
         end
       end
