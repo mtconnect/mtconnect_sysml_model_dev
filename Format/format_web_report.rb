@@ -307,7 +307,9 @@ class WebReportConverter
 
   def format_block(block)
     if b = @blocks[block]
-      format_target(b, block, BlockIcon)
+      "<a><span style=\"vertical-align: middle;\">" \
+      "<img src='#{BlockIcon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span>" \
+      "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{b}');return false;\"> #{block}</a>"            
     else
       "<code>#{block}</code>"                
     end                    
@@ -315,7 +317,9 @@ class WebReportConverter
 
   def format_package(package)
     if b = @blocks[package]
-      format_target(b, package, PackageIcon)
+      "<a><span style=\"vertical-align: middle;\">" \
+        "<img src='#{PackageIcon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span>" \
+        "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{b}');return false;\"> #{package}</a>"            
     else
       "<em>#{package}</em>"                
     end                    
@@ -336,7 +340,7 @@ class WebReportConverter
           text = collect_comments(@model, name)
           unless text.empty?
             # Create documentation w/ characteristics section
-            content = convert_markdown_to_html(text)
+            content = "<p>#{convert_markdown_to_html(text)}</p>"
             puts "\n\n-------------------- #{name} -----------------------"
             puts content
             
