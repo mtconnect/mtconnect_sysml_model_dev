@@ -169,7 +169,8 @@ class WebReportConverter
     @doc = js_to_json(js)
     @content = @doc['window.content_data_json']
     @search = @doc['window.search_data_json']
-    @tree = @doc.path('window.navigation_json', 0, 'data')
+    @tree = @doc.path('window.navigation_json')
+    @struct = find_section('Structure')
 
     @enumerations = Hash.new
     @deprecated = Set.new
@@ -203,6 +204,11 @@ class WebReportConverter
     JSON.parse(data)
   end
 
+  def find_section(sect)
+    tree = @tree.detect { |n| n['title'] == sect }
+    tree['data'] if tree
+  end
+  
   def add_license(file)
     # Add the legal docs to the landing page
     puts "Adding licesnse #{file}"
@@ -343,19 +349,34 @@ class WebReportConverter
     end
   end
 
+  def find_path(*path)
+    list = @struct
+    res = nil
+    path.each do |text|
+      res = list.detect { |node| node['text'] == text }
+      break unless res
+      list = res['children']
+    end
+    res
+  end
+
   def generate_enumerations
     # The static package id of 'DataTypes'
     package = 'Package__9f1dc926-575b-4c4d-bc3e-f0b64d617dfc'
-    
-    loc = @tree.index { |e| e['text'] > 'DataTypes' }
-    
-    list = @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").sort_by { |ele| ele['name'] }.map do |ele|
-      { text: ele['name'], qtitle: "Enumeration__#{ele['xmi:id']}", icon: EnumTypeIcon, expanded: false, leaf: true }
+
+    data_types = find_path('Profile', 'DataTypes')
+    unless data_types
+      puts "Could not find data types"
+      return
     end
+
+    children = data_types['children']
     
-    @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").map do |ele|
+    @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").sort_by { |ele| ele['name'] }.map do |ele|            
       name = ele['name']
       enum = "Enumeration__#{ele['xmi:id']}"
+
+      children << { text: name, qtitle: enum, icon: EnumTypeIcon, expanded: false, leaf: true }
       
       col1 = format_target(enum, name, EnumTypeIcon)
       path = "#{format_target(package, 'DataTypes', PackageIcon)} / #{col1}"      
@@ -405,10 +426,6 @@ class WebReportConverter
     end.each do |id, value|
       @content[id] = value
     end
-    
-    dt = { text: 'DataTypes', qtitle: package, icon: PackageIcon,
-           children: list, leaf: false, expanded: false }
-    @tree.insert(loc, dt)
     
     # Sort the search items
     @search['all'].sort_by! { |e| e['name'] }
@@ -472,27 +489,63 @@ class WebReportConverter
         node['children'].each { |c| recurse.call(c, path) }
       end
     end
-    
-    @tree.each do |node|
+
+    @struct.each do |node|
       recurse.call(node, [])
     end
   end
 
+  def merge(list1, list2, indent = 0)
+    list1.each do |node1|
+      text = node1['text']
+      space = '  ' * indent
+      node2 = list2.detect { |n| n['text'] == text }
+      if node2
+        if node1['qtitle'] == node2['qtitle']
+          # puts "#{space}= Found matching #{node2['text']}"
+        else
+          # puts "#{space}~ Found matching #{node2['text']} but different targets"
+          list2 << node1
+        end
+        
+        c1, c2 = node1['children'], node2['children']
+        merge(c1, c2, indent + 1) if c1 and c2
+      else
+        # puts "#{space}! Missing #{node1['text']}"
+        list2 << node1
+      end
+    end    
+  end
+
+  def merge_diagrams
+    diagrams = find_section('Diagrams')
+    structure = find_section('Structure')
+
+    # Parallel recures diagrams and structure combining common nodes
+    merge(diagrams, structure)
+
+    @tree.delete_if { |node| node['title'] == 'Diagrams' } 
+  end
+
   def convert
-    puts "Generating enumerations"
+    puts "\nMerging Diagrams into Structure"
+    merge_diagrams    
+
+    puts "\nGenerating enumerations"
     generate_enumerations
 
-    puts "Document packages"
+    puts "\nDocument packages"
     document_packages
   
-    puts "Converting markdown" 
+    puts "\nConverting markdown" 
     convert_markdown
 
-    puts "Deprecating classes in tree"
+    puts "\nDeprecating classes in tree"
     deprecate_tree
 
-    puts "Adding superclasses"
+    puts "\nAdding superclasses"
     add_superclasses
+
   end
 
   def write(file)
