@@ -331,6 +331,15 @@ class WebReportConverter
     comments.map { |ele| recurse.call(ele) }.flatten.compact.join("\n\n")
   end
 
+  def gen_characteristics(*rows)
+    data = rows.map { |col1, col2| { col0: "#{col1} ", col1: col2 } }
+    
+    { title: 'Characteristics ', hideHeaders: true, collapsible: true,
+      data_store: { fields: ['col0', 'col1'], data: data },
+      columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
+                 { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }    
+  end
+
   def document_packages
     @content.each do |k, v|
       if k =~ /^Package__/
@@ -342,13 +351,9 @@ class WebReportConverter
             # Create documentation w/ characteristics section
             content = "<p>#{convert_markdown_to_html(text)}</p>"
             
-            grid[0] = { title: "Characteristics ", hideHeaders: true,
-                        data_store: { fields: ['col0', 'col1'],
-                                      data: [ { col0: 'Name ', col1: format_target(k, name, PackageIcon) },
-                                              { col0: 'Documentation ', col1: content } ] },
-                        columns:[ { text: "col0", dataIndex: "col0", flex: 0, width: 192 },
-                                  { text: "col1", dataIndex: "col1", flex: 1, width: -1 } ],
-                        collapsible: false }
+            grid[0] = gen_characteristics(['Name', format_target(k, name, PackageIcon)],
+                                          ['Documentation', content])
+
           end
         end
       end
@@ -376,15 +381,6 @@ class WebReportConverter
       end
     end
     text
-  end
-
-  def gen_characteristics(*rows)
-    data = rows.map { |col1, col2| { col0: col1, col1: col2 } }
-    
-    { title: 'Characteristics ', hideHeaders: true, collapsible: true,
-      data_store: { fields: ['col0', 'col1'], data: data },
-      columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
-                 { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }    
   end
 
   def add_entry(id, name)
@@ -415,7 +411,7 @@ class WebReportConverter
       path = "#{format_target(package, 'DataTypes', PackageIcon)} / #{col1}"      
       
       # Create characteristics section of the page
-      characteristics = gen_characteristics(['Name ', col1])
+      characteristics = gen_characteristics(['Name', col1])
 
       # Collect all the literals and build the table. Also collect them for {{def(...)}} dereferencing
       i = 0
@@ -465,7 +461,7 @@ class WebReportConverter
       desc = get_comment(ele)
       
       # Create characteristics section of the page
-      characteristics = gen_characteristics(['Name ', col1 ], ['Documentation', desc.to_s ])
+      characteristics = gen_characteristics(['Name', col1 ], ['Documentation', desc.to_s ])
       
       @content[st] = { title: name, path: path, html_panel: [], grid_panel: [characteristics], image_panel: [] }
       add_entry(st, name)
