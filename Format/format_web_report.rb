@@ -540,18 +540,23 @@ class WebReportConverter
       text = node1['text']
       space = '  ' * indent
       node2 = list2.detect { |n| n['text'] == text }
+      # puts "#{space}Node: #{text}"
       if node2
-        if node1['qtitle'] == node2['qtitle']
-          # puts "#{space}= Found matching #{node2['text']}"
-        else
-          # puts "#{space}~ Found matching #{node2['text']} but different targets"
+        # If the nodes entities don't match, then append this node to the parent
+        if node1['qtitle'] != node2['qtitle']
           list2 << node1
         end
-        
+
+        # Recurse if there are children of both trees
         c1, c2 = node1['children'], node2['children']
-        merge(c1, c2, indent + 1) if c1 and c2
+        if c1 and c2.nil?
+          # puts "#{space}  Children in only one branch: #{text}"
+          node2['children'] = c1
+        elsif c1 and c2
+          merge(c1, c2, indent + 1)
+        end
       else
-        # puts "#{space}! Missing #{node1['text']}"
+        # If there is no child, add this child
         list2 << node1
       end
     end    
