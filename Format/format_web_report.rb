@@ -435,11 +435,7 @@ class WebReportConverter
       @search['block'] << entry
       
       @content[enum] = { title: name, path: path, html_panel: [], grid_panel: [characteristics, literals], image_panel: [] }
-    end
-    
-    # Sort the search items
-    @search['all'].sort_by! { |e| e['name'] }
-    @search['block'].sort_by! { |e| e['name'] }
+    end    
   end
 
   def generate_stereotypes
@@ -593,6 +589,9 @@ class WebReportConverter
     puts "\nAdding superclasses"
     add_superclasses
 
+    # Sort the search items
+    @search['all'].sort_by! { |e| e['name'] }
+    @search['block'].sort_by! { |e| e['name'] }
   end
 
   def write(file)
