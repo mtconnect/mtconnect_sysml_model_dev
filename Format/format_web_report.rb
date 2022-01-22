@@ -378,6 +378,21 @@ class WebReportConverter
     text
   end
 
+  def gen_characteristics(*rows)
+    data = rows.map { |col1, col2| { col0: col1, col1: col2 } }
+    
+    { title: 'Characteristics ', hideHeaders: true, collapsible: true,
+      data_store: { fields: ['col0', 'col1'], data: data },
+      columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
+                 { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }    
+  end
+
+  def add_entry(id, name)
+    entry = { id: id, 'name' => "#{name} : <i>Block</i>", type: "block" }
+    @search['all'] << entry
+    @search['block'] << entry
+  end
+
   def generate_enumerations
     # The static package id of 'DataTypes'
     package = 'Package__9f1dc926-575b-4c4d-bc3e-f0b64d617dfc'
@@ -400,11 +415,8 @@ class WebReportConverter
       path = "#{format_target(package, 'DataTypes', PackageIcon)} / #{col1}"      
       
       # Create characteristics section of the page
-      characteristics = { title: 'Characteristics ', hideHeaders: true, collapsible: true,
-                          data_store: { fields: ['col0', 'col1'], data: [{ col0: 'Name ', col1: col1 }] },
-                          columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
-                                     { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }
-      
+      characteristics = gen_characteristics(['Name ', col1])
+
       # Collect all the literals and build the table. Also collect them for {{def(...)}} dereferencing
       i = 0
       definitions = Hash.new    
@@ -430,10 +442,7 @@ class WebReportConverter
                               { text: 'Documentation ', dataIndex: 'col2', flex: 1, width: -1 } ] }
       
       # Add the items to the search
-      entry = { id: enum, 'name' => "#{name} : <i>Block</i>", type: "block" }
-      @search['all'] << entry
-      @search['block'] << entry
-      
+      add_entry(enum, name)
       @content[enum] = { title: name, path: path, html_panel: [], grid_panel: [characteristics, literals], image_panel: [] }
     end    
   end
@@ -456,18 +465,10 @@ class WebReportConverter
       desc = get_comment(ele)
       
       # Create characteristics section of the page
-      characteristics = { title: 'Characteristics ', hideHeaders: true, collapsible: true,
-                          data_store: { fields: ['col0', 'col1'],
-                                        data: [ { col0: 'Name ', col1: col1 },
-                                                { col0: 'Documentation', col1: desc.to_s }] },
-                          columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
-                                     { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }
-      
+      characteristics = gen_characteristics(['Name ', col1 ], ['Documentation', desc.to_s ])
       
       @content[st] = { title: name, path: path, html_panel: [], grid_panel: [characteristics], image_panel: [] }
-      entry = { id: st, 'name' => "#{name} : <i>Block</i>", type: "block" }
-      @search['all'] << entry
-      @search['block'] << entry
+      add_entry(st, name)
     end
     
   end
