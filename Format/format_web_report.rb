@@ -341,8 +341,6 @@ class WebReportConverter
           unless text.empty?
             # Create documentation w/ characteristics section
             content = "<p>#{convert_markdown_to_html(text)}</p>"
-            puts "\n\n-------------------- #{name} -----------------------"
-            puts content
             
             grid[0] = { title: "Characteristics ", hideHeaders: true,
                         data_store: { fields: ['col0', 'col1'],
@@ -351,7 +349,6 @@ class WebReportConverter
                         columns:[ { text: "col0", dataIndex: "col0", flex: 0, width: 192 },
                                   { text: "col1", dataIndex: "col1", flex: 1, width: -1 } ],
                         collapsible: false }
-            puts "-------------------- #{name} -----------------------\n\n"
           end
         end
       end
@@ -369,6 +366,18 @@ class WebReportConverter
     res
   end
 
+  def get_comment(node)
+    vname = node['name']
+    comment, = node.xpath('./ownedComment')
+    if comment
+      text = convert_markdown_to_html(comment['body'])
+      if text =~ /deprecated/i
+        lit = deprecated_format_name(vname, EnumLiteralIcon)
+      end
+    end
+    text
+  end
+
   def generate_enumerations
     # The static package id of 'DataTypes'
     package = 'Package__9f1dc926-575b-4c4d-bc3e-f0b64d617dfc'
@@ -381,7 +390,7 @@ class WebReportConverter
 
     children = data_types['children']
     
-    @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").sort_by { |ele| ele['name'] }.map do |ele|            
+    @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").sort_by { |ele| ele['name'] }.each do |ele|            
       name = ele['name']
       enum = "Enumeration__#{ele['xmi:id']}"
 
@@ -403,15 +412,9 @@ class WebReportConverter
         i += 1
         vname = value['name']
         lit = format_name(vname, EnumLiteralIcon)
-        comment, = value.xpath('./ownedComment')
-        if comment
-          text = convert_markdown_to_html(comment['body'])
-          definitions[vname] = text
-          if text =~ /deprecated/i
-            lit = deprecated_format_name(vname, EnumLiteralIcon)
-          end
-        end
-        
+        text = get_comment(value)
+        definitions[vname] = text if text
+
         { col0: "#{i} </br>", col1: lit, col2: text.to_s }
       end
       
@@ -431,14 +434,46 @@ class WebReportConverter
       @search['all'] << entry
       @search['block'] << entry
       
-      [ enum, { title: name, path: path, html_panel: [], grid_panel: [characteristics, literals], image_panel: [] }]
-    end.each do |id, value|
-      @content[id] = value
+      @content[enum] = { title: name, path: path, html_panel: [], grid_panel: [characteristics, literals], image_panel: [] }
     end
     
     # Sort the search items
     @search['all'].sort_by! { |e| e['name'] }
     @search['block'].sort_by! { |e| e['name'] }
+  end
+
+  def generate_stereotypes
+    package = 'Package__8cc92b6d-16e3-4b08-acc8-1f8120d7d68c'
+    stereo = find_path('Profile', 'Stereotypes')
+    children = stereo['children']
+
+    @model.xpath("//packagedElement[@name='Stereotypes' and @xmi:type='uml:Package']/packagedElement[@xmi:type='uml:Stereotype']").
+      sort_by { |ele| ele['name'] }.each do |ele|            
+      name = ele['name']
+      st = "Stereotype__#{ele['xmi:id']}"
+
+      children << { text: name, qtitle: st, icon: BlockIcon, expanded: false, leaf: true }
+
+      col1 = format_target(st, name, BlockIcon)
+      path = "#{format_target(package, 'StereoTypes', PackageIcon)} / #{col1}"
+
+      desc = get_comment(ele)
+      
+      # Create characteristics section of the page
+      characteristics = { title: 'Characteristics ', hideHeaders: true, collapsible: true,
+                          data_store: { fields: ['col0', 'col1'],
+                                        data: [ { col0: 'Name ', col1: col1 },
+                                                { col0: 'Documentation', col1: desc.to_s }] },
+                          columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
+                                     { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }
+      
+      
+      @content[st] = { title: name, path: path, html_panel: [], grid_panel: [characteristics], image_panel: [] }
+      entry = { id: st, 'name' => "#{name} : <i>Block</i>", type: "block" }
+      @search['all'] << entry
+      @search['block'] << entry
+    end
+    
   end
 
   def xmi_path(node)
@@ -542,6 +577,9 @@ class WebReportConverter
 
     puts "\nGenerating enumerations"
     generate_enumerations
+
+    puts "\nGenerating Stereotypes"
+    generate_stereotypes
 
     puts "\nDocument packages"
     document_packages
