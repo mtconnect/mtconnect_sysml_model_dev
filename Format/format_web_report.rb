@@ -411,7 +411,9 @@ class WebReportConverter
 
   def generate_enumerations
     # The static package id of 'DataTypes'
+    profile = 'Package__30f1303c-9595-4a32-a8e4-99f3ff79459f'
     package = 'Package__9f1dc926-575b-4c4d-bc3e-f0b64d617dfc'
+    root = "#{format_target(profile, 'Profile', PackageIcon)} / #{format_target(package, 'DataTypes', PackageIcon)}"
 
     data_types = find_path('Profile', 'DataTypes')
     unless data_types
@@ -429,7 +431,7 @@ class WebReportConverter
       children << { text: name, qtitle: enum, icon: EnumTypeIcon, expanded: false, leaf: true }
       
       col1 = format_target(enum, name, EnumTypeIcon)
-      path = "#{format_target(package, 'DataTypes', PackageIcon)} / #{col1}"      
+      path = "#{root} / #{col1}"      
       
       # Create characteristics section of the page
       characteristics = gen_characteristics(['Name', col1])
@@ -451,7 +453,10 @@ class WebReportConverter
   end
 
   def generate_stereotypes
+    profile = 'Package__30f1303c-9595-4a32-a8e4-99f3ff79459f'
     package = 'Package__8cc92b6d-16e3-4b08-acc8-1f8120d7d68c'
+    root = "#{format_target(profile, 'Profile', PackageIcon)} / #{format_target(package, 'DataTypes', PackageIcon)}"
+    
     stereo = find_path('Profile', 'Stereotypes')
     children = stereo['children']
 
@@ -463,7 +468,7 @@ class WebReportConverter
       children << { text: name, qtitle: st, icon: BlockIcon, expanded: false, leaf: true }
 
       col1 = format_target(st, name, BlockIcon)
-      path = "#{format_target(package, 'StereoTypes', PackageIcon)} / #{col1}"
+      path = "#{root} / #{col1}"
 
       desc = get_comment(ele)
       
@@ -548,19 +553,32 @@ class WebReportConverter
       if node2
         # If the nodes entities don't match, then append this node to the parent
         if node1['qtitle'] != node2['qtitle']
-          list2 << node1
+          # See if we can merge the grids and children
+          qn1, qn2 = @content[node1['qtitle']], @content[node2['qtitle']]
+          gp1, gp2 = qn1['grid_panel'], qn2['grid_panel']
+
+          if !gp1.empty? and gp2.empty?
+            # puts "#{space}  Replace grid: #{text}"            
+            qn2['grid_panel'] = gp1
+          elsif !gp1.empty? and !gp2.empty?
+            # puts "#{space}  Merging grids: #{text}"
+            qn2['grid_panel'].concat(qn1['grid_panel'])
+          end
         end
 
         # Recurse if there are children of both trees
         c1, c2 = node1['children'], node2['children']
         if c1 and c2.nil?
           # puts "#{space}  Children in only one branch: #{text}"
+          node2['leaf'] = false
           node2['children'] = c1
         elsif c1 and c2
+          # puts "#{space}  Merging children: #{text}"
           merge(c1, c2, indent + 1)
         end
       else
         # If there is no child, add this child
+        # puts "#{space}  Adding node: #{text}"
         list2 << node1
       end
     end    
@@ -572,10 +590,14 @@ class WebReportConverter
     structure = find_section('Structure')
 
     # Parallel recures diagrams and structure combining common nodes
+    # puts "\n----------------------------------"
     merge(diagrams, structure)
+    # puts "\n----------------------------------"
     merge(behavior, structure)
 
     @tree.delete_if { |node| node['title'] == 'Diagrams' } 
+    @tree.delete_if { |node| node['title'] == 'Interfaces' } 
+    @tree.delete_if { |node| node['title'] == 'Behavior' } 
   end
 
   def convert
