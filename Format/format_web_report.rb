@@ -568,10 +568,12 @@ class WebReportConverter
 
   def merge_diagrams
     diagrams = find_section('Diagrams')
+    behavior = find_section('Behavior')
     structure = find_section('Structure')
 
     # Parallel recures diagrams and structure combining common nodes
     merge(diagrams, structure)
+    merge(behavior, structure)
 
     @tree.delete_if { |node| node['title'] == 'Diagrams' } 
   end
