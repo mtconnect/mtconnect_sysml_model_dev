@@ -554,8 +554,9 @@ class WebReportConverter
         # If the nodes entities don't match, then append this node to the parent
         t1, = node1['qtitle'].split('_', 2)
         t2, = node2['qtitle'].split('_', 2)
+
         if t1 != t2
-          list2 << node1
+          list2 << node1 if t1 != 'EmptyContent'
         elsif node1['qtitle'] != node2['qtitle']
           # First check if these are the same types, don't merge a diagram to a Structure
           
