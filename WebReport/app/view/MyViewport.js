@@ -1108,7 +1108,7 @@ function showTipPanel(all_tips_data)
 
 Ext.onReady(function()
             {
-                var showTip = "True".toLowerCase() === "true";
+                var showTip = "False".toLowerCase() === "true";
                 if (showTip && !Ext.util.Cookies.get('process_portal_first_load'))
                 {
                     showTipPanel(window.tips_data);
