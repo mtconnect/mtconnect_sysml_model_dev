@@ -514,8 +514,8 @@ class WebReportConverter
   def add_model_comments(model, characteristics)
     # Check for comments
     model.xpath('./ownedComment/ownedComment').each do  |comment|
-              # A two level nested comment has the parent body being the title and the body having the markdown conent
-      # Create a row in the grid
+      # A two level nested comment has the parent body as title and the child body the markdown conent
+      # Create a row in the grid at the end of the characteristics block
       characteristics.path('data_store', 'data') << { col0: comment.parent['body'], col1:  convert_markdown_to_html(comment['body']) }
     end
   end
@@ -523,14 +523,18 @@ class WebReportConverter
   def add_constraints(model, grid)
     # Check for owned rules
     rules = model.xpath('./ownedRule/specification').map do |rule|
+      # create a row in the grid using the parent name and the spec body as code
       { col0: rule.parent['name'], col1: "<code>#{rule.body.text}</code>" }
+      # Sort by the name
     end.sort_by { |c| c[:col0] }
     
     if rules and !rules.empty?
+      # Rules are added as another grid with two columns. 
       constraints = { title: 'Constraints', hideHeaders: false, collapsible: true,
                       data_store: { fields: ['col0', 'col1'], data: rules },
                       columns: [ { text: 'Name ', dataIndex: 'col0', flex: 0, width: 200 },
                                  { text: 'Documentation ', dataIndex: 'col1', flex: 1, width: -1 } ] }
+      # Add to the end of the grid
       grid << constraints            
     end
   end
