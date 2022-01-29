@@ -515,8 +515,9 @@ class WebReportConverter
         characteristics = v.path('grid_panel', 0)        
         if characteristics and characteristics['title'].start_with?('Characteristics')          
           # Find model
+          parent_path = target[0...-1]
           model, = @model.xpath("//packagedElement[(@xmi:type='uml:Class' or @xmi:type='uml:AssociationClass')  and @name='#{title}']").select do |m|
-            xmi_path(m) << title == target
+            xmi_path(m) == parent_path
           end
 
           if model
@@ -541,9 +542,10 @@ class WebReportConverter
 
             # Check for comments
             model.xpath('./ownedComment/ownedComment').each do  |comment|
+              # A two level nested comment has the parent body being the title and the body having the markdown conent
+              # Create a row in the grid
               characteristics.path('data_store', 'data') << { col0: comment.parent['body'], col1:  convert_markdown_to_html(comment['body']) }
             end
-            
           else
             puts "Error: Cannot find model for #{title} and path #{target.inspect}"
           end                             
