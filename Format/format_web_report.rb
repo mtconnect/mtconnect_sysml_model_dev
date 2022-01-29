@@ -490,7 +490,7 @@ class WebReportConverter
     return [p1.length, p2.length].min
   end
 
-  def add_superclasses
+  def add_model_content
     recurse = lambda do |node, path|
       path = path.dup << node['text']
       @paths[node['qtitle']] = path.freeze
@@ -511,16 +511,16 @@ class WebReportConverter
         target = @paths[k]
 
         next unless target
-        
-        characteristics = v.path('grid_panel', 0)        
-        if characteristics and characteristics['title'].start_with?('Characteristics')          
-          # Find model
-          parent_path = target[0...-1]
-          model, = @model.xpath("//packagedElement[(@xmi:type='uml:Class' or @xmi:type='uml:AssociationClass')  and @name='#{title}']").select do |m|
-            xmi_path(m) == parent_path
-          end
 
-          if model
+        # Find model
+        parent_path = target[0...-1]
+        model, = @model.xpath("//packagedElement[(@xmi:type='uml:Class' or @xmi:type='uml:AssociationClass')  and @name='#{title}']").select do |m|
+          xmi_path(m) == parent_path
+        end
+        
+        if model
+          characteristics = v.path('grid_panel', 0)        
+          if characteristics and characteristics['title'].start_with?('Characteristics')          
             # Find its parent
             parent, = model.xpath('./generalization').map do |g|
               if id = g['general']
@@ -530,7 +530,7 @@ class WebReportConverter
                 nil
               end
             end.compact.select { |node, m| m > 0 }.sort_by { |node, m| -m }.first
-
+            
             # If there is a superclass and it is not a term
             if parent
               # Find the parent in the content
@@ -539,17 +539,31 @@ class WebReportConverter
               # Insert a row at the beginning
               characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_block(name) })
             end
-
+            
             # Check for comments
             model.xpath('./ownedComment/ownedComment').each do  |comment|
               # A two level nested comment has the parent body being the title and the body having the markdown conent
               # Create a row in the grid
               characteristics.path('data_store', 'data') << { col0: comment.parent['body'], col1:  convert_markdown_to_html(comment['body']) }
             end
-          else
-            puts "Error: Cannot find model for #{title} and path #{target.inspect}"
-          end                             
-        end
+          end
+
+          # Check for owned rules
+          rules = model.xpath('./ownedRule/specification').map do |rule|
+            { col0: rule.parent['name'], col1: "<code>#{rule.body.text}</code>" }
+          end
+
+          if rules and !rules.empty?
+            grid = v['grid_panel']
+            constraints = { title: 'Constraints', hideHeaders: false, collapsible: true,
+                   data_store: { fields: ['col0', 'col1'], data: rules },
+                   columns: [ { text: 'Name ', dataIndex: 'col0', flex: 0, width: 200 },
+                              { text: 'Documentation ', dataIndex: 'col1', flex: 1, width: -1 } ] }
+            grid << constraints            
+          end
+        else
+          puts "Error: Cannot find model for #{title} and path #{target.inspect}"
+        end                             
       end
     end
   end
@@ -649,8 +663,8 @@ class WebReportConverter
     puts "\nConverting markdown" 
     convert_markdown
 
-    puts "\nAdding superclasses"
-    add_superclasses
+    puts "\nAdding additional model content"
+    add_model_content
 
     puts "\nDeprecating classes in tree"
     deprecate_tree
