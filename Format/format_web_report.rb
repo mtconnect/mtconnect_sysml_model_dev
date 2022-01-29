@@ -524,7 +524,7 @@ class WebReportConverter
     # Check for owned rules
     rules = model.xpath('./ownedRule/specification').map do |rule|
       { col0: rule.parent['name'], col1: "<code>#{rule.body.text}</code>" }
-    end
+    end.sort_by { |c| c[:col0] }
     
     if rules and !rules.empty?
       constraints = { title: 'Constraints', hideHeaders: false, collapsible: true,
