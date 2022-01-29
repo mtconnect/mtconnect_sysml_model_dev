@@ -490,6 +490,51 @@ class WebReportConverter
     return [p1.length, p2.length].min
   end
 
+  def add_parent(model, target, characteristics)
+    # Find its parent
+    parent, = model.xpath('./generalization').map do |g|
+      if id = g['general']
+        parent, = @model.xpath("//packagedElement[@xmi:id='#{id}']")
+        [parent, match_count(target, xmi_path(parent))] if parent
+      else
+        nil
+      end
+    end.compact.select { |node, m| m > 0 }.sort_by { |node, m| -m }.first
+    
+    # If there is a superclass and it is not a term
+    if parent
+      # Find the parent in the content
+      name = parent['name']
+      
+      # Insert a row at the beginning
+      characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_block(name) })
+    end        
+  end
+
+  def add_model_comments(model, characteristics)
+    # Check for comments
+    model.xpath('./ownedComment/ownedComment').each do  |comment|
+              # A two level nested comment has the parent body being the title and the body having the markdown conent
+      # Create a row in the grid
+      characteristics.path('data_store', 'data') << { col0: comment.parent['body'], col1:  convert_markdown_to_html(comment['body']) }
+    end
+  end
+
+  def add_constraints(model, grid)
+    # Check for owned rules
+    rules = model.xpath('./ownedRule/specification').map do |rule|
+      { col0: rule.parent['name'], col1: "<code>#{rule.body.text}</code>" }
+    end
+    
+    if rules and !rules.empty?
+      constraints = { title: 'Constraints', hideHeaders: false, collapsible: true,
+                      data_store: { fields: ['col0', 'col1'], data: rules },
+                      columns: [ { text: 'Name ', dataIndex: 'col0', flex: 0, width: 200 },
+                                 { text: 'Documentation ', dataIndex: 'col1', flex: 1, width: -1 } ] }
+      grid << constraints            
+    end
+  end
+
   def add_model_content
     recurse = lambda do |node, path|
       path = path.dup << node['text']
@@ -519,48 +564,14 @@ class WebReportConverter
         end
         
         if model
-          characteristics = v.path('grid_panel', 0)        
-          if characteristics and characteristics['title'].start_with?('Characteristics')          
-            # Find its parent
-            parent, = model.xpath('./generalization').map do |g|
-              if id = g['general']
-                parent, = @model.xpath("//packagedElement[@xmi:id='#{id}']")
-                [parent, match_count(target, xmi_path(parent))] if parent
-              else
-                nil
-              end
-            end.compact.select { |node, m| m > 0 }.sort_by { |node, m| -m }.first
-            
-            # If there is a superclass and it is not a term
-            if parent
-              # Find the parent in the content
-              name = parent['name']
-              
-              # Insert a row at the beginning
-              characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_block(name) })
-            end
-            
-            # Check for comments
-            model.xpath('./ownedComment/ownedComment').each do  |comment|
-              # A two level nested comment has the parent body being the title and the body having the markdown conent
-              # Create a row in the grid
-              characteristics.path('data_store', 'data') << { col0: comment.parent['body'], col1:  convert_markdown_to_html(comment['body']) }
-            end
+          grid = v['grid_panel']          
+          characteristics = grid[0]
+          if characteristics and characteristics['title'].start_with?('Characteristics')
+            add_parent(model, target, characteristics)
+            add_model_comments(model, characteristics)            
           end
 
-          # Check for owned rules
-          rules = model.xpath('./ownedRule/specification').map do |rule|
-            { col0: rule.parent['name'], col1: "<code>#{rule.body.text}</code>" }
-          end
-
-          if rules and !rules.empty?
-            grid = v['grid_panel']
-            constraints = { title: 'Constraints', hideHeaders: false, collapsible: true,
-                   data_store: { fields: ['col0', 'col1'], data: rules },
-                   columns: [ { text: 'Name ', dataIndex: 'col0', flex: 0, width: 200 },
-                              { text: 'Documentation ', dataIndex: 'col1', flex: 1, width: -1 } ] }
-            grid << constraints            
-          end
+          add_constraints(model, grid)
         else
           puts "Error: Cannot find model for #{title} and path #{target.inspect}"
         end                             
