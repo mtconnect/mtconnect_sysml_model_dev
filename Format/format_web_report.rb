@@ -491,56 +491,79 @@ class WebReportConverter
   end
 
   def add_superclasses
+    recurse = lambda do |node, path|
+      path = path.dup << node['text']
+      @paths[node['qtitle']] = path.freeze
+      if node['children']
+        node['children'].each { |c| recurse.call(c, path) }
+      end
+    end
+    @struct.each do |node|
+      recurse.call(node, [])
+    end   
+    
     # Second pass
     @content.each do |k, v|
       if k =~ /^Structure/
         title = v['title']
+        title = $1 if title =~ /<strike>([^<]+)/
+        
         target = @paths[k]
 
         next unless target
         
-        characteristics = v.path('grid_panel', 0)
-        if characteristics and characteristics['title'].start_with?('Characteristics')
+        characteristics = v.path('grid_panel', 0)        
+        if characteristics and characteristics['title'].start_with?('Characteristics')          
           # Find model
-          parent, = @model.xpath("//packagedElement[@xmi:type='uml:Class' and @name='#{title}']/generalization").select do |g|
-            target == xmi_path(g)
-          end.map do |g|
-            if id = g['general']
-              parent, = @model.xpath("//packagedElement[@xmi:id='#{id}']")
-              [parent, match_count(target, xmi_path(parent))] if parent
-            else
-              nil
-            end
-          end.compact.select { |node, m| m > 0 }.sort_by { |node, m| -m }.first
-
-          # If there is a superclass and it is not a term
-          if parent
-            # Find the parent in the content
-            name = parent['name']
-            
-            # Insert a row at the beginning
-            characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_block(name) })
+          model, = @model.xpath("//packagedElement[(@xmi:type='uml:Class' or @xmi:type='uml:AssociationClass')  and @name='#{title}']").select do |m|
+            xmi_path(m) << title == target
           end
+
+          if model
+            # Find its parent
+            parent, = model.xpath('./generalization').map do |g|
+              if id = g['general']
+                parent, = @model.xpath("//packagedElement[@xmi:id='#{id}']")
+                [parent, match_count(target, xmi_path(parent))] if parent
+              else
+                nil
+              end
+            end.compact.select { |node, m| m > 0 }.sort_by { |node, m| -m }.first
+
+            # If there is a superclass and it is not a term
+            if parent
+              # Find the parent in the content
+              name = parent['name']
+              
+              # Insert a row at the beginning
+              characteristics.path('data_store', 'data').unshift({ col0: 'Parent ', col1: format_block(name) })
+            end
+
+            # Check for comments
+            model.xpath('./ownedComment/ownedComment').each do  |comment|
+              characteristics.path('data_store', 'data') << { col0: comment.parent['body'], col1:  convert_markdown_to_html(comment['body']) }
+            end
+            
+          else
+            puts "Error: Cannot find model for #{title} and path #{target.inspect}"
+          end                             
         end
       end
     end
   end
   
   def deprecate_tree
-    recurse = lambda do |node, path|
-      path = path.dup << node['text']
-      @paths[node['qtitle']] = path.freeze
-      
+    recurse = lambda do |node|
       if @deprecated.include?(node['qtitle'])
         node['text'] = "<strike>#{node['text']}</strike>"
       end
       if node['children']
-        node['children'].each { |c| recurse.call(c, path) }
+        node['children'].each { |c| recurse.call(c) }
       end
     end
 
     @struct.each do |node|
-      recurse.call(node, [])
+      recurse.call(node)
     end
   end
 
@@ -624,11 +647,11 @@ class WebReportConverter
     puts "\nConverting markdown" 
     convert_markdown
 
-    puts "\nDeprecating classes in tree"
-    deprecate_tree
-
     puts "\nAdding superclasses"
     add_superclasses
+
+    puts "\nDeprecating classes in tree"
+    deprecate_tree
 
     # Sort the search items
     @search['all'].sort_by! { |e| e['name'] }
