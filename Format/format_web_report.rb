@@ -670,21 +670,7 @@ class WebReportConverter
     end    
   end
 
-  def merge_diagrams
-    diagrams = find_section('Diagrams')
-    behavior = find_section('Behavior')
-    structure = find_section('Structure')
-
-    # Parallel recures diagrams and structure combining common nodes
-    # puts "\n----------------------------------"
-    merge(diagrams, structure)
-    # puts "\n----------------------------------"
-    merge(behavior, structure)
-
-    @tree.delete_if { |node| node['title'] == 'Diagrams' } 
-    @tree.delete_if { |node| node['title'] == 'Interfaces' } 
-    @tree.delete_if { |node| node['title'] == 'Behavior' }
-
+  def cache_content
     @xmi_blocks = Hash.new
     @xmi_map = Hash.new
     eles = Hash.new
@@ -716,9 +702,28 @@ class WebReportConverter
     end
   end
 
+  def merge_diagrams
+    diagrams = find_section('Diagrams')
+    behavior = find_section('Behavior')
+    structure = find_section('Structure')
+
+    # Parallel recures diagrams and structure combining common nodes
+    # puts "\n----------------------------------"
+    merge(diagrams, structure)
+    # puts "\n----------------------------------"
+    merge(behavior, structure)
+
+    @tree.delete_if { |node| node['title'] == 'Diagrams' } 
+    @tree.delete_if { |node| node['title'] == 'Interfaces' } 
+    @tree.delete_if { |node| node['title'] == 'Behavior' }
+  end
+
   def convert
     puts "\nMerging Diagrams into Structure"
-    merge_diagrams    
+    merge_diagrams
+
+    puts "\nCaching Content"
+    cache_content
 
     puts "\nGenerating enumerations"
     generate_enumerations
