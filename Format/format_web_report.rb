@@ -350,6 +350,7 @@ class WebReportConverter
   end
 
   def find_stereos(xmi_id, model)
+    return nil
     stereos = @model.xpath("//*[@base_Element='#{xmi_id}']")
     prof = stereos.map { |s| s.name if s.namespace.prefix == 'Profile' }.compact
     
