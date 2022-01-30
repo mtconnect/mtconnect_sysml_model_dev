@@ -670,6 +670,22 @@ class WebReportConverter
     end    
   end
 
+  def merge_diagrams
+    diagrams = find_section('Diagrams')
+    behavior = find_section('Behavior')
+    structure = find_section('Structure')
+
+    # Parallel recures diagrams and structure combining common nodes
+    # puts "\n----------------------------------"
+    merge(diagrams, structure)
+    # puts "\n----------------------------------"
+    merge(behavior, structure)
+
+    @tree.delete_if { |node| node['title'] == 'Diagrams' } 
+    @tree.delete_if { |node| node['title'] == 'Interfaces' } 
+    @tree.delete_if { |node| node['title'] == 'Behavior' }
+  end
+
   def cache_content
     @xmi_blocks = Hash.new
     @xmi_map = Hash.new
@@ -700,22 +716,6 @@ class WebReportConverter
     @struct.each do |node|
       recurse.call(node, [])
     end
-  end
-
-  def merge_diagrams
-    diagrams = find_section('Diagrams')
-    behavior = find_section('Behavior')
-    structure = find_section('Structure')
-
-    # Parallel recures diagrams and structure combining common nodes
-    # puts "\n----------------------------------"
-    merge(diagrams, structure)
-    # puts "\n----------------------------------"
-    merge(behavior, structure)
-
-    @tree.delete_if { |node| node['title'] == 'Diagrams' } 
-    @tree.delete_if { |node| node['title'] == 'Interfaces' } 
-    @tree.delete_if { |node| node['title'] == 'Behavior' }
   end
 
   def convert
