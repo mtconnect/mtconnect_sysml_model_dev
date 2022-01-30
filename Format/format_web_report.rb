@@ -349,12 +349,9 @@ class WebReportConverter
     [xmi_id, model]
   end
 
-  def find_stereos(xmi_id, model)
-    return nil
-    stereos = @model.xpath("//*[@base_Element='#{xmi_id}']")
-    prof = stereos.map { |s| s.name if s.namespace.prefix == 'Profile' }.compact
-    
-    return nil if prof.empty?
+  def find_stereos(id)
+    return nil unless @stereotypes.include?(id)
+    prof = @stereotypes[id]
 
     prof.map { |t| "<em>&lt;&lt;#{t}&gt;&gt;</em>" }.join(' ')    
   end
@@ -365,9 +362,11 @@ class WebReportConverter
         name = v['title']
         xmi_id, model = find_element(k)
         if model
-          stereos = find_stereos(xmi_id, model)
-          @stereos[k] = stereos
-          v['title'] = "#{stereos} #{name}"
+          stereos = find_stereos(xmi_id)
+          if stereos
+            @stereos[k] = stereos
+            v['title'] = "#{stereos} #{name}"
+          end
         end
         
         grid = v['grid_panel']
@@ -520,7 +519,7 @@ class WebReportConverter
     # Find its parent
     parent, = model.xpath('./generalization').map do |g|
       if id = g['general']
-        parent, = @model.xpath("//packagedElement[@xmi:id='#{id}']")
+        parent = @xmi_blocks[id]
         [parent, match_count(target, xmi_path(parent))] if parent
       else
         nil
@@ -583,7 +582,7 @@ class WebReportConverter
           next
         end
 
-        stereos = find_stereos(xmi_id, model)
+        stereos = find_stereos(xmi_id)
         if stereos
           @stereos[k] = stereos
           v['title'] = (stereos + ' ') << v['title']
@@ -595,7 +594,7 @@ class WebReportConverter
           add_parent(model, @paths[k], characteristics)
           add_model_comments(model, characteristics)            
         end
-
+        
         add_constraints(model, grid)
       end
     end
@@ -686,6 +685,7 @@ class WebReportConverter
     @tree.delete_if { |node| node['title'] == 'Interfaces' } 
     @tree.delete_if { |node| node['title'] == 'Behavior' }
 
+    @xmi_blocks = Hash.new
     @xmi_map = Hash.new
     eles = Hash.new
     @model.xpath("//packagedElement").each do |m|
@@ -694,7 +694,13 @@ class WebReportConverter
       
       path = xmi_path(m) << m['name']
       eles[path] = m
-    end    
+      @xmi_blocks[m['xmi:id']] = m
+    end
+
+    @stereotypes = Hash.new { |h, k| h[k] = [] }
+    @model.xpath("/xmi:XMI/*").select { |m| m.namespace.prefix == 'Profile' }.each do |m|
+      @stereotypes[m['base_Element']] << m.name
+    end
     
     recurse = lambda do |node, path|
       path = (path.dup << node['text']).freeze
