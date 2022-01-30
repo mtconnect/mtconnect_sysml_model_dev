@@ -341,10 +341,43 @@ class WebReportConverter
                  { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }    
   end
 
+  def find_element(id, node)
+    title = node['title']
+    title = $1 if title =~ /<strike>([^<]+)/
+    
+    target = @paths[id]    
+    return nil unless target
+
+    parent_path = target[0...-1]
+    model, = @model.xpath("//packagedElement[(@xmi:type='uml:Class' or @xmi:type='uml:AssociationClass' or @xmi:type='uml:Package') and @name='#{title}']").select do |m|
+      xmi_path(m) == parent_path
+    end
+    
+    [model, title, target]
+  end
+
+  def find_stereos(model)
+    id = model['xmi:id']
+    
+    stereos = @model.xpath("//*[@base_Element='#{id}']")
+    prof = stereos.map { |s| s.name if s.namespace.prefix == 'Profile' }.compact
+    
+    return nil if prof.empty?
+
+    prof.map { |t| "<em>&lt;&lt;#{t}&gt;&gt;</em>" }.join(' ')    
+  end
+
   def document_packages
     @content.each do |k, v|
       if k =~ /^Package__/
         name = v['title']
+        model, = find_element(k, v)
+        if model
+          stereos = find_stereos(model)
+          @stereos[k] = stereos
+          v['title'] = "#{stereos} #{name}"
+        end
+        
         grid = v['grid_panel']
         if grid and grid.empty?
           text = collect_comments(@model, name)
@@ -546,41 +579,16 @@ class WebReportConverter
   end
 
   def add_model_content
-    recurse = lambda do |node, path|
-      path = path.dup << node['text']
-      @paths[node['qtitle']] = path.freeze
-      if node['children']
-        node['children'].each { |c| recurse.call(c, path) }
-      end
-    end
-    @struct.each do |node|
-      recurse.call(node, [])
-    end   
-    
     # Second pass
     @content.each do |k, v|
       if k =~ /^Structure/
-        title = v['title']
-        title = $1 if title =~ /<strike>([^<]+)/
-        
-        target = @paths[k]
+        model, title, target = find_element(k, v)
+        next unless model
 
-        next unless target
-
-        # Find model
-        parent_path = target[0...-1]
-        model, = @model.xpath("//packagedElement[(@xmi:type='uml:Class' or @xmi:type='uml:AssociationClass')  and @name='#{title}']").select do |m|
-          xmi_path(m) == parent_path
-        end
-
-        id = model['xmi:id']
-        stereos = @model.xpath("//*[@base_Element='#{id}']")
-        prof = stereos.map { |s| s.name if s.namespace.prefix == 'Profile' }.compact
-
-        unless prof.empty?
-          text = prof.map { |t| "<em>&lt;&lt;#{t}&gt;&gt;</em>" }.join(' ')
-          @stereos[k] = text
-          v['title'] = (text + ' ') << v['title']
+        stereos = find_stereos(model)
+        if stereos
+          @stereos[k] = stereos
+          v['title'] = (stereos + ' ') << v['title']
         end
         
         print '.'
@@ -684,7 +692,18 @@ class WebReportConverter
 
     @tree.delete_if { |node| node['title'] == 'Diagrams' } 
     @tree.delete_if { |node| node['title'] == 'Interfaces' } 
-    @tree.delete_if { |node| node['title'] == 'Behavior' } 
+    @tree.delete_if { |node| node['title'] == 'Behavior' }
+
+    recurse = lambda do |node, path|
+      path = path.dup << node['text']
+      @paths[node['qtitle']] = path.freeze
+      if node['children']
+        node['children'].each { |c| recurse.call(c, path) }
+      end
+    end
+    @struct.each do |node|
+      recurse.call(node, [])
+    end
   end
 
   def convert
