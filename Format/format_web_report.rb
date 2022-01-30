@@ -246,7 +246,7 @@ class WebReportConverter
             panel.path('data_store', 'data').each do |row|
               if row['col0'].start_with?('Documentation')
                 row['col1'] = convert_markdown_to_html(row['col1'])
-                deprecated = row['col1'] =~ /deprecated/i
+                deprecated = row['col1'] =~ /DEPRECATED/
               end
             end
           else
@@ -523,15 +523,15 @@ class WebReportConverter
   def add_constraints(model, grid)
     # Check for owned rules
     rules = model.xpath('./ownedRule/specification').map do |rule|
-      # create a row in the grid using the parent name and the spec body as code
+      # Look for the error message associated with the validation rule
       id = rule.parent['xmi:id']
       error, = @model.xpath("//Validation_Profile:validationRule[@base_Constraint='#{id}']")
       message = error['errorMessage'] if error
       
+      # create a row in the grid using the parent name and the spec body as code
       { col0: rule.parent['name'],
         col1: "<code>#{rule.body.text}</code>",
-        col2: convert_markdown_to_html(message.to_s)
-      }
+        col2: convert_markdown_to_html(message.to_s) }
       # Sort by the name
     end.sort_by { |c| c[:col0] }
     
