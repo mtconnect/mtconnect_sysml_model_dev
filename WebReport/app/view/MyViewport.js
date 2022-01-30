@@ -169,10 +169,6 @@ function createGridPanel(grid_panel_json)
                                allowDeselect: true
                            });
 
-  grid.on({ cellClick: function(obj, evt, x, y, z) {
-    console.debug(obj, evt, x, y, z);
-  } });
-
     var gridPanelHolder = new Ext.Panel(
         {
             title: grid_panel_json.title,

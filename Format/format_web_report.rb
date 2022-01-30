@@ -524,16 +524,24 @@ class WebReportConverter
     # Check for owned rules
     rules = model.xpath('./ownedRule/specification').map do |rule|
       # create a row in the grid using the parent name and the spec body as code
-      { col0: rule.parent['name'], col1: "<code>#{rule.body.text}</code>" }
+      id = rule.parent['xmi:id']
+      error, = @model.xpath("//Validation_Profile:validationRule[@base_Constraint='#{id}']")
+      message = error['errorMessage'] if error
+      
+      { col0: rule.parent['name'],
+        col1: "<code>#{rule.body.text}</code>",
+        col2: convert_markdown_to_html(message.to_s)
+      }
       # Sort by the name
     end.sort_by { |c| c[:col0] }
     
-    if rules and !rules.empty?
+    if rules and !rules.empty?      
       # Rules are added as another grid with two columns. 
       constraints = { title: 'Constraints', hideHeaders: false, collapsible: true,
-                      data_store: { fields: ['col0', 'col1'], data: rules },
-                      columns: [ { text: 'Name ', dataIndex: 'col0', flex: 0, width: 200 },
-                                 { text: 'Documentation ', dataIndex: 'col1', flex: 1, width: -1 } ] }
+                      data_store: { fields: ['col0', 'col1', 'col2'], data: rules },
+                      columns: [ { text: 'Name ', dataIndex: 'col0', flex: 0, width: 150 },                                 
+                                 { text: 'OCL Expression ', dataIndex: 'col1', flex: 1, width: 500 },
+                                 { text: 'Documentation ', dataIndex: 'col2', flex: 1, width: -1 } ] }
       # Add to the end of the grid
       grid << constraints            
     end
