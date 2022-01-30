@@ -687,6 +687,7 @@ class WebReportConverter
   end
 
   def cache_content
+    # Cache some xmi elements and associate with the path for faster lookup
     @xmi_blocks = Hash.new
     @xmi_map = Hash.new
     eles = Hash.new
@@ -699,11 +700,13 @@ class WebReportConverter
       @xmi_blocks[m['xmi:id']] = m
     end
 
+    # Find stereotypes and associate them with the element ids for our profile
     @stereotypes = Hash.new { |h, k| h[k] = [] }
     @model.xpath("/xmi:XMI/*").select { |m| m.namespace.prefix == 'Profile' }.each do |m|
       @stereotypes[m['base_Element']] << m.name
     end
-    
+
+    # Recurse the tree and associate the path with the model
     recurse = lambda do |node, path|
       path = (path.dup << node['text']).freeze
       @paths[node['qtitle']] = path
