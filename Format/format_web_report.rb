@@ -711,17 +711,17 @@ class WebReportConverter
     # Recurse the tree and associate the path with the model
     recurse = lambda do |node, path|
       path = (path.dup << node['text']).freeze
-      @paths[node['qtitle']] = path
+      qid = node['qtitle']
+      @paths[qid] = path
       model = eles[path]
       if model
-        @xmi_map[node['qtitle']] = model
+        @xmi_map[qid] = model
       
         id = model['xmi:id']
         if @stereotypes.include?(id) and @stereotypes[id].include?('deprecated')
-          @deprecated << node['qtitle']
+          @deprecated << qid
         end
       end
-
       
       if node['children']
         node['children'].each { |c| recurse.call(c, path) }
