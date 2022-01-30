@@ -341,25 +341,16 @@ class WebReportConverter
                  { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }    
   end
 
-  def find_element(id, node)
-    title = node['title']
-    title = $1 if title =~ /<strike>([^<]+)/
+  def find_element(id)
+    model = @xmi_map[id]
+    return unless model
     
-    target = @paths[id]    
-    return nil unless target
-
-    parent_path = target[0...-1]
-    model, = @model.xpath("//packagedElement[(@xmi:type='uml:Class' or @xmi:type='uml:AssociationClass' or @xmi:type='uml:Package') and @name='#{title}']").select do |m|
-      xmi_path(m) == parent_path
-    end
-    
-    [model, title, target]
+    xmi_id = model['xmi:id']
+    [xmi_id, model]
   end
 
-  def find_stereos(model)
-    id = model['xmi:id']
-    
-    stereos = @model.xpath("//*[@base_Element='#{id}']")
+  def find_stereos(xmi_id, model)
+    stereos = @model.xpath("//*[@base_Element='#{xmi_id}']")
     prof = stereos.map { |s| s.name if s.namespace.prefix == 'Profile' }.compact
     
     return nil if prof.empty?
@@ -371,9 +362,9 @@ class WebReportConverter
     @content.each do |k, v|
       if k =~ /^Package__/
         name = v['title']
-        model, = find_element(k, v)
+        xmi_id, model = find_element(k)
         if model
-          stereos = find_stereos(model)
+          stereos = find_stereos(xmi_id, model)
           @stereos[k] = stereos
           v['title'] = "#{stereos} #{name}"
         end
@@ -567,7 +558,7 @@ class WebReportConverter
         col1: "<code>#{rule.body.text}</code>" }
     end
     
-    if rules and !rules.empty?      
+    if rules and !rules.empty?
       # Rules are added as another grid with two columns. 
       constraints = { title: 'Constraints', hideHeaders: false, collapsible: true,
                       data_store: { fields: ['col0', 'col1'], data: rules },
@@ -582,29 +573,29 @@ class WebReportConverter
     # Second pass
     @content.each do |k, v|
       if k =~ /^Structure/
-        model, title, target = find_element(k, v)
-        next unless model
+        title = v['title']
+        title = $1 if title =~ /<strike>([^<]+)/
 
-        stereos = find_stereos(model)
+        xmi_id, model = find_element(k)
+        unless model
+          puts "Error: Cannot find model for #{title} and path #{@paths[k].inspect}"
+          next
+        end
+
+        stereos = find_stereos(xmi_id, model)
         if stereos
           @stereos[k] = stereos
           v['title'] = (stereos + ' ') << v['title']
         end
         
-        print '.'
-        
-        if model
-          grid = v['grid_panel']          
-          characteristics = grid[0]
-          if characteristics and characteristics['title'].start_with?('Characteristics')
-            add_parent(model, target, characteristics)
-            add_model_comments(model, characteristics)            
-          end
-
-          add_constraints(model, grid)
-        else
-          puts "Error: Cannot find model for #{title} and path #{target.inspect}"
+        grid = v['grid_panel']          
+        characteristics = grid[0]
+        if characteristics and characteristics['title'].start_with?('Characteristics')
+          add_parent(model, @paths[k], characteristics)
+          add_model_comments(model, characteristics)            
         end
+
+        add_constraints(model, grid)
       end
     end
 
@@ -694,9 +685,21 @@ class WebReportConverter
     @tree.delete_if { |node| node['title'] == 'Interfaces' } 
     @tree.delete_if { |node| node['title'] == 'Behavior' }
 
+    @xmi_map = Hash.new
+    eles = Hash.new
+    @model.xpath("//packagedElement").each do |m|
+      type = m['xmi:type']
+      next unless type =~ /^uml:(Package|Class|AssociationClass)/
+      
+      path = xmi_path(m) << m['name']
+      eles[path] = m
+    end    
+    
     recurse = lambda do |node, path|
-      path = path.dup << node['text']
-      @paths[node['qtitle']] = path.freeze
+      path = (path.dup << node['text']).freeze
+      @paths[node['qtitle']] = path
+      @xmi_map[node['qtitle']] = eles[path]
+      
       if node['children']
         node['children'].each { |c| recurse.call(c, path) }
       end
