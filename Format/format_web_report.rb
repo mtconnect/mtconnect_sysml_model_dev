@@ -237,7 +237,7 @@ class WebReportConverter
     @content.each do |k, v|
       if k =~ /^(Architecture|Glossary|Diagram|Structure)/
         title = v['title']
-        deprecated = false
+        deprecated = @deprecated.include?(k)
         
         # Scan the grid panel looking for content
         panels = v['grid_panel']
@@ -247,7 +247,7 @@ class WebReportConverter
             panel.path('data_store', 'data').each do |row|
               if row['col0'].start_with?('Documentation')
                 row['col1'] = convert_markdown_to_html(row['col1'])
-                deprecated = row['col1'] =~ /DEPRECATED/
+                deprecated ||= row['col1'] =~ /DEPRECATED/
               end
             end
           else
@@ -415,23 +415,24 @@ class WebReportConverter
   end
 
   def enumeration_rows(ele)
-      name = ele['name']
-      i = 0
-      definitions = Hash.new    
-      rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').sort_by { |value| value['name'] }.map do |value|
-        i += 1
-        vname = value['name']
-        lit = format_name(vname, EnumLiteralIcon)
-        text = get_comment(value)
-        definitions[vname] = text if text
-
-        { col0: "#{i} </br>", col1: lit, col2: text.to_s }
-      end
+    name = ele['name']
+    i = 0
+    definitions = Hash.new    
+    rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').
+          sort_by { |value| value['name'] }.map do |value|
+      i += 1
+      vname = value['name']
+      lit = format_name(vname, EnumLiteralIcon)
+      text = get_comment(value)
+      definitions[vname] = text if text
       
-      # Add the definitions to the markdown converter
-      Kramdown::Converter::MtcHtml.add_definitions(name, definitions)
-
-      rows
+      { col0: "#{i} </br>", col1: lit, col2: text.to_s }
+    end
+    
+    # Add the definitions to the markdown converter
+    Kramdown::Converter::MtcHtml.add_definitions(name, definitions)
+    
+    rows
   end
 
   def generate_enumerations
@@ -448,7 +449,8 @@ class WebReportConverter
 
     children = data_types['children']
     
-    @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").sort_by { |ele| ele['name'] }.each do |ele|            
+    @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").
+          sort_by { |ele| ele['name'] }.each do |ele|
       name = ele['name']
       enum = "Enumeration__#{ele['xmi:id']}"
       @enumerations[name] = enum
@@ -486,7 +488,7 @@ class WebReportConverter
     children = stereo['children']
 
     @model.xpath("//packagedElement[@name='Stereotypes' and @xmi:type='uml:Package']/packagedElement[@xmi:type='uml:Stereotype']").
-      sort_by { |ele| ele['name'] }.each do |ele|            
+          sort_by { |ele| ele['name'] }.each do |ele|
       name = ele['name']
       st = "Stereotype__#{ele['xmi:id']}"
 
@@ -519,8 +521,8 @@ class WebReportConverter
     # Find its parent
     parent, = model.xpath('./generalization').map do |g|
       if id = g['general']
-        parent = @xmi_blocks[id]
-        [parent, match_count(target, xmi_path(parent))] if parent
+        node = @xmi_blocks[id]
+        [node, match_count(target, xmi_path(node))] if node
       else
         nil
       end
@@ -703,14 +705,23 @@ class WebReportConverter
     # Find stereotypes and associate them with the element ids for our profile
     @stereotypes = Hash.new { |h, k| h[k] = [] }
     @model.xpath("/xmi:XMI/*").select { |m| m.namespace.prefix == 'Profile' }.each do |m|
-      @stereotypes[m['base_Element']] << m.name
+      @stereotypes[m['base_Element']] << m.name if m['base_Element']
     end
 
     # Recurse the tree and associate the path with the model
     recurse = lambda do |node, path|
       path = (path.dup << node['text']).freeze
       @paths[node['qtitle']] = path
-      @xmi_map[node['qtitle']] = eles[path]
+      model = eles[path]
+      if model
+        @xmi_map[node['qtitle']] = model
+      
+        id = model['xmi:id']
+        if @stereotypes.include?(id) and @stereotypes[id].include?('deprecated')
+          @deprecated << node['qtitle']
+        end
+      end
+
       
       if node['children']
         node['children'].each { |c| recurse.call(c, path) }
