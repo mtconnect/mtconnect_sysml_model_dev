@@ -175,6 +175,7 @@ class WebReportConverter
     @enumerations = Hash.new
     @deprecated = Set.new
     @paths = Hash.new
+    @stereos = Hash.new
 
     # Collect all the structures so we can relate them later
     @blocks = Hash.new
@@ -571,6 +572,18 @@ class WebReportConverter
         model, = @model.xpath("//packagedElement[(@xmi:type='uml:Class' or @xmi:type='uml:AssociationClass')  and @name='#{title}']").select do |m|
           xmi_path(m) == parent_path
         end
+
+        id = model['xmi:id']
+        stereos = @model.xpath("//*[@base_Element='#{id}']")
+        prof = stereos.map { |s| s.name if s.namespace.prefix == 'Profile' }.compact
+
+        unless prof.empty?
+          text = prof.map { |t| "<em>&lt;&lt;#{t}&gt;&gt;</em>" }.join(' ')
+          @stereos[k] = text
+          v['title'] = (text + ' ') << v['title']
+        end
+        
+        print '.'
         
         if model
           grid = v['grid_panel']          
@@ -583,15 +596,22 @@ class WebReportConverter
           add_constraints(model, grid)
         else
           puts "Error: Cannot find model for #{title} and path #{target.inspect}"
-        end                             
+        end
       end
     end
+
+    puts
   end
   
   def deprecate_tree
     recurse = lambda do |node|
-      if @deprecated.include?(node['qtitle'])
+      id = node['qtitle']
+      if @deprecated.include?(id)
         node['text'] = "<strike>#{node['text']}</strike>"
+      end
+      if @stereos.include?(id)
+        text = @stereos[id]
+        node['text'] = "#{text} #{node['text']}"
       end
       if node['children']
         node['children'].each { |c| recurse.call(c) }
