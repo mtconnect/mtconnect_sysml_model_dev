@@ -639,8 +639,6 @@ class WebReportConverter
           list2 << node1 if t1 != 'EmptyContent'
         elsif node1['qtitle'] != node2['qtitle']
           # First check if these are the same types, don't merge a diagram to a Structure
-          
-          
           # See if we can merge the grids and children
           qn1, qn2 = @content[node1['qtitle']], @content[node2['qtitle']]
           gp1, gp2 = qn1['grid_panel'], qn2['grid_panel']
