@@ -654,7 +654,9 @@ class WebReportConverter
         node['text'] = "#{text} #{node['text']}"
       end
       if @normative.include?(id)
-        node['text'] = "#{node['text']} #{@normative[id]}"
+        if @normative[id] =~ /^[0-9]/
+          node['text'] = "#{node['text']} #{@normative[id]}"
+        end
       end
       
       if node['children']
