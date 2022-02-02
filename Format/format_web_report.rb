@@ -173,7 +173,8 @@ class WebReportConverter
     @struct = find_section('Structure')
 
     @enumerations = Hash.new
-    @deprecated = Set.new
+    @deprecated = Hash.new
+    @normative = Hash.new
     @paths = Hash.new
     @stereos = Hash.new
 
@@ -210,11 +211,12 @@ class WebReportConverter
     tree['data'] if tree
   end
   
-  def add_license(file)
-    # Add the legal docs to the landing page
-    puts "Adding licesnse #{file}"
-    File.open(file) do |f|
-      legal = ::Kramdown::Document.new(f.read, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
+  def add_license
+    comment, = @model.xpath('./ownedComment')
+    if comment
+      legal = convert_markdown_to_html(comment['body'])
+      
+      # Add the legal docs to the landing page
       panel = @doc.path('window.index_page_json', 'html_panel', 0)
       
       # Clean up the styling
@@ -222,7 +224,7 @@ class WebReportConverter
       panel['html'].sub!(%r{height: 500px}, 'height: 800px')
       # Add the legal content
       panel['html'].
-        sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal.to_mtc_html}</div></div>")
+        sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal}</div></div>")
     end
   end
     
@@ -237,7 +239,7 @@ class WebReportConverter
     @content.each do |k, v|
       if k =~ /^(Architecture|Glossary|Diagram|Structure)/
         title = v['title']
-        deprecated = @deprecated.include?(k)
+        deprecated = @deprecated[k]
         
         # Scan the grid panel looking for content
         panels = v['grid_panel']
@@ -274,7 +276,7 @@ class WebReportConverter
         end
         
         if deprecated
-          @deprecated << k
+          @deprecated[k] = '2.0' unless @deprecated.include?(k)
           v['title'] = "<strike>#{title}</strike>"
         end
       end
@@ -353,7 +355,7 @@ class WebReportConverter
     return nil unless @stereotypes.include?(id)
     prof = @stereotypes[id]
 
-    prof.map { |t| "<em>&lt;&lt;#{t}&gt;&gt;</em>" }.join(' ')    
+    prof.select { |s| s.name != 'normative' }.map { |t| "<em>&lt;&lt;#{t.name}&gt;&gt;</em>" }.join(' ')    
   end
 
   def document_packages
@@ -414,19 +416,35 @@ class WebReportConverter
     @search['block'] << entry
   end
 
-  def enumeration_rows(ele)
+  def enumeration_rows(ele, dver)
     name = ele['name']
     i = 0
     definitions = Hash.new    
     rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').
           sort_by { |value| value['name'] }.map do |value|
       i += 1
-      vname = value['name']
-      lit = format_name(vname, EnumLiteralIcon)
+      lname = vname = value['name']
       text = get_comment(value)
       definitions[vname] = text if text
+
+      ver = dver
+      id = value['xmi:id']
+      if @stereotypes.include?(id)
+        norm = @stereotypes[id].detect { |m| m.name == 'normative' }
+        dep = @stereotypes[id].detect { |m| m.name == 'deprecated' }
+
+        ver = norm['version'] if norm
+
+        if dep
+          ver = "#{ver} - #{dep['version']}"
+          lname = "<strike>#{vname}</strike>"
+        end
+      end
+
+      lit = format_name(vname, EnumLiteralIcon, lname)
+
       
-      { col0: "#{i} </br>", col1: lit, col2: text.to_s }
+      { col0: "#{i} </br>", col1: lit, ver: ver, col2: text.to_s }
     end
     
     # Add the definitions to the markdown converter
@@ -450,10 +468,20 @@ class WebReportConverter
     children = data_types['children']
     
     @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").
-          sort_by { |ele| ele['name'] }.each do |ele|
+      sort_by { |ele| ele['name'] }.each do |ele|
+      id = ele['xmi:id']
       name = ele['name']
-      enum = "Enumeration__#{ele['xmi:id']}"
+      enum = "Enumeration__#{id}"
       @enumerations[name] = enum
+
+      ver = '??'
+      if @stereotypes.include?(id)        
+        norm = @stereotypes[id].detect { |m| m.name == 'normative' }
+        if norm
+          ver = norm['version']
+          name = "#{name} #{ver}"
+        end
+      end
 
       children << { text: name, qtitle: enum, icon: EnumTypeIcon, expanded: false, leaf: true }
       
@@ -464,13 +492,14 @@ class WebReportConverter
       characteristics = gen_characteristics(['Name', col1])
 
       # Collect all the literals and build the table. Also collect them for {{def(...)}} dereferencing
-      rows = enumeration_rows(ele)
+      rows = enumeration_rows(ele, ver)
       
       # Create the grid of literals
       literals = { title: 'Enumeration Literals', hideHeaders: false, collapsible: true,
-                   data_store: { fields: ['col0', 'col1', 'col2'], data: rows },
+                   data_store: { fields: ['col0', 'col1', 'ver', 'col2'], data: rows },
                    columns: [ { text: '# ', dataIndex: 'col0', flex: 0, width: 84 },
                               { text: 'Name ', dataIndex: 'col1', flex: 0, width: 300 },
+                              { text: 'Ver', dataIndex: 'ver', flex: 0, width: 84 },
                               { text: 'Documentation ', dataIndex: 'col2', flex: 1, width: -1 } ] }
       
       # Add the items to the search
@@ -595,8 +624,18 @@ class WebReportConverter
         if characteristics and characteristics['title'].start_with?('Characteristics')
           add_parent(model, @paths[k], characteristics)
           add_model_comments(model, characteristics)            
+
+          if @normative.include?(k)
+            characteristics.path('data_store', 'data') << { col0: 'Introduced', col1: @normative[k] }
+          end
+
+          if @deprecated.include?(k)
+            characteristics.path('data_store', 'data') << { col0: 'Deprecated', col1: @deprecated[k] }
+          end
+
+          
         end
-        
+                  
         add_constraints(model, grid)
       end
     end
@@ -614,6 +653,10 @@ class WebReportConverter
         text = @stereos[id]
         node['text'] = "#{text} #{node['text']}"
       end
+      if @normative.include?(id)
+        node['text'] = "#{node['text']} #{@normative[id]}"
+      end
+      
       if node['children']
         node['children'].each { |c| recurse.call(c) }
       end
@@ -622,6 +665,15 @@ class WebReportConverter
     @struct.each do |node|
       recurse.call(node)
     end
+
+    order = [ 'Fundamentals',
+              'Device Information Model',
+              'Observation Information Model',
+              'Asset Information Model',
+              'Interface Interaction Model',
+              'Profile',
+              'Glossary' ]
+    @struct.sort_by! { |node| order.index(node['text']) }
   end
 
   def merge(list1, list2, indent = 0)
@@ -702,8 +754,8 @@ class WebReportConverter
 
     # Find stereotypes and associate them with the element ids for our profile
     @stereotypes = Hash.new { |h, k| h[k] = [] }
-    @model.xpath("/xmi:XMI/*").select { |m| m.namespace.prefix == 'Profile' }.each do |m|
-      @stereotypes[m['base_Element']] << m.name if m['base_Element']
+    @model.document.root.elements.select { |m| m.namespace.prefix == 'Profile' }.each do |m|
+      @stereotypes[m['base_Element']] << m if m['base_Element']
     end
 
     # Recurse the tree and associate the path with the model
@@ -716,8 +768,17 @@ class WebReportConverter
         @xmi_map[qid] = model
       
         id = model['xmi:id']
-        if @stereotypes.include?(id) and @stereotypes[id].include?('deprecated')
-          @deprecated << qid
+        if @stereotypes.include?(id)
+          sts = @stereotypes[id]
+
+          sts.each do |m|
+            ver = m['version']
+            if m.name == 'deprecated'
+              @deprecated[qid] = (ver || '2.0')
+            elsif m.name == 'normative'
+              @normative[qid] = (ver || '1.0')
+            end
+          end
         end
       end
       
@@ -725,6 +786,7 @@ class WebReportConverter
         node['children'].each { |c| recurse.call(c, path) }
       end
     end
+    
     @struct.each do |node|
       recurse.call(node, [])
     end
@@ -785,7 +847,6 @@ if __FILE__ == $PROGRAM_NAME
   logo = File.expand_path("#{dir}/images/logo.png", File.dirname(__FILE__))
   mtconnect = File.expand_path('./MTConnect.png', File.dirname(__FILE__))
   xmi = File.expand_path('../MTConnect SysML Model.xml', File.dirname(__FILE__))
-  legal = File.expand_path('./legal.md', File.dirname(__FILE__))
   src_images = File.expand_path('./images', File.dirname(__FILE__))
   dest_images = File.expand_path("#{dir}/images", File.dirname(__FILE__))
   
@@ -802,7 +863,7 @@ if __FILE__ == $PROGRAM_NAME
   File.open(index, 'w') { |f| f.write(text) }
   
   converter = WebReportConverter.new(file, xmi)
-  converter.add_license(legal)
+  converter.add_license
   converter.convert
   converter.write(output)
 
