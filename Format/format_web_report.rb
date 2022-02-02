@@ -419,16 +419,18 @@ class WebReportConverter
   def enumeration_rows(ele, dver)
     name = ele['name']
     i = 0
-    definitions = Hash.new    
+    definitions = Hash.new
     rows = ele.xpath('./ownedLiteral[@xmi:type="uml:EnumerationLiteral"]').
           sort_by { |value| value['name'] }.map do |value|
       i += 1
       lname = vname = value['name']
       text = get_comment(value)
       definitions[vname] = text if text
-
+            
       ver = dver
       id = value['xmi:id']
+      @enum_ids["#{name}:#{vname}"] = id
+      
       if @stereotypes.include?(id)
         norm = @stereotypes[id].detect { |m| m.name == 'normative' }
         dep = @stereotypes[id].detect { |m| m.name == 'deprecated' }
@@ -442,7 +444,6 @@ class WebReportConverter
       end
 
       lit = format_name(vname, EnumLiteralIcon, lname)
-
       
       { col0: "#{i} </br>", col1: lit, ver: ver, col2: text.to_s }
     end
@@ -465,6 +466,7 @@ class WebReportConverter
       return
     end
 
+    @enum_ids = Hash.new
     children = data_types['children']
     
     @model.xpath("//packagedElement[@xmi:type='uml:Enumeration']").
@@ -618,6 +620,17 @@ class WebReportConverter
           @stereos[k] = stereos
           v['title'] = (stereos + ' ') << v['title']
         end
+
+        if @stereotypes.include?(xmi_id)
+          norm = @stereotypes[xmi_id].detect { |m| m.name == 'normative' }
+          if norm
+            ver = norm['version']
+            if ver and ver !~ /^[0-9]/
+              ver = derive_versions(model, norm['version'].split(/,/).map { |s| s.strip })
+              @normative[k] = ver if ver
+            end
+          end
+        end
         
         grid = v['grid_panel']          
         characteristics = grid[0]
@@ -626,7 +639,7 @@ class WebReportConverter
           add_model_comments(model, characteristics)            
 
           if @normative.include?(k)
-            characteristics.path('data_store', 'data') << { col0: 'Introduced', col1: @normative[k] }
+            characteristics.path('data_store', 'data') << { col0: 'Introduced', col1: ver }
           end
 
           if @deprecated.include?(k)
@@ -641,6 +654,36 @@ class WebReportConverter
     end
 
     puts
+  end
+
+  def derive_versions(node, props, level = 0)
+    ver = props.map do |prop|
+      # Find owned property with default value
+      version, = node.xpath("./ownedAttribute[@name='#{prop}' and @xmi:type='uml:Property']/defaultValue").map do |i|
+        type = i['xmi:type']
+        if type == 'uml:InstanceValue'
+          instance = i['instance']
+          stereo, = @stereotypes[instance].select { |s| s.name == 'normative' }.map { |s| s['version'] }
+          stereo
+        elsif type == 'uml:LiteralString'
+          id = @enum_ids["DataItemSubTypeEnum:#{i['value']}"]
+          stereo, = @stereotypes[id].select { |s| s.name == 'normative' }.map { |s| s['version'] }
+          stereo
+        end
+      end
+
+      if version.nil? and level == 0 and prop == 'type'
+        parent, = node.xpath("./generalization").map do |i|
+          g = i['general']
+          @xmi_blocks[g]
+        end
+        derive_versions(parent, props, level + 1) if parent
+      end
+      
+      # If the value cannot be found, search the parent
+      version
+    end.compact.max
+    ver
   end
   
   def deprecate_tree
