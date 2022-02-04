@@ -170,7 +170,7 @@ class PortalType < Type
 
       resize(columns, 'Type', 150)
       resize(columns, 'Multiplicity', 100)
-      resize(columns, 'Default Value', 100)
+      resize(columns, 'Default Value', 200)
 
       rows.each do |row|
         html = Nokogiri::HTML(row[ind])
