@@ -168,4 +168,12 @@ class PortalModel < Model
   def self.add_versions_to_relations
     $logger.info "Adding version numbers to properties and relations"
   end
+
+  def self.add_version_to_attributes
+    $logger.info "Adding versions to type properties"
+
+    @@models.each do |k, m|
+      m.types.each { |t| t.add_version_to_attributes }
+    end
+  end
 end

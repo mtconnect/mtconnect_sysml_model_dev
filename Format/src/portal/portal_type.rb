@@ -144,4 +144,52 @@ class PortalType < Type
     # Add to the end of the grid
     @content['grid_panel'] << constraints
   end
+
+  def add_version_to_attributes
+    return if @content.nil? or !@content.include?('grid_panel')
+    
+    $logger.debug "Adding version to #{@name}"
+
+    grid = @content['grid_panel']
+    grid.each do |panel|
+      next if panel['title'].nil? or panel['title'].start_with?('Characteristics')
+
+      rows = panel.path('data_store', 'data')
+
+      columns = panel['columns']
+      nc = columns.detect { |col| col['text'].start_with?('Name') }
+      next unless nc and nc.include?('dataIndex')
+
+      ind = nc['dataIndex']
+      fields = panel.path('data_store', 'fields')
+      pos = fields.index(ind) + 1
+      fields.insert(pos, :int, :dep)
+      columns.insert(pos,
+                     { text: "Int", dataIndex: 'int', flex: 0, width: 84 },
+                     { text: "Dep", dataIndex: 'dep', flex: 0, width: 84 })
+
+      resize(columns, 'Type', 150)
+      resize(columns, 'Multiplicity', 84)
+      resize(columns, 'Default Value', 100)
+
+      p columns
+      
+      rows.each do |row|
+        html = Nokogiri::HTML(row[ind])
+        name, type = html.text.split(':').map { |s| s.strip }
+
+        rel = relation(name)
+        if rel
+          int = rel.introduced
+          dep = rel.deprecated
+        end
+        int ||= introduced
+        dep ||= deprecated
+
+        row[:int] = int
+        row[:dep] = dep
+      end
+      
+    end
+  end
 end

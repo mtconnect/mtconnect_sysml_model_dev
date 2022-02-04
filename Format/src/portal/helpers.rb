@@ -6,7 +6,12 @@ module PortalHelpers
     kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
   end
 
-    def format_name(name, icon, text = name)
+  def resize(columns, name, width)
+    col = columns.detect { |c| c['text'] and c['text'].start_with?(name) }
+    col['width'] = width if col
+  end
+
+  def format_name(name, icon, text = name)
     "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
       "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
       "</span> #{text}</div></br>"

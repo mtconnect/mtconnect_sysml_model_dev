@@ -84,15 +84,14 @@ class PortalGenerator
 
     @top.associate_models(@doc)
     PortalModel.generate_enumerations
-    @doc.convert_markdown
     PortalModel.generate_stereotypes
-      
+    @doc.convert_markdown    
     @doc.deprecate_tree
     
     PortalModel.document_models
-    PortalModel.add_characteristics
-    
+    PortalModel.add_characteristics    
     PortalModel.add_constraints
+    PortalModel.add_version_to_attributes
 
     @doc.write(output)
     @doc.update_resources(resource, res_formatted)
