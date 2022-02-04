@@ -165,15 +165,13 @@ class PortalType < Type
       pos = fields.index(ind) + 1
       fields.insert(pos, :int, :dep)
       columns.insert(pos,
-                     { text: "Int", dataIndex: 'int', flex: 0, width: 84 },
-                     { text: "Dep", dataIndex: 'dep', flex: 0, width: 84 })
+                     { text: "Int", dataIndex: 'int', flex: 0, width: 64 },
+                     { text: "Dep", dataIndex: 'dep', flex: 0, width: 64 })
 
       resize(columns, 'Type', 150)
-      resize(columns, 'Multiplicity', 84)
+      resize(columns, 'Multiplicity', 100)
       resize(columns, 'Default Value', 100)
 
-      p columns
-      
       rows.each do |row|
         html = Nokogiri::HTML(row[ind])
         name, type = html.text.split(':').map { |s| s.strip }
