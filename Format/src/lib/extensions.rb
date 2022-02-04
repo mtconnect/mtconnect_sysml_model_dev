@@ -9,23 +9,7 @@ module Extensions
   def version_for(stereo)
     if @stereotypes
       st = @stereotypes.detect { |s| s.name == stereo }
-      if st and st.respond_to? :version
-        v = st.version
-        return nil unless v
-        if v =~ /^[0-9]/
-          v
-        elsif Type === self
-          v.split(',').map { |s| s.strip }.map do |s|
-            prop = relation(s)
-            if prop and prop.value and prop.target.type
-              lit = prop.target.type.literal(prop.value)
-              if lit
-                lit.version_for(stereo)
-              end
-            end
-          end.compact.max
-        end
-      end
+      st.version if st and st.respond_to? :version
     end
   end
 
@@ -47,7 +31,7 @@ module Extensions
 
   def xmi_documentation(e)
     recurse = lambda { |v| [ v['body'], v.xpath('./ownedComment').map { |c| [ c['body'], recurse.call(c) ] } ] }
-    e.xpath('./ownedComment').map do |c1|      
+    e.xpath('./ownedComment').map do |c1|
       recurse.call(c1)
     end.flatten.compact.join("\n\n")
   end
@@ -55,10 +39,10 @@ module Extensions
   def get_multiplicity(r)
     lower = upper = '1'
     if r.at('upperValue')
-      upper = r.at('upperValue')['value']    
+      upper = r.at('upperValue')['value']
       upper = '0' unless upper
     end
-    
+
     if r.at('lowerValue')
       lower = r.at('lowerValue')['value']
       lower = '0' unless lower

@@ -26,7 +26,7 @@ class PortalType < Type
     unless lits.empty?
       definitions = Hash.new
       lits.sort_by { |lit| lit.name }.each do |lit|
-        definitions[lit.name] = lit.description
+        definitions[lit.name] = convert_markdown_to_html(lit.description)
       end
 
       Kramdown::Converter::MtcHtml.add_definitions(@name, definitions)

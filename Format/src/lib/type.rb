@@ -439,4 +439,39 @@ class Type
     @relations.select { |r| r.class == Relation::Realization }
   end
 
+  def derive_version(stereo, properties)
+    properties.split(',').map { |s| s.strip }.map do |s|
+      prop = relation(s)
+      if prop and prop.value and prop.target.type
+        lit = prop.target.type.literal(prop.value)
+        if lit
+          lit.version_for(stereo)
+        end
+      end
+    end.compact.max
+  end
+
+  def introduced
+    if defined? @introduced
+      @introduced
+    else
+      super
+      if @introduced and @introduced !~ /^[0-9]/
+        @version_properties = @introduced
+        @introduced = derive_version('normative', @version_properties)
+
+        # Check for deprecated
+        unless @deprecated
+          @deprecated = version_for('deprecated')
+          @deprecated = derive_version('deprecated', @version_properties) unless @deprecated
+        end
+      end
+      @introduced
+    end
+  end
+
+  def deprecated
+    introduced
+    super
+  end
 end
