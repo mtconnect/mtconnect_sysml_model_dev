@@ -89,7 +89,7 @@ class PortalGenerator
     @doc.deprecate_tree
     
     PortalModel.document_models
-    PortalModel.format_types
+    PortalModel.add_characteristics
 
     @doc.write(output)
     @doc.update_resources(resource, res_formatted)

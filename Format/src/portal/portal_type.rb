@@ -87,7 +87,7 @@ class PortalType < Type
     add_entry
   end
 
-  def add_content
+  def add_characteristics
     if @content
       characteristics, = @content['grid_panel']
       if characteristics

@@ -132,9 +132,9 @@ class PortalModel < Model
     end
   end
 
-  def self.format_types
+  def self.add_characteristics
     @@models.each do |k, m|
-      m.types.each { |t| t.add_content }
+      m.types.each { |t| t.add_characteristics }
     end    
   end
 end
