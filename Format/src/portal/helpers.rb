@@ -56,7 +56,7 @@ module PortalHelpers
     pid = obj.pid
     
     case obj
-    when PortalType
+    when PortalType, Type::LazyPointer
       if obj.enumeration?
         icon = EnumTypeIcon
       else
@@ -67,7 +67,10 @@ module PortalHelpers
       icon = PackageIcon
 
     when Type::Literal
-      icon = EnumLiteralIcon      
+      icon = EnumLiteralIcon
+
+    else
+      $logger.error "!!!! Unknown type: #{obj.class}"
     end
 
     if dep

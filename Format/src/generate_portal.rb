@@ -83,12 +83,13 @@ class PortalGenerator
     @top.find_definitions
 
     @top.associate_models(@doc)
-    @doc.convert_markdown
     PortalModel.generate_enumerations
+    @doc.convert_markdown
       
     @doc.deprecate_tree
     
     PortalModel.document_models
+    PortalModel.format_types
 
     @doc.write(output)
     @doc.update_resources(resource, res_formatted)

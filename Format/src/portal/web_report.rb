@@ -51,6 +51,10 @@ class WebReport
   end
 
   def write(file)
+    # Sort the search items
+    @search['all'].sort_by! { |e| e['name'] }
+    @search['block'].sort_by! { |e| e['name'] }
+    
     order = [ 'Fundamentals',
               'Device Information Model',
               'Observation Information Model',
@@ -208,7 +212,6 @@ class WebReport
               end
               
               if tc and row[tc] =~ /([A-Za-z]+Enum)</ and type = PortalType.type_for_name($1)
-                p $1
                 row[tc] = format_obj(type)
               end
             end

@@ -86,4 +86,22 @@ class PortalType < Type
 
     add_entry
   end
+
+  def add_content
+    if @content
+      characteristics, = @content['grid_panel']
+      if characteristics
+        data = characteristics.path('data_store', 'data')
+        if @parent
+          data.unshift({ col0: 'Parent', col1: format_obj(@parent) })
+        end
+        if v = introduced
+          data << { col0: 'Introduced', col1: v }
+        end
+        if v = deprecated
+          data << { col0: 'Deprecated', col1: v }
+        end
+      end
+    end
+  end
 end

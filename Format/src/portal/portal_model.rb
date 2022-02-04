@@ -129,6 +129,12 @@ class PortalModel < Model
   def self.generate_enumerations
     @@models.each do |k, m|
       m.generate_enumeration
+    end
+  end
+
+  def self.format_types
+    @@models.each do |k, m|
+      m.types.each { |t| t.add_content }
     end    
   end
 end
