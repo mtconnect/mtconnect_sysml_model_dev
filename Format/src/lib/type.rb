@@ -15,7 +15,9 @@ class Type
   attr_writer :is_subtype
   
   class Literal
-    attr_reader :name, :value, :description, :stereotypes
+    include Extensions
+    
+    attr_reader :pid, :name, :value, :description, :stereotypes
 
     @@literals = Hash.new
     
@@ -24,10 +26,10 @@ class Type
     end
     
     def initialize(id, name, value, description, suffix = '', stereotypes)
-      @id, @name, @value, @description, @stereotypes = id, name, value, description, stereotypes
+      @pid, @name, @value, @description, @stereotypes = id, name, value, description, stereotypes
       base = name.gsub('_', '').downcase
 
-      @@literals[@id] = self
+      @@literals[@pid] = self
     end
   end
 
@@ -291,6 +293,7 @@ class Type
         description = xmi_documentation(lit)
         id = lit['xmi:id']
         stereotypes = xmi_stereotype(lit)
+        puts "#{id} #{stereotypes}" if name == 'CODE'
         @literals << Literal.new(id, name, value, description, suffix, stereotypes)
       end
     end
@@ -334,18 +337,6 @@ class Type
   def resolve_types
     @relations.each do |r|
       r.resolve_types
-    end
-  end
-
-  def variable_data_type
-    data_type = get_attribute_like('DataType', /Attribute/)
-    if data_type
-      data_type.target.type
-    elsif @type == 'uml:DataType' or @type == 'uml:Enumeration'
-      self
-    else
-      raise "Could not find data type for #{@type} #{@name} #{@stereotypes} "
-      nil
     end
   end
 

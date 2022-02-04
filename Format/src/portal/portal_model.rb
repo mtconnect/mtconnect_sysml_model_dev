@@ -7,7 +7,7 @@ class PortalModel < Model
   include Document
   include PortalHelpers
 
-  attr_reader :pid, :content, :doc
+  attr_reader :pid, :content, :doc, :path, :tree
   
   def self.generator_class=(generator_class)
     @@generator = generator_class
@@ -27,8 +27,6 @@ class PortalModel < Model
     @@models_by_pid[id]
   end
 
-
-
   def initialize(e)
     super
   end
@@ -38,6 +36,7 @@ class PortalModel < Model
     @doc = doc
     @pid = node['qtitle']
     @content = @doc.content[@pid]
+    @tree = node
 
     if node.include?('children')
       node['children'].each do |child|
@@ -115,9 +114,21 @@ class PortalModel < Model
     end
   end
   
-  def document_models
+  def self.document_models
     @@models.each do |k, m|
       m.document_model
     end
+  end
+
+  def generate_enumeration
+    @types.sort_by { |t| t.name }.each do |t|
+      t.generate_enumeration if t.enumeration?
+    end
+  end
+  
+  def self.generate_enumerations
+    @@models.each do |k, m|
+      m.generate_enumeration
+    end    
   end
 end

@@ -85,13 +85,7 @@ class Model
   end
 
   def find_definitions(depth = 0)
-    $logger.info "#{'  ' * depth}Finding classes for '#{@name}' '#{@type}'"
-
-    if depth == 0
-      @xmi.document.root.elements.select { |m| m.namespace.prefix == 'Profile' }.each do |m|
-        Stereotype.new(m)
-      end
-    end
+    $logger.info "#{'  ' * depth}Finding stereotypes for '#{@name}' '#{@type}'"
 
     @xmi.xpath('./packagedElement[@xmi:type="uml:Class" or @xmi:type="uml:Object" or @xmi:type="uml:Stereotype" or @xmi:type="uml:AssociationClass" or @xmi:type="uml:InstanceSpecification"]', $namespaces).each do |e|
       $logger.debug "#{'  ' * depth}#{@name}::#{e['name']} #{e['xmi:type']}"

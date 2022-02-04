@@ -74,15 +74,21 @@ class PortalGenerator
     
     PortalModel.generator_class = self
     PortalModel.skip_models = @skip_models
+    @xmi.document.root.elements.select { |m| m.namespace.prefix == 'Profile' }.each do |m|
+      Stereotype.new(m)
+    end
+
     @top = PortalModel.new(@xmi)
     @top.find_data_types
     @top.find_definitions
 
     @top.associate_models(@doc)
     @doc.convert_markdown
+    PortalModel.generate_enumerations
+      
     @doc.deprecate_tree
     
-    @top.document_models
+    PortalModel.document_models
 
     @doc.write(output)
     @doc.update_resources(resource, res_formatted)

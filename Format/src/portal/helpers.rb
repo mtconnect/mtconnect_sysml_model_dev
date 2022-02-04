@@ -64,7 +64,10 @@ module PortalHelpers
       end
       
     when PortalModel
-      icon = ModelIcon      
+      icon = PackageIcon
+
+    when Type::Literal
+      icon = EnumLiteralIcon      
     end
 
     if dep
@@ -79,8 +82,7 @@ module PortalHelpers
       format_name(obj.name, icon, text)
     end            
   end
-        
-
+  
   def gen_characteristics(*rows)
     data = rows.map { |col1, col2| { col0: "#{col1} ", col1: col2 } }
     
@@ -90,4 +92,9 @@ module PortalHelpers
                  { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }    
   end
 
+  def add_entry
+    entry = { id: @pid, 'name' => "#{@name} : <i>Block</i>", type: "block" }
+    @doc.search['all'] << entry
+    @doc.search['block'] << entry
+  end
 end

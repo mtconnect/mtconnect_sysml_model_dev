@@ -314,8 +314,6 @@ class WebReportConverter
         end
       end
 
-      lit = format_name(vname, EnumLiteralIcon, lname)
-      
       { col0: "#{i} </br>", col1: lit, ver: ver, col2: text.to_s }
     end
     
