@@ -1,5 +1,8 @@
 $: << File.dirname(__FILE__)
 
+require 'constraint'
+require 'stereotype'
+
 module Extensions
   def xmi_stereotype(e)
     id = e['xmi:id']
@@ -10,6 +13,12 @@ module Extensions
     if @stereotypes
       st = @stereotypes.detect { |s| s.name == stereo }
       st.version if st and st.respond_to? :version
+    end
+  end
+
+  def collect_constraints(element)
+    element.xpath('./ownedRule').map do |c|
+      Constraint.new(c)
     end
   end
 

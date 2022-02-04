@@ -66,7 +66,7 @@ class Model
   end
 
   def find_data_types(depth = 0)
-    $logger.info "#{'  ' * depth}Finding data types for #{@name}"
+    $logger.debug "#{'  ' * depth}Finding data types for #{@name}"
     
     @xmi.xpath('./packagedElement[@xmi:type="uml:DataType" or @xmi:type="uml:Enumeration" or @xmi:type="uml:PrimitiveType"]').each do |e|
       $logger.debug "#{'  ' * depth}#{@name}::#{e['name']} #{e['xmi:type']}"
@@ -85,7 +85,7 @@ class Model
   end
 
   def find_definitions(depth = 0)
-    $logger.info "#{'  ' * depth}Finding stereotypes for '#{@name}' '#{@type}'"
+    $logger.debug "#{'  ' * depth}Finding stereotypes for '#{@name}' '#{@type}'"
 
     @xmi.xpath('./packagedElement[@xmi:type="uml:Class" or @xmi:type="uml:Object" or @xmi:type="uml:Stereotype" or @xmi:type="uml:AssociationClass" or @xmi:type="uml:InstanceSpecification"]', $namespaces).each do |e|
       $logger.debug "#{'  ' * depth}#{@name}::#{e['name']} #{e['xmi:type']}"

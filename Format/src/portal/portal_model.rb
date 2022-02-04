@@ -91,19 +91,25 @@ class PortalModel < Model
       @content['title'] = "#{@stereotypes} #{@name}"
     end
 
+    $logger.debug "Documenting model: #{@name}"
+
     grid = @content['grid_panel'] if @content
-    if grid and grid.empty? and !@documentation.empty?
+    if grid and grid.empty?
       # Create documentation w/ characteristics section
-      content = "<p>#{convert_markdown_to_html(@documentation)}</p>"
+
+      chars = [['Name', format_target(@pid, @name, PackageIcon)]]
+      if @documentation and !@documentation.empty?
+        content = "<p>#{convert_markdown_to_html(@documentation)}</p>"
+        chars << ['Documentation', content]
+      end
       
-      grid << gen_characteristics(['Name', format_target(@pid, @name, PackageIcon)],
-                                  ['Documentation', content])      
+      grid << gen_characteristics(*chars)      
       
       rows = @types.map do |type|
         dep = type.deprecated
         { name: format_obj(type), introduced: type.introduced.to_s, deprecated: dep.to_s }
       end
-      
+
       blocks = { title: 'Blocks', hideHeaders: false, collapsible: true,
                  data_store: { fields: ['name', 'introduced', 'deprecated'], data: rows },
                  columns: [ { text: 'Name ', dataIndex: 'name', flex: 0, width: 300 },
@@ -115,26 +121,51 @@ class PortalModel < Model
   end
   
   def self.document_models
+    $logger.info "Documenting models"
     @@models.each do |k, m|
       m.document_model
     end
   end
 
   def generate_enumeration
+    $logger.debug "  Generating enumerations for #{@name}"
     @types.sort_by { |t| t.name }.each do |t|
       t.generate_enumeration if t.enumeration?
     end
   end
   
   def self.generate_enumerations
+    $logger.info "Generating enumerations types and literals"
     @@models.each do |k, m|
       m.generate_enumeration
     end
   end
 
   def self.add_characteristics
+    $logger.info "Adding characteristics to types"
     @@models.each do |k, m|
       m.types.each { |t| t.add_characteristics }
     end    
+  end
+
+  def self.generate_stereotypes
+    $logger.info "Generating stereotypes for Profile"
+
+    model = @@models['Stereotypes']
+    model.types.each do |t|
+      t.generate_stereotype
+    end
+  end
+
+  def self.add_constraints
+    $logger.info "Adding constraints to types"
+
+    @@models.each do |k, m|
+      m.types.each { |t| t.add_constraints }
+    end    
+  end
+  
+  def self.add_versions_to_relations
+    $logger.info "Adding version numbers to properties and relations"
   end
 end

@@ -63,7 +63,7 @@ module Relation
     
     attr_reader :id, :name, :type, :xmi, :multiplicity, 
                 :source, :target, :owner, :stereotypes, :visibility, :association_name,
-                :constraints, :invariants, :assoc, :redefinesProperty, :default, :association_doc
+                :constraints, :assoc, :redefinesProperty, :default, :association_doc
     attr_accessor :documentation
 
     class Connection
@@ -92,7 +92,6 @@ module Relation
       @type = r['xmi:type']
       @xmi = r
       @constraints = {}
-      @invariants = {}
        
       @multiplicity, @optional = get_multiplicity(r)
       @assoc = r['association']
@@ -232,16 +231,7 @@ module Relation
       @multiplicity = @target.multiplicity
       @optional = @target.optional
 
-      assoc.xpath('./ownedRule[@type="uml:Constraint"]').each do |c|
-        name = c['name']
-        spec = c.at('./specification')
-        props =  @association.at("./constraints/constraint[@name='#{name}']")
-        if props['type'] == 'Invariant'
-          (@invariants ||= {})[name] = spec['body'] if spec
-        else
-          (@constraints ||= {})[name] = spec['body'] if spec
-        end
-      end
+      @constraints = collect_constraints(assoc)
     end
 
     def final_target

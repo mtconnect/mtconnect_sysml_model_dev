@@ -226,40 +226,26 @@ class Type
     
     @type = e['xmi:type']       
     $logger.debug "  -- Creating class #{@stereotypes} #{@name} : #{@type}"
-    
-    @operations = @xmi.xpath('./ownedOperation').map do |op|
-      name = op['name']
-      doc = xmi_documentation(op)
-      
-      $logger.warn "Could not find docs for for #{@name}::#{name}" unless doc
-      [name, doc]
-    end
+
+    find_operations
     
     @abstract = e['isAbstract'] || false
     @literals = Hash.new
 
     @aliased = false
 
-    associations = []
-    if @type == 'uml:Enumeration' and defined? e.ownedLiteral
-      collect_enumerations
-    else
-      e.element_children.each do |r|
-        if r.name != 'ownedAttribute' or r['type']
-          associations << Relation.create_association(self, r)
-        end
-      end
-    end
-    associations.compact!
-   
-    @constraints = {}
-    @invariants = {}
-    @relations = associations
+    @relations = if @type == 'uml:Enumeration' and defined? e.ownedLiteral
+                   collect_enumerations
+                   []
+                 else
+                   @relations = collect_attributes
+                 end
 
+    @constraints = collect_constraints(@xmi)
+    @invariants = {}
     @children = []
 
     # puts "Adding type #{@name} for id #{@id}"
-
     @@types_by_id[@id] = self
     @@types_by_name[@name] = self
     
@@ -271,6 +257,24 @@ class Type
 
     raise "Unknown name for #{@xmi.to_s}" unless @name
     @model.add_type(self)
+  end
+
+  def find_operations
+    @operations = @xmi.xpath('./ownedOperation').map do |op|
+      name = op['name']
+      doc = xmi_documentation(op)
+      
+      $logger.warn "Could not find docs for for #{@name}::#{name}" unless doc
+      [name, doc]
+    end    
+  end
+
+  def collect_attributes
+    @xmi.element_children.map do |r|
+      if r.name != 'ownedAttribute' or r['type']
+        Relation.create_association(self, r)
+      end
+    end.compact   
   end
 
   def resolved?

@@ -56,15 +56,18 @@ class PortalType < Type
     end
   end
 
+  def root_path
+    root = @model.path.map { |m| format_obj(PortalModel.model_for_name(m)) }.join(' / ')    
+    @path = (@model.path.dup << @name).freeze
+    fname = format_obj(self)
+    path = "#{root} / #{fname}"
+    [fname, path]
+  end
+
   def generate_enumeration
     return unless enumeration?
 
-    root = @model.path.map { |m| format_obj(PortalModel.model_for_name(m)) }.join(' / ')    
-    @path = (@model.path.dup << @name).freeze
-
-    fname = format_obj(self)
-
-    path = "#{root} / #{fname}"
+    fname, path = root_path
     @pid = "Enumeration__#{id}"
     @doc = @model.doc
     @@types_by_pid[@pid] = self
@@ -88,6 +91,25 @@ class PortalType < Type
     add_entry
   end
 
+  def generate_stereotype
+    return unless @type == 'uml:Stereotype'
+
+    fname, path = root_path
+    @pid = "Stereotype__#{id}"
+    @doc = @model.doc
+    @@types_by_pid[@pid] = self
+
+    characteristics = gen_characteristics(['Name', fname],
+                                          ['Documentation', convert_markdown_to_html(@documentation)])
+
+    # Add the items to the search
+    @content = { title: name, path: path, html_panel: [], grid_panel: [characteristics], image_panel: [] }
+    @doc.content[@pid] = @content
+    @model.tree['children'] << { text: @name, qtitle: @pid, icon: BlockIcon, expanded: false, leaf: true }
+
+    add_entry
+  end
+
   def add_characteristics
     if @content
       characteristics, = @content['grid_panel']
@@ -104,5 +126,22 @@ class PortalType < Type
         end
       end
     end
+  end
+
+  def add_constraints
+    return unless @constraints and !@constraints.empty?
+
+    $logger.debug "Adding constraints to #{@name}"
+
+    rows = @constraints.map do |const|
+      { col0: convert_markdown_to_html(const.documentation), col1: "<code>#{const.ocl}</code>" }
+    end
+    
+    constraints = { title: 'Constraints', hideHeaders: false, collapsible: true,
+                    data_store: { fields: ['col0', 'col1'], data: rows },
+                    columns: [ { text: 'Error Message', dataIndex: 'col0', flex: 0, width: 600 },
+                               { text: 'OCL Expression ', dataIndex: 'col1', flex: 1, width: -1 }] }
+    # Add to the end of the grid
+    @content['grid_panel'] << constraints
   end
 end
