@@ -236,7 +236,7 @@ class Type
     end
     
     @abstract = e['isAbstract'] || false
-    @literals = []
+    @literals = Hash.new
 
     @aliased = false
 
@@ -286,21 +286,33 @@ class Type
         description = xmi_documentation(literal)
         stereotypes = xmi_stereotype(literal)
         id = literal['xmi:id']
-        @literals << Literal.new(id, name, value, description, suffix, stereotypes)
+        @literals[name] = Literal.new(id, name, value, description, suffix, stereotypes)
         break
       else
         name, value = lit['name'].sub(/\^/,'\^').split('=')
         description = xmi_documentation(lit)
         id = lit['xmi:id']
         stereotypes = xmi_stereotype(lit)
-        puts "#{id} #{stereotypes}" if name == 'CODE'
-        @literals << Literal.new(id, name, value, description, suffix, stereotypes)
+        @literals[name] = Literal.new(id, name, value, description, suffix, stereotypes)
       end
     end
   end
 
+  def literal(name)
+    @literals[name]
+
+  end
+
+  def literals
+    @literals.values
+  end
+
   def add_relation(rel)
     @relations << rel
+  end
+
+  def inspect
+    "<#{@type} #{@name}>"
   end
 
   def relation(name)
@@ -338,12 +350,6 @@ class Type
     @relations.each do |r|
       r.resolve_types
     end
-  end
-
-  def escape_name
-    n = @name.gsub('{', '\{').gsub('}', '\}')
-    n = "<<#{n}>>" if @type == 'uml:Stereotype'
-    n
   end
 
   def add_child(c)
@@ -423,12 +429,6 @@ class Type
 
   def is_a_type?(type)
     @name == type or (@parent and @parent.is_a_type?(type))
-  end
-
-  def mixin_properties(f)
-    @parent.mixin_properties(f) if @parent
-    generate_properties(f)
-    generate_relations(f)
   end
 
   def dependencies

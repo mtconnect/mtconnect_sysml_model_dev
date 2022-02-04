@@ -6,17 +6,42 @@ module Extensions
     Stereotype.stereotype(id)
   end
 
-  def introduced
+  def version_for(stereo)
     if @stereotypes
-      intro = @stereotypes.detect { |s| s.name == 'normative' }
-      intro.version if intro and intro.respond_to? :version
+      st = @stereotypes.detect { |s| s.name == stereo }
+      if st and st.respond_to? :version
+        v = st.version
+        return nil unless v
+        if v =~ /^[0-9]/
+          v
+        elsif Type === self
+          v.split(',').map { |s| s.strip }.map do |s|
+            prop = relation(s)
+            if prop and prop.value and prop.target.type
+              lit = prop.target.type.literal(prop.value)
+              if lit
+                lit.version_for(stereo)
+              end
+            end
+          end.compact.max
+        end
+      end
+    end
+  end
+
+  def introduced
+    if defined? @introduced
+      @introduced
+    else
+      @introduced = version_for('normative')
     end
   end
 
   def deprecated
-    if @stereotypes
-      intro = @stereotypes.detect { |s| s.name == 'deprecated' }
-      intro.version if intro and intro.respond_to? :version
+    if defined? @deprecated
+      @deprecated
+    else
+      @deprecated = version_for('deprecated')
     end
   end
 

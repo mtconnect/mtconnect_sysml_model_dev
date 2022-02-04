@@ -22,9 +22,10 @@ class PortalType < Type
   def initialize(model, e)
     super
 
-    unless @literals.empty?
+    lits = literals
+    unless lits.empty?
       definitions = Hash.new
-      @literals.sort_by { |lit| lit.name }.each do |lit|
+      lits.sort_by { |lit| lit.name }.each do |lit|
         definitions[lit.name] = lit.description
       end
 
@@ -43,7 +44,7 @@ class PortalType < Type
 
   def enumeration_rows
     i = 0
-    @literals.sort_by { |lit| lit.name }.map do |lit|
+    literals.sort_by { |lit| lit.name }.map do |lit|
       i += 1
 
       name = format_obj(lit)
