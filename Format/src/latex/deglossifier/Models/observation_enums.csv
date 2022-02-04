@@ -1,0 +1,16 @@
+Owner,Name
+Observations::EventTypes,ActuatorStateEnum
+Observations::EventTypes,AvailabilityEnum
+Observations::EventTypes,AxisCouplingEnum
+Observations::EventTypes,AxisStateEnum
+Observations::EventTypes,ChuckStateEnum
+Observations::EventTypes,ControllerModeEnum
+Observations::EventTypes,ControllerModeOverrideEnum
+Observations::EventTypes,EmergencyStopEnum
+Observations::EventTypes,EndOfBarEnum
+Observations::EventTypes,ExecutionEnum
+Observations::EventTypes,FunctionalModeEnum
+Observations::EventTypes,InterfaceStateEnum
+Observations::EventTypes,PathModeEnum
+Observations::EventTypes,ProgramEditEnum
+Observations::EventTypes,RotaryModeEnum

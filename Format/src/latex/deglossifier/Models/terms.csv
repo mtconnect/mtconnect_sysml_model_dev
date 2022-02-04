@@ -1,0 +1,1044 @@
+Owner,Name,Descriptionn
+Glossary,Abstract Element,"
+  An element that defines a set of common characteristics that are shared by a group of elements.
+  
+  An abstract element cannot appear in a document. In a specific implementation of a schema, an abstract element is replaced by a derived element that is itself not an abstract element. The characteristics for the derived element are inherited from the abstract element. 
+  
+  Appears in the documents in the following form: abstract.
+"
+Glossary,Adapter,"
+  An optional piece of hardware or software that transforms information provided by a piece of equipment into a form that can be received by an {term:Agent}.
+
+  Appears in the documents in the following form: adapter.
+"
+Glossary,Agent,"
+  Refers to an MTConnect Agent. 
+  
+  Software that collects data published from one or more piece(s) of equipment, organizes that data in a structured manner, and responds to requests for data from client software systems by providing a structured response in the form of a {term:Response Document} that is constructed using the {term:semantic data model} defined in the Standard. 
+  
+  Appears in the documents in the following form: {term:Agent}.
+"
+Glossary,Application Programming Interface,"
+  A set of methods to provide communications between software applications.
+
+  The API defined in the MTConnect Standard describes the methods for providing the {term:Request/Response} Information Exchange between an {term:Agent} and client software applications.
+  
+  Appears in the documents in the following forms: Application Programming Interface or API.
+"
+Glossary,Archetype,"
+  *ULHEADING:General Description of an {term:MTConnect Asset}*:
+  
+  Archetype is a class of {term:MTConnect Asset} that provides the requirements, constraints, and common properties for a type of {term:MTConnect Asset}.
+
+  Appears in the documents in the following form: Archetype.
+
+  *ULHEADING:Used as an XML term describing an {term:MTConnect Asset}*:
+  
+  In an XML representation of the {term:Asset Information Model}, {model:Archetype} is an abstract element that is replaced by a specific type of {term:Asset} Archetype.
+  
+  Appears in the documents in the following form: {model:Archetype}
+"
+Glossary,array3d,A three dimensional {term:float} array.
+Glossary,arraystring,An array of {term:string}.
+Glossary,Asset,"
+  *ULHEADING:General meaning*:
+
+  Typically referred to as an {term:MTConnect Asset}.
+
+  An {term:MTConnect Asset} is something that is used in the manufacturing process, but is not permanently associated with a single piece of equipment, can be removed from the piece of equipment without compromising its function, and can be associated with other pieces of equipment during its lifecycle.
+
+  *ULHEADING:Used to identify a storage area in an {term:Agent}*:
+
+  See description of {term:buffer}.
+
+  *ULHEADING:Used as an {term:Information Model}*:
+
+  Used to describe an {term:Information Model} that contains the rules and terminology that describe information that may be included in electronic documents representing {term:MTConnect Asset}.
+
+  The {term:Asset Information Model} defines the structure for the {term:Assets Response Document}.
+
+  Individual {term:Information Models} describe the structure of the {term:Asset Document} represent each type of {term:MTConnect Asset}. Appears in the documents in the following form: {term:Asset Information Model} or (asset type) {term:Information Model}.
+  
+  *ULHEADING:Used when referring to an {term:MTConnect Asset}*:
+
+  Refers to the information related to an {term:MTConnect Asset} or a group of {term:MTConnect Asset}.
+
+  Appears in the documents in the following form: {term:Asset} or {term:Assets}.
+
+  *ULHEADING:Used as an XML container or element*:
+
+  *BEGIN:itemize*
+      *ITEM* When used as an XML container that consists of one or more types of {model:Asset} XML elements.
+      
+      Appears in the documents in the following form: {model:Asset}.
+      
+      *ITEM* When used as an abstract XML element. It is replaced in the XML document by types of {model:Asset} elements representing individual {term:Asset} entities.
+      
+      Appears in the documents in the following form: {model:Asset}.
+  *END:itemize*
+
+  *ULHEADING:Used to describe information stored in an {term:Agent}*:
+
+  Identifies an electronic document published by a data source and stored in the {term:assets buffer} of an {term:Agent}.
+  
+  Appears in the documents in the following form: {term:Asset Document}.
+  
+  *ULHEADING:Used as an XML representation of an {term:MTConnect Response Document}*:
+
+  Identifies an electronic document encoded in XML and published by an {term:Agent} in response to a {term:Request} for information from a client software application relating to {term:MTConnect Asset}.
+
+  Appears in the documents in the following form: {model:MTConnectAssets}.
+
+  *ULHEADING:Used as an {term:MTConnect Request}*:
+
+  Represents a specific type of communications request between a client software application and an {term:Agent} regarding {term:MTConnect Asset}.
+
+  Appears in the documents in the following form: {term:Asset Request}.
+
+  *ULHEADING:Used as part of an {term:HTTP Request}*:
+
+  Used in the path portion of an {term:HTTP Request Line}, by a client software application, to initiate an {term:Asset Request} to an {term:Agent} to publish an {model:MTConnectAssets} document.
+
+  Appears in the documents in the following form: {model:asset}.
+"
+Glossary,asset buffer,A buffer or queue for {model:Assets}.
+Glossary,Asset Document,"
+	An electronic document published by an {term:Agent} in response to a {term:Request} for information from a client software application relating to Assets.
+"
+Glossary,Asset Information Model,"It associates each electronic {model:MTConnectAssets} document with a unique identifier and allows for some predefined mechanisms to find, create, request, updated, and delete these electronic documents in a way that provides for consistency across multiple pieces of equipment."
+Glossary,Asset Request,See {term:Asset}.
+Glossary,Asset Response Document,See {term:MTConnectAssets Response Document}
+Glossary,Attribute,"
+  A term that is used to provide additional information or properties for an element.
+
+  Appears in the documents in the following form: attribute.
+"
+Glossary,Base Functional Structure,"
+  A consistent set of functionalities defined by the MTConnect Standard. This functionality includes the protocol(s) used to communicate data to a client software application, the {term:semantic data model} defining how that data is organized into {term:Response Document}, and the encoding of those {term:Response Document}.
+
+  Appears in the documents in the following form: {term:Base Functional Structure}.
+"
+Glossary,boolean,Boolean data type.
+Glossary,buffer,"
+  *ULHEADING:General meaning*:
+
+  A section of an {term:Agent} that provides storage for information published from pieces of equipment.
+
+  *ULHEADING:Used relative to {term:Streaming Data}*:
+
+  A section of an {term:Agent} that provides storage for information relating to individual pieces of {term:Streaming Data}. 
+  
+  Appears in the documents in the following form: {term:buffer}.
+
+  *ULHEADING:Used relative to {term:MTConnect Asset}*:
+
+  A section of an {term:Agent} that provides storage for {term:Asset Document}.
+
+  Appears in the documents in the following form: {term:assets buffer}.
+"
+Glossary,normalfont CDATA,"
+  *ULHEADING:General meaning*:
+
+  An abbreviation for Character Data.
+
+  {term:CDATA} is used to describe a value (text or data) published as part of an XML element.
+
+  For example, *CFONT:""This is some text""* is the {term:CDATA} in the XML element:
+  
+  *TAB* *CFONT:<Message ...>This is some text</Message>*
+
+  Appears in the documents in the following form: {term:CDATA}
+"
+Glossary,Child Element,"
+  A portion of a data modeling structure that illustrates the relationship between an element and the higher-level {term:Parent Element} within which it is contained.
+  
+  Appears in the documents in the following form: {term:Child Element}.
+"
+Glossary,Client,"
+  A process or set of processes that send {term:Request} for information to an {term:Agent}; e.g. software applications or a function that implements the {term:Request} portion of an {term:Interface} {term:Interaction Model}.
+
+  Appears in the documents in the following form: client.
+"
+Glossary,Component,"
+  *ULHEADING:General meaning*:
+
+  A {term:Structural Element} that represents a physical or logical part or subpart of a piece of equipment.
+
+  Appears in the documents in the following form: {term:Component}.
+
+  *ULHEADING:Used in {term:Information Models}*:
+
+  A data modeling element used to organize the data being retrieved from a piece of equipment.
+  
+  *BEGIN:itemize*
+      *ITEM* When used as an XML container to organize {term:Lower Level} {model:Component} elements. 
+      
+      Appears in the documents in the following form: {model:Components}.
+      
+      *ITEM* When used as an abstract XML element. {model:Component} is replaced in a data model by a type of {term:Component} element. {model:Component} is also an XML container used to organize {term:Lower Level} {model:Component} elements, {term:Data Entities}, or both.
+      
+      Appears in the documents in the following form: {model:Component}.
+  *END:itemize*
+"
+Glossary,Composition,"
+  *ULHEADING:General meaning*:
+
+  Data modeling elements that describe the lowest level basic structural or functional building blocks contained within a {model:Component} element.
+
+  Appears in the documents in the following form: {term:Composition}
+
+  *ULHEADING:Used in {term:Information Models}*:
+
+  A data modeling element used to organize the data being retrieved from a piece of equipment.
+
+  *BEGIN:itemize*
+      *ITEM* When used as an XML container to organize {model:Composition} elements. 
+      
+      Appears in the documents in the following form: {model:Compositions}
+      
+      *ITEM* When used as an abstract XML element. {model:Composition} is replaced in a data model by a type of {term:Composition} element. 
+      
+      Appears in the documents in the following form: {model:Composition}.
+  *END:itemize*
+"
+Glossary,Condition,"
+	*ULHEADING:General meaning*:
+
+	An indicator of the health of a piece of equipment or a {term:Component} and its ability to function.
+
+	*ULHEADING:Used as a modeling element*:
+
+	A data modeling element used to organize and communicate information relative to the health of a piece of equipment or {term:Component}.
+
+	Appears in the documents in the following form: {term:Condition}.
+
+	*ULHEADING:Used in {term:Information Models}*:
+
+	An XML element used to represent {term:Condition} elements.
+
+    *BEGIN:itemize*
+	*ITEM* When used as an XML container to organize {term:Lower Level} {model:Condition} elements.
+
+	Appears in the documents in the following form: {model:Condition}.
+
+	*ITEM* When used as a {term:Lower Level} element, the form {model:Condition} is an abstract type XML element.  This {term:Lower Level} element is a {term:Data Entity}.  {model:Condition} is replaced in a data model by type of {term:Condition} element.
+
+	Appears in the documents in the following form: {model:Condition}.
+	*END:itemize*
+
+	*BEGIN:note*
+	Note: The form {model:Condition} is used to represent both above uses.
+	*END:note*
+"
+Glossary,Controlled Vocabulary,"
+	A restricted set of values that may be published as the {term:Valid Data Value} for a {term:Data Entity}.
+
+	Appears in the documents in the following form: {term:Controlled Vocabulary}.
+"
+Glossary,Current Request,An *GLSTEXT:http* request to the {term:Agent} for returning latest known values for the {model:DataItem} as an {model:MTConnectStreams} *GLSTEXT:xml* document
+Glossary,Current,"
+	*ULHEADING:General meaning*:
+
+	Meaning 1:  A term describing the most recent occurrence of something.
+
+	Meaning 2:  A term used to describe movement; e.g. electric current or air current.
+
+	Appears in the documents in the following form: current
+
+	*ULHEADING:Used in reference to an {term:Agent}*:
+
+	A reference to the most recent information available to an {term:Agent}.
+
+	Appears in the documents in the following form: current.
+
+	*ULHEADING:Used as an {term:MTConnect Request}*:
+
+	A specific type of communications request between a client software application and an {term:Agent} regarding {term:Streaming Data}.  
+
+	Appears in the documents in the following form: {term:Current Request}.
+
+	*ULHEADING:Used as part of an {term:HTTP Request}*:
+
+	Used in the path portion of an {term:HTTP Request Line}, by a client software application, to initiate a {term:Current Request} to an {term:Agent} to publish an {model:MTConnectStreams} document.
+
+	Appears in the documents in the following form: {model:current}.
+"
+Glossary,data dictionary,"
+	Listing of standardized terms and definitions used in {term:MTConnect Information Model}.
+
+	Appears in the documents in the following form: {term:data dictionary}.
+"
+Glossary,Data Entity,"
+	A primary data modeling element that represents all elements that either describe data items that may be reported by an {term:Agent} or the data items that contain the actual data published by an {term:Agent}.
+
+	Appears in the documents in the following form: {term:Data Entity}.
+"
+Glossary,Data Item,"
+	*ULHEADING:General meaning*:
+
+	Descriptive information or properties and characteristics associated with a {term:Data Entity}.
+
+	Appears in the documents in the following form: data item.
+
+	*ULHEADING:Used in an XML representation of a {term:Data Entity}*:
+
+    *BEGIN:itemize*
+	*ITEM* When used as an XML container to organize {model:DataItem} elements.
+
+	Appears in the documents in the following form: {model:DataItems}.
+
+	*ITEM* When used to represent a specific {term:Data Entity}, the form {model:DataItem} is an XML element.  
+
+	Appears in the documents in the following form: {model:DataItem}.
+    *END:itemize*
+"
+Glossary,Data Model,A {term:semantic data model}.
+Glossary,Data Set,A set of {term:key-value pairs} where each entry is uniquely identified by the {term:key}.
+Glossary,Data Source,"
+	Any piece of equipment that can produce data that is published to an {term:Agent}.
+
+	Appears in the documents in the following form: data source.
+"
+Glossary,Data Streaming,"
+	A method for an {term:Agent} to provide a continuous stream of information in response to a single {term:Request} from a client software application.
+
+	Appears in the documents in the following form: {term:Data Streaming}.
+"
+Glossary,datetime,DateTime (yyyy-mm-ddthh:mm:ss.ffff) data type.
+Glossary,Deprecated,"
+	An indication that specific content in an {term:MTConnect Document} is currently usable but is regarded as being obsolete or superseded. It is recommended that deprecated content should be avoided.
+
+	Appears in the documents in the following form: *DEPRECATED*.
+"
+Glossary,Deprecation Warning,"
+	An indicator that specific content in an {term:MTConnect Document} may be changed to *DEPRECATED* in a future release of the standard.
+
+	Appears in the documents in the following form: *DEPRECATIONWARNING*.
+"
+Glossary,Devices Information Model,"
+	A set of rules and terms that describes the physical and logical configuration for a piece of equipment and the data that may be reported by that equipment.    
+
+	Appears in the documents in the following form: {term:Devices Information Model}.
+"
+Glossary,Device,"
+	A part of an information model representing a piece of equipment.  
+	
+	*ULHEADING:Used in an XML representation of a {term:Response Document}*:
+
+    *BEGIN:itemize*
+	*ITEM* When used as an XML container to organize {model:Device} elements.
+
+	Appears in the documents in the following form: {model:Devices}.
+
+	*ITEM* When used as an XML container to represent a specific piece of equipment and is composed of a set of {term:Structural Elements} that organize and provide relevance to data published from that piece of equipment.
+
+	Appears in the documents in the following form: {model:Device}.
+	*END:itemize*
+"
+Glossary,Document,"
+	*ULHEADING:General meaning*:
+
+	A piece of written, printed, or electronic matter that provides information.
+
+	*ULHEADING:Used to represent an {term:MTConnect Document}*:
+
+	Refers to printed or electronic document(s) that represent a {term:Part}(s) of the MTConnect Standard.
+
+	Appears in the documents in the following form: {term:MTConnect Document}.
+
+	*ULHEADING:Used to represent a specific representation of an {term:MTConnect Document}*:
+
+	Refers to electronic document(s) associated with an {term:Agent} that are encoded using XML; {term:Response Document} or {term:Asset Document}.
+
+	Appears in the documents in the following form: {term:MTConnect XML Document}.
+
+	*ULHEADING:Used to describe types of information stored in an {term:Agent}*:
+
+	In an implementation, the electronic documents that are published from a data source and stored by an {term:Agent}.
+
+	Appears in the documents in the following form: {term:Asset Document}.
+
+	*ULHEADING:Used to describe information published by an {term:Agent}*:
+
+	A document published by an {term:Agent} based upon one of the {term:semantic data model} defined in the MTConnect Standard in response to a request from a client.  
+
+	Appears in the documents in the following form: {term:Response Document}.
+"
+Glossary,Document Body,"
+	The portion of the content of an {term:MTConnect Response Document} that is defined by the relative {term:MTConnect Information Model}. The {term:Document Body} contains the {term:Structural Elements} and {term:Data Entities} reported in a {term:Response Document}.
+
+	Appears in the documents in the following form: {term:Document Body}.
+"
+Glossary,Document Header,"
+	The portion of the content of an {term:MTConnect Response Document} that provides information from an {term:Agent} defining version information, storage capacity, protocol, and other information associated with the management of the data stored in or retrieved from the {term:Agent}.
+	
+	Appears in the documents in the following form: {term:Document Header}.
+"
+Glossary,Element,"
+	Refers to an XML element.
+
+	An XML element is a logical portion of an XML document or schema that begins with a *CFONT:start-tag* and ends with a corresponding *CFONT:end-tag*.  
+
+	The information provided between the *CFONT:start-tag* and *CFONT:end-tag* may contain attributes, other elements (sub-elements), and/or CDATA.
+
+    *BEGIN:note*
+	Note:  Also, an XML element may consist of an *CFONT:empty-element tag*.  Refer to *APX:A* for more information on element tags.
+    *END:note*
+    
+	Appears in the documents in the following form: element.
+"
+Glossary,Element Name,"
+	A descriptive identifier contained in both the *CFONT:start-tag* and *CFONT:end-tag* of an XML element that provides the name of the element.
+
+	Appears in the documents in the following form: element name.
+
+	*ULHEADING:Used to describe the name for a specific XML element*:
+
+	Reference to the name provided in the *CFONT:start-tag*, *CFONT:end-tag*, or *CFONT:empty-element tag* for an XML element.
+
+	Appears in the documents in the following form: {term:Element Name}.
+"
+Glossary,Equipment,"
+	Represents anything that can publish information and is used in the operations of a manufacturing facility shop floor.  Examples of equipment are machine tools, ovens, sensor units, workstations, software applications, and bar feeders.
+
+	Appears in the documents in the following form: equipment or piece of equipment.
+"
+Glossary,Equipment Metadata,See {term:Metadata}
+Glossary,Error Information Model,"
+	The rules and terminology that describes the {term:Response Document} returned by an {term:Agent} when it encounters an error while interpreting a {term:Request} for information from a client software application or when an {term:Agent} experiences an error while publishing the {term:Response} to a {term:Request} for information.
+
+	Appears in the documents in the following form: {term:Error Information Model}.
+"
+Glossary,Event,"
+	*ULHEADING:General meaning*:
+
+	The occurrence of something that happens or takes place.
+
+	Appears in the documents in the following form: event.
+
+	*ULHEADING:Used as a type of {term:Data Entity}*:
+
+	An identification that represents a change in state of information associated with a piece of equipment or an occurrence of an action.  Event also provides a means to publish a message from a piece of equipment.
+
+	Appears in the documents in the following form: {term:Event}.
+
+	*ULHEADING:Used as a {model:category} attribute for a {term:Data Entity}*:
+
+	Used as a value for the {model:category} attribute for an XML {model:DataItem} element.
+
+	Appears in the documents in the following form: {model:EVENT}.
+
+	*ULHEADING:Used as an XML container or element*:
+
+    *BEGIN:itemize*
+	*ITEM* When used as an XML container that consists of one or more types of {model:Event} XML elements.
+
+	Appears in the documents in the following form: {model:Events}.
+
+	*ITEM* When used as an abstract XML element.  It is replaced in the XML document by types of {model:Event} elements.
+
+	Appears in the documents in the following form: {model:Event}.
+    *END:itemize*
+"
+Glossary,Extensible,"
+	The ability for an implementer to extend {term:MTConnect Information Model} by adding content not currently addressed in the MTConnect Standard.
+"
+Glossary,Fault State,"
+	In the MTConnect Standard, a term that indicates the reported status of a {term:Condition} category {term:Data Entity}.   
+
+	Appears in the documents in the following form: {term:Fault State}.
+"
+Glossary,float,Float data type.
+Glossary,Header,See {term:Document Header}
+Glossary,heartbeat,"
+	*ULHEADING:General meaning*:
+
+	A function that indicates to a client application that the communications connection to an {term:Agent} is still viable during times when there is no new data available to report  often referred to as a ""keep alive"" message.
+
+	Appears in the documents in the following form: {term:heartbeat}.
+
+	*ULHEADING:When used as part of an {term:HTTP Request}*:
+
+	The form {model:heartbeat} is used as a parameter in the query portion of an {term:HTTP Request Line}.
+
+	Appears in the documents in the following form: {model:heartbeat}.
+"
+Glossary,Higher Level,A nested element that is above a lower level element.
+Glossary,normalfont HTTP,"
+	Hyper-Text Transport Protocol.  The protocol used by all web browsers and web applications.
+
+    *BEGIN:note*
+	Note:  HTTP is an IETF standard and is defined in RFC 7230. \ See https://tools.ietf.org/html/rfc7230 for more information.
+	*END:note*
+"
+Glossary,HTTP Body,{term:HTTP Body} is the data bytes transmitted in an HTTP transaction message immediately following the headers.
+Glossary,HTTP Error Message,"
+	In the MTConnect Standard, a response provided by an {term:Agent} indicating that an {term:HTTP Request} is incorrectly formatted or identifies that the requested data is not available from the {term:Agent}.  
+
+	Appears in the documents in the following form: {term:HTTP Error Message}.
+"
+Glossary,HTTP Header,"
+	In the MTConnect Standard, the content of the {term:Header} portion of either an {term:HTTP Request} from a client software application or an {term:HTTP Response} from an {term:Agent}.
+
+	Appears in the documents in the following form: {term:HTTP Header}.
+"
+Glossary,HTTP Header Field,{term:HTTP Header Field} are components of the header section of request and response messages in an HTTP transaction.
+Glossary,HTTP Messaging,{term:HTTP Messaging} is an interface for information exchange functionality.
+Glossary,HTTP Method,"
+	In the MTConnect Standard, a portion of a command in an {term:HTTP Request} that indicates the desired action to be performed on the identified resource; often referred to as verbs.
+"
+Glossary,HTTP Request,"
+	In the MTConnect Standard, a communications command issued by a client software application to an {term:Agent} requesting information defined in the {term:HTTP Request Line}.
+
+	Appears in the documents in the following form: {term:HTTP Request}.
+"
+Glossary,HTTP Request Line,"
+	In the MTConnect Standard, the first line of an {term:HTTP Request} describing a specific {term:Response Document} to be published by an {term:Agent}.
+
+	Appears in the documents in the following form: {term:HTTP Request Line}.
+"
+Glossary,HTTP Request Method,It indicates the method to be performed on the resource identified by the given request URI.
+Glossary,HTTP Request URL,A request specifying the location and mechanism to retrieve a web resource.
+Glossary,HTTP Response,"
+	In the MTConnect Standard, the information published from an {term:Agent} in reply to an {term:HTTP Request}.  An {term:HTTP Response} may be either a {term:Response Document} or an {term:HTTP Error Message}.
+
+	Appears in the documents in the following form: {term:HTTP Response}.
+"
+Glossary,HTTP Server,"
+	In the MTConnect Standard, a software program that accepts {term:HTTP Request} from client software applications and publishes {term:HTTP Response} as a reply to those {term:Request}.
+
+	Appears in the documents in the following form: {term:HTTP Server}.
+"
+Glossary,HTTP Status Code,"
+	In the MTConnect Standard, a numeric code contained in an {term:HTTP Response} that defines a status category associated with the {term:Response}  either a success status or a category of an HTTP error.  
+
+	Appears in the documents in the following form: {term:HTTP Status Code}.
+"
+Glossary,HTTP Version,Version of the HTTP protocol.
+Glossary,id,"
+	*ULHEADING:General meaning*:
+
+	An identifier used to distinguish a piece of information.
+
+	Appears in the documents in the following form: id.
+
+	*ULHEADING:Used as an XML attribute*:
+
+	When used as an attribute for an XML element - {term:Structural Element}, {term:Data Entity}, or {term:Asset}.  {model:id} provides a unique identity for the element within an XML document.
+
+	Appears in the documents in the following form: {model:id}.
+"
+Glossary,Implementation,"
+	A specific instantiation of the MTConnect Standard.
+"
+Glossary,Information Model,"
+	The rules, relationships, and terminology that are used to define how information is structured.
+
+	For example, an information model is used to define the structure for each {term:MTConnect Response Document}; the definition of each piece of information within those documents and the relationship between pieces of information.
+
+	Appears in the documents in the following form: {term:Information Model}.
+"
+Glossary,instance,"
+	Describes a set of {term:Streaming Data} in an {term:Agent}.  Each time an {term:Agent} is restarted with an empty {term:buffer}, data placed in the {term:buffer} represents a new {term:instance} of the {term:Agent}.
+
+	Appears in the documents in the following form: {term:instance}.
+"
+Glossary,integer,Integer data type.
+Glossary,Interaction Model,"
+	The definition of information exchanged to support the interactions between pieces of equipment collaborating to complete a task.
+
+	Appears in the documents in the following form: {term:Interaction Model}.
+"
+Glossary,Interface,"
+	*ULHEADING:General meaning*:
+
+	The exchange of information between pieces of equipment and/or software systems.
+
+	Appears in the documents in the following form: interface.
+
+	*ULHEADING:Used as an {term:Interaction Model}*:
+
+	An {term:Interaction Model} that describes a method for inter-operations between pieces of equipment.
+
+	Appears in the documents in the following form: {term:Interface}.
+
+	*ULHEADING:Used as an XML container or element*:
+
+	*TAB* - When used as an XML container that consists of one or more types of {model:Interface} XML elements.
+
+	Appears in the documents in the following form: {model:Interfaces}.
+
+	*TAB* - When used as an abstract XML element.  It is replaced in the XML document by types of {model:Interface} elements.
+
+	Appears in the documents in the following form: {model:Interface}
+"
+Glossary,interfaces,*CITETITLE:MTCPart5* provides an interaction model for coordinating activities between manufacturing devices
+Glossary,key-value pair,An association between an identifier referred to as the {term:key} and a value which taken together create a {term:key-value pair}. When used in a set of {term:key-value pairs} each {term:key} is unique and will only have one value associated with it at any point in time.
+Glossary,Lower Camel Case,the first word is lowercase and the remaining words are capitalized and all spaces between words are removed.
+Glossary,Lower Level,A nested element that is below a higher level element.
+Glossary,major,Identifier representing a consistent set of functionalities defined by the MTConnect Standard. 
+Glossary,Message,"
+	*ULHEADING:General meaning*:
+
+	The content of a communication process.
+
+	Appears in the documents in the following form: message.
+
+	*ULHEADING:Used relative to an {term:Agent}*:
+
+	Describes the information that is exchanged between an {term:Agent} and a client software application.  A {term:Message} may contain either a {term:Request} from a client software application or a {term:Response} from an {term:Agent}.
+
+	Appears in the documents in the following form: {term:Message}.
+
+	*ULHEADING:Used as a type of {term:Data Entity}*:
+
+	Describes a type of {term:Data Entity} in the {term:Devices Information Model} that can contain any text string of information or native code to be transferred from a piece of equipment.
+
+	Appears in the documents in the following form: {model:MESSAGE}.
+
+	*ULHEADING:Used as an Element Name*:
+
+	An {term:Element Name} for a {term:Data Entity} in the {term:Streams Information Model} that can contain any text string of information or native code to be transferred from a piece of equipment.
+
+	Appears in the documents in the following form:  *GLSELEMENTNAME:message event*.
+"
+Glossary,Metadata,"
+	Data that provides information about other data.
+
+	For example, {term:Equipment Metadata} defines both the {term:Structural Elements} that represent the physical and logical parts and sub-parts of each piece of equipment, the relationships between those parts and sub-parts, and the definitions of the {term:Data Entities} associated with that piece of equipment.
+
+	Appears in the documents in the following form: {term:Metadata} or {term:Equipment Metadata}.
+"
+Glossary,minor,Identifier representing a specific set of functionalities defined by the MTConnect Standard.
+Glossary,MODBUS,Modbus is a communication protocol developed by Modicon systems and is a method used for transmitting information over serial lines between electronic devices.
+Glossary,MTConnect,The name of the standard.
+Glossary,MTConnect Agent,"
+	See definition for {term:Agent}.
+"
+Glossary,MTConnect Asset,See {term:Asset}
+Glossary,MTConnect Document,See {term:Document}.
+Glossary,MTConnect Information Model,See {term:Information Model}
+Glossary,MTConnect Request,"
+	A communication request for information issued from a client software application to an {term:Agent}.
+
+	Appears in the documents in the following form: {term:MTConnect Request}.
+"
+Glossary,MTConnect Response Document,See {term:Response Document}.
+Glossary,MTConnect Standard,The name of the standard.
+Glossary,MTConnect XML Document,See {term:Document}.
+Glossary,MTConnectAssets Response Document,"
+	An electronic document published by an {term:Agent} in response to a {term:Request} for information from a client software application relating to {term:MTConnect Asset}.
+
+	Appears in the documents in the following form: {term:MTConnectAssets Response Document}.
+"
+Glossary,MTConnectDevices Response Document,"
+	An electronic document published by an {term:Agent} in response to a {term:Request} for information from a client software application that includes {term:Metadata} for one or more pieces of equipment.
+
+	Appears in the documents in the following form: {term:MTConnectDevices Response Document}.
+"
+Glossary,MTConnectErrors Response Document,"
+	An electronic document published by an {term:Agent} whenever it encounters an error while interpreting a {term:Request} for information from a client software application or when an {term:Agent} experiences an error while publishing the {term:Response} to a {term:Request} for information.
+
+	Appears in the documents in the following form: {term:MTConnectErrors Response Document}.
+"
+Glossary,MTConnectStreams Response Document,"
+	An electronic document published by an {term:Agent} in response to a {term:Request} for information from a client software application that includes {term:Streaming Data} from the {term:Agent}.
+
+	Appears in the documents in the following form: {term:MTConnectStreams Response Document}.
+"
+Glossary,namespace,{term:namespace} are used to organize code into logical groups.
+Glossary,normalfont NMTOKEN,"
+	The data type for XML identifiers.
+
+	*BEGIN:note*
+	Note: The identifier must start with a letter, an underscore ""_"" or a colon.  The next character must be a letter, a number, or one of the following ""."", ""-"", ""_"", "":"".  The identifier must not have any spaces or special characters.
+	*END:note*
+
+	Appears in the documents in the following form: {term:NMTOKEN}.
+"
+Glossary,Occurrence,Occurrence defines the number of times the content defined in the tables *MAY* be provided in the usage case specified
+Glossary,ontology,"logical structure of the terms used to describe a domain of knowledge, including both the definitions of the applicable terms and their relationships ISO 20534:2018"
+Glossary,parameter,"
+	*ULHEADING:General Meaning*:
+
+	A variable that must be given a value during the execution of a program or a communications command.
+
+	*ULHEADING:When used as part of an {term:HTTP Request}*:
+
+	Represents the content (keys and associated values) provided in the {term:Query} portion of an {term:HTTP Request Line} that identifies specific information to be returned in a {term:Response Document}.
+
+	Appears in the documents in the following form: parameter.
+"
+Glossary,Parent Element,"
+	An XML element used to organize {term:Lower Level} child elements that share a common relationship to the {term:Parent Element}.
+
+	Appears in the documents in the following form: {term:Parent Element}.
+"
+Glossary,Part,Each Standard document is referred to as a {term:Part} of the Standard.
+Glossary,Pascal Case,The first letter of each word is capitalized and the remaining letters are in lowercase. All space is removed between letters
+Glossary,Persistence,"
+	A method for retaining or restoring information.
+"
+Glossary,Physical Connection,The network transmission technologies that physically interconnect an {term:Agent}.
+Glossary,Probe Request,An *GLSTEXT:http* request to the {term:Agent} for returning metadata as an {model:MTConnectDevices} *GLSTEXT:xml* document
+Glossary,Probe,"
+	*ULHEADING:General meaning of a physical entity*:
+
+	An instrument commonly used for measuring the physical geometrical characteristics of an object.
+
+    *BEGIN:itemize*
+	*ITEM* *ULHEADING:Used to describe a measurement device*:
+
+	The form probe is used to define a measurement device that provides position information.
+
+	Appears in the documents in the following form: probe. 
+
+	*ITEM* *ULHEADING:Used within a {term:Data Entity}*:
+
+	The form {model:PROBE} is used to designate a subtype for the {term:Data Entity} {model:PATH_POSITION} indicating a measurement position relating to a probe unit.
+
+	Appears in the documents in the following form: {model:PROBE}.
+    *END:itemize*
+
+	*ULHEADING:General meaning for communications with an {term:Agent}*:
+
+	Probe is used to define a type of communication request. 
+
+    *BEGIN:itemize*
+	*ITEM* *ULHEADING:Used as a type of communication request*:
+
+	The form {term:Probe Request} represents a specific type of communications request between a client software application and an {term:Agent} regarding {term:Metadata} for one or more pieces of equipment.
+
+	Appears in the documents in the following form: {term:Probe Request}.
+
+	*ITEM* *ULHEADING:Used in an {term:HTTP Request Line}*:
+
+	The form {model:probe} is used to designate a {term:Probe Request} in the *CFONT:<Path>* portion of an {term:HTTP Request Line}.
+
+	Appears in the documents in the following form: {model:probe}.
+    *END:itemize*
+"
+Glossary,Protocol,"
+	A set of rules that allow two or more entities to transmit information from one to the other.
+"
+Glossary,Publish,Sending of messages in a {term:Publish/Subscribe} pattern.
+Glossary,Publish/Subscribe,"
+	In the MTConnect Standard, a communications messaging pattern that may be used to publish {term:Streaming Data} from an {term:Agent}.  When a {term:Publish/Subscribe} communication method is established between a client software application and an {term:Agent}, the {term:Agent} will repeatedly publish a specific {model:MTConnectStreams} document at a defined period.
+
+	Appears in the documents in the following form: {term:Publish/Subscribe}.
+"
+Glossary,Query,"
+	*ULHEADING:General Meaning*:
+
+	A portion of a request for information that more precisely defines the specific information to be published in response to the request. 
+
+	Appears in the documents in the following form: {term:Query}.
+
+	*ULHEADING:Used in an {term:HTTP Request Line}*:
+
+	The form {model:query} includes a string of parameters that define filters used to refine the content of a {term:Response Document} published in response to an {term:HTTP Request}.
+
+	Appears in the documents in the following form: {model:query}.
+"
+Glossary,Realization,"Realization is a specialized abstraction relationship between two sets of model elements, one representing a specification (the supplier) and the other represents an implementation of the latter (the client). Realization can be used to model stepwise refinement, optimizations, transformations, templates, model synthesis, framework composition, etc."
+Glossary,Reference,{model:Reference} is a pointer to information that is associated with another {term:Structural Element}.
+Glossary,Request,"
+	A communications method where a client software application transmits a message to an {term:Agent}.  That message instructs the {term:Agent} to respond with specific information.
+
+	Appears in the documents in the following form: {term:Request}.
+"
+Glossary,Requester,"
+	An entity that initiates a {term:Request} for information in a communications exchange.
+
+	Appears in the documents in the following form: {term:Requester}.
+"
+Glossary,Request/Response,"
+	A communications pattern that supports the transfer of information between an {term:Agent} and a client software application. In a {term:Request/Response} information exchange, a client software application requests specific information from an {term:Agent}. An {term:Agent} responds to the {term:Request} by publishing a {term:Response Document}.   
+
+	Appears in the documents in the following form: {term:Request/Response}.
+"
+Glossary,reset,"A reset is associated with an occurrence of a {term:Data Entity} indicated by the \{model:resetTriggered} attribute. When a reset occurs, the accumulated value or statistic are reverted back to their initial value. A {term:Data Entity} with a {term:Data Set} representation removes all {term:key-value pairs}, setting the {term:Data Set} to an empty set."
+Glossary,Responder,"
+	An entity that responds to a {term:Request} for information in a communications exchange.
+
+	Appears in the documents in the following form: {term:Responder}.
+"
+Glossary,Response,A response {term:Interface} which responds to a {term:Request}.
+Glossary,Response Document,"
+	See {term:Document}.
+"
+Glossary,normalfont REST,"
+	Stands for REpresentational State Transfer:  A software architecture where a client software application and server move through a series of state transitions based solely on the request from the client and the response from the server. 
+
+	Appears in the documents in the following form: REST.
+"
+Glossary,revision,A supplemental identifier representing only organizational or editorial changes to a {term:minor} version document with no changes in the functionality described in that document.
+Glossary,Root Element,"
+	The first {term:Structural Element} provided in a {term:Response Document} encoded using XML.  The {term:Root Element} is an XML container and is the {term:Parent Element} for all other XML elements in the document.  The {term:Root Element} appears immediately following the XML Declaration.
+
+	Appears in the documents in the following form: {term:Root Element}.
+"
+Glossary,Sample Request,A request from the {term:Agent} for a stream of time series data.
+Glossary,Sample,"
+	*ULHEADING:General meaning*:
+
+	The collection of one or more pieces of information.  
+
+	*ULHEADING:Used when referring to the collection of information*:
+
+	When referring to the collection of a piece of information from a data source.
+
+	Appears in the documents in the following form: sample.
+
+	*ULHEADING:Used as an {term:MTConnect Request}*:
+
+	When representing a specific type of communications request between a client software application and an {term:Agent} regarding {term:Streaming Data}.  
+
+	Appears in the documents in the following form: {term:Sample Request}.
+
+	*ULHEADING:Used as part of an {term:HTTP Request}*:
+
+	Used in the {model:path} portion of an {term:HTTP Request Line}, by a client software application, to initiate a {term:Sample Request} to an {term:Agent} to publish an {model:MTConnectStreams} document.
+
+	Appears in the documents in the following form: {model:sample}.
+
+	*ULHEADING:Used to describe a {term:Data Entity}*:
+
+	Used to define a specific type of {term:Data Entity}.  A {term:Sample} type {term:Data Entity} reports the value for a continuously variable or analog piece of information.
+
+	Appears in the documents in the following form: {term:Sample} or {term:Samples}.
+
+	*ULHEADING:Used as an XML container or element*:
+
+    *BEGIN:itemize*
+	*ITEM* When used as an XML container that consists of one or more types of Sample XML elements.
+
+	Appears in the documents in the following form: {model:Samples}.
+
+	*ITEM* When used as an abstract XML element.  It is replaced in the XML document by types of {model:Sample} elements representing individual {term:Sample} type of {term:Data Entity}.
+
+	Appears in the documents in the following form: {model:Sample}.
+    *END:itemize*
+"
+Glossary,schema,"
+	*ULHEADING:General meaning*:
+
+	The definition of the structure, rules, and vocabularies used to define the information published in an electronic document.
+
+	Appears in the documents in the following form: schema.
+
+	*ULHEADING:Used in association with an {term:MTConnect Response Document}*:
+
+	Identifies a specific schema defined for an {term:MTConnect Response Document}.
+
+	Appears in the documents in the following form: {term:schema}.
+"
+Glossary,semantic data model,"
+	A methodology for defining the structure and meaning for data in a specific logical way.  
+
+	It provides the rules for encoding electronic information such that it can be interpreted by a software system.  
+
+	Appears in the documents in the following form: {term:semantic data model}.
+"
+Glossary,sensing element,A mechanism that provides a signal or measured value.
+Glossary,sensor element,A {term:sensor element} provides a signal or measured value.
+Glossary,Sensor,"A {term:Sensor} is typically comprised of two major components: a {term:sensor unit} that provides signal processing, conversion, and communications and the {term:sensing elements} that provides a signal or measured value."
+Glossary,sensor unit,"A {term:sensor unit} provides signal processing, conversion, and communications."
+Glossary,sequence number,"
+	The primary key identifier used to manage and locate a specific piece of {term:Streaming Data} in an {term:Agent}.
+
+	{term:sequence number} is a monotonically increasing number within an instance of an {term:Agent}.
+
+	Appears in the documents in the following form: {term:sequence number}.
+"
+Glossary,Standard,"
+	*ULHEADING:General meaning*:
+
+	A document established by consensus that provides rules, guidelines, or characteristics for activities or their results (as defined in ISO/IEC Guide 2:2004).
+
+	*ULHEADING:Used when referring to the MTConnect Standard*: 
+
+	The MTConnect Standard is a standard that provides the definition and semantic data structure for information published by pieces of equipment.
+
+	Appears in the documents in the following form: Standard or MTConnect Standard.
+"
+Glossary,Streaming Data,"
+	The values published by a piece of equipment for the {term:Data Entities} defined by the {term:Equipment Metadata}.
+
+	Appears in the documents in the following form: {term:Streaming Data}.
+"
+Glossary,Streams Information Model,"
+	The rules and terminology ({term:semantic data model}) that describes the {term:Streaming Data} returned by an {term:Agent} from a piece of equipment in response to a {term:Sample Request} or a {term:Current Request}.
+
+	Appears in the documents in the following form: {term:Streams Information Model}.
+"
+Glossary,string,String data type.
+Glossary,Structural Element,"
+	*ULHEADING:General meaning*:
+
+	An XML element that organizes information that represents the physical and logical parts and sub-parts of a piece of equipment.
+
+	Appears in the documents in the following form: {term:Structural Element}.
+
+	*ULHEADING:Used to indicate hierarchy of Components*:
+
+	When used to describe a primary physical or logical construct within a piece of equipment. 
+
+	Appears in the documents in the following form: {term:Top Level} {term:Structural Element}.
+
+	When used to indicate a {term:Child Element} which provides additional detail describing the physical or logical structure of a {term:Top Level} {term:Structural Element}.
+
+	Appears in the documents in the following form: {term:Lower Level} {term:Structural Element}.
+"
+Glossary,Subscribe,Receiving messages in a {term:Publish/Subscribe} pattern.
+Glossary,subtype,"
+	*ULHEADING:General meaning*:
+
+	A secondary or subordinate type of categorization or classification of information.
+
+	In software and data modeling, a subtype is a type of data that is related to another higher-level type of data.
+
+	Appears in the documents in the following form: subtype.
+
+	*ULHEADING:Used as an attribute for a {term:Data Entity}*:
+
+	Used as an attribute that provides a sub-categorization for the {model:type} attribute for a piece of information.
+
+	Appears in the documents in the following form: {model:subType}.
+"
+Glossary,Time Series,A {model:DataItem} representation of a contiguous vector of values supporting high frequency data rates
+Glossary,time stamp,"
+	*ULHEADING:General meaning*:
+
+	The best available estimate of the time that the value(s) for published or recorded information was measured or determined.
+
+	Appears in the documents as ""time stamp"".
+
+	*ULHEADING:Used as an attribute for recorded or published data*:
+
+	An attribute that identifies the time associated with a {term:Data Entity} as stored in an {term:Agent}.
+
+	Appears in the documents in the following form: {model:timestamp}.
+"
+Glossary,Top Level,{term:Structural Elements} that represent the most significant physical or logical functions of a piece of equipment.
+Glossary,Transport Protocol,A set of capabilities that provide the rules and procedures used to transport information between an {term:Agent} and a client software application through a {term:Physical Connection}.
+Glossary,type,"
+	*ULHEADING:General meaning*:
+
+	A classification or categorization of information.
+
+	In software and data modeling, a type is a grouping function to identify pieces of information that share common characteristics. 
+
+	Appears in the documents in the following form: type.
+
+	*ULHEADING:Used as an attribute for a {term:Data Entity}*:
+
+	Used as an attribute that provides a categorization for piece of information that share common characteristics.
+
+	Appears in the documents in the following form: {model:type}.
+"
+Glossary,normalfont URI,"
+	Stands for Universal Resource Identifier.  
+
+	See http://www.w3.org/TR/uri-clarification/#RFC3986  
+"
+Glossary,normalfont URN,"
+	Stands for Uniform Resource Name.  
+
+	See http://www.w3.org/TR/uri-clarification/#RFC3986  
+"
+Glossary,normalfont UTC/GMT,"
+	Stands for Coordinated Universal Time/Greenwich Mean Time.  
+
+	UTC/GMT is the primary time standard by which the world regulates clocks and time.
+
+	The time stamp for all information reported in an {term:MTConnect Response Document} is provided in UTC/GMT format.
+"
+Glossary,normalfont UUID,"
+	*ULHEADING:General meaning*:
+
+	Stands for Universally Unique Identifier. (Can also be referred to as a GUID in some literature  Globally Unique Identifier).
+
+	*BEGIN:note*
+	Note:  Defined in RFC 4122 of the IETF.  See https://www.ietf.org/rfc/rfc4122.txt for more information.
+	*END:note*
+
+	Appears in the documents in the following form: UUID.
+
+	*ULHEADING:Used as an attribute for an XML element*:
+
+	Used as an attribute that provides a unique identity for a piece of information reported by an {term:Agent}.
+
+	Appears in the documents in the following form: {model:uuid}.
+"
+Glossary,Valid Data Value,"
+	One or more acceptable values or constrained values that can be reported for a {term:Data Entity}.
+
+	Appears in the documents in the following form: {term:Valid Data Value}(s).
+"
+Glossary,normalfont W3C,"
+	Stands for World Wide Web Consortium.
+
+	W3C is an international community of organizations and the public work together to develop internet standards.  
+
+	W3C Standards are used as a guide within the MTConnect Standard.
+"
+Glossary,WARNING,"
+	*ULHEADING:General Meaning*:
+
+	A statement or action that indicates a possible danger, problem, or other unexpected situation.
+
+	*ULHEADING:Used relative to changes in an {term:MTConnect Document}*:
+
+	Used to indicate that specific content in an {term:MTConnect Document} may be changed in a future release of the standard.
+
+	Appears in the documents in the following form: *WARNING*.
+
+	*ULHEADING:Used as a {term:Valid Data Value} for a {term:Condition}*:
+
+	Used as a {term:Valid Data Value} for a {term:Condition} type {term:Data Entity}.
+
+	Appears in the documents in the following form: {model:WARNING}.
+
+	*ULHEADING:Used as an {term:Element Name} for a {term:Data Entity}*:
+
+	Used as the {term:Element Name} for a {term:Condition} type {term:Data Entity} in an {term:MTConnectStreams Response Document}.
+
+	Appears in the documents in the following form: {model:Warning}.
+"
+Glossary,normalfont XML,"
+	Stands for eXtensible Markup Language. 
+
+	XML defines a set of rules for encoding documents that both a human-readable and machine-readable.
+
+	XML is the language used for all code examples in the MTConnect Standard.
+
+	Refer to http://www.w3.org/XML for more information about XML.
+"
+Glossary,XML Container,"
+	In the MTConnect Standard, a type of XML element.
+
+	An XML container is used to organize other XML elements that are logically related to each other.   A container may have either {term:Data Entities} or other {term:Structural Elements} as {term:Child Elements}.
+"
+Glossary,XML Declaration,It is a processing instruction that identifies the document as being XML.
+Glossary,XML Document,"
+	An XML document is a structured text file encoded using XML.
+
+	An XML document is an instantiation of an XML schema.  It has a single root XML element, conforms to the XML specification, and is structured based upon a specific schema.
+
+	{term:MTConnect Response Document} may be encoded as an XML document.
+"
+Glossary,XML Schema,"
+	In the MTConnect Standard, an instantiation of a schema defining a specific document encoded in XML.
+"
+Glossary,normalfont XPath,"
+	*ULHEADING:General meaning*:
+
+	{term:XPath} is a command structure that describes a way for a software system to locate information in an XML document.  
+
+	{term:XPath} uses an addressing syntax based on a path through the document's logical structure. 
+
+	See http://www.w3.org/TR/xpath for more information on {term:XPath}.
+
+	Appears in the documents in the following form: {term:XPath}.
+"

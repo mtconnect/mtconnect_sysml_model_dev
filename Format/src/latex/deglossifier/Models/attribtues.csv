@@ -1,0 +1,54 @@
+Owner,Name,Description
+Protocols::MTConnect::MTConnectErrors::Error,errorCode,Provides a descriptive code that indicates the type of error that was encountered by an {term:Agent}.
+Configuration::SensorConfiguration::Channel,number,A unique identifier that will only refer to a specific {term:sensing element}.
+Configuration::SensorConfiguration::Channel,name,The name of an element or a piece of equipment.
+Components::Component,id,The unique identifier for this element.
+Components::Component,nativeName,The common name normally associated with a piece of equipment or an element.
+Components::Component,sampleInterval,An optional attribute that is an indication provided by a piece of equipment describing the interval in milliseconds between the completion of the reading of the data associated with the {model:Device} element until the beginning of the next sampling of that data.
+Components::Component,uuid,The unique identifier for an XML element.
+Components::Component,name,The name of an element or a piece of equipment.
+Components::Compositions::Composition,id,The unique identifier for this element.
+Components::Compositions::Composition,uuid,The unique identifier for an XML element.
+Components::Compositions::Composition,name,The name of an element or a piece of equipment.
+Components::Compositions::Composition,type,The type of either a {term:Structural Element} or a {model:DataItem} being measured.
+DataItems::DataItem,name,The name of an element or a piece of equipment.
+DataItems::DataItem,id,The unique identifier for this element.
+DataItems::DataItem,type,The type of either a {term:Structural Element} or a {model:DataItem} being measured.
+DataItems::DataItem,subType,A sub-categorization of the data item {model:type}.
+DataItems::DataItem,statistic,Describes the type of statistical calculation performed on a series of data samples to provide the reported data value.
+DataItems::DataItem,units,The unit of measurement for the reported value of the data item.
+DataItems::DataItem,nativeUnits,The native units of measurement for the reported value of the data item.
+DataItems::DataItem,nativeScale,{model:nativeScale} *MAY* be used to convert the reported value to represent the original measured value.
+DataItems::DataItem,category,Specifies the kind of information provided by a data item. 
+DataItems::DataItem,coordinateSystem,"For measured values relative to a coordinate system like {model:POSITION}, the coordinate system being used may be reported."
+DataItems::DataItem,compositionId,The identifier attribute of the {model:Composition} element that the reported data is most closely associated. 
+DataItems::DataItem,sampleRate,The rate at which successive samples of a data item are recorded by a piece of equipment.
+DataItems::DataItem,representation,"Description of a means to interpret data consisting of multiple data points or samples reported as a single value.  
+ {model:representation} is an optional attribute.  
+ {model:representation} will define a unique format for each set of data.  
+ {model:representation} for {model:TIME_SERIES}, {model:DISCRETE ( *DEPRECATED* in _Version 1.5_)}, and {model:VALUE} are defined in *CITETITLE:MTCPart2* _Section 7.2.2.12_.  
+ If {model:representation} is not specified, it *MUST* be determined to be {model:VALUE}."
+DataItems::DataItem,significantDigits,The number of significant digits in the reported value.
+DataItems::DataItem,discrete,"An indication signifying whether each value reported for the {term:Data Entity} is significant and whether duplicate values are to be suppressed.
+  
+ The value defined *MUST* be either {model:true} or {model:false} - an XML boolean type.
+  
+ {model:true} indicates that each update to the {term:Data Entity}'s value is significant and duplicate values *MUSTNOT* be suppressed.
+  
+ {model:false} indicates that duplicated values *MUST* be suppressed.
+  
+ If a value is not defined for {model:discrete}, the default value *MUST* be {model:false}."
+Components::Description,manufacturer,The name of the manufacturer of the physical or logical part of a piece of equipment represented by an XML element.
+Components::Description,model,The model description of the physical part or logical function of a piece of equipment represented by this XML element.
+Components::Description,serialNumber,The serial number associated with a piece of equipment. 
+Components::Description,station,The station where the physical part or logical function of a piece of equipment is located when it is part of a manufacturing unit or cell with multiple stations.
+Components::Device,id,The unique identifier for this element.
+Components::Device,nativeName,The common name normally associated with a piece of equipment or an element.
+Components::Device,sampleInterval,An optional attribute that is an indication provided by a piece of equipment describing the interval in milliseconds between the completion of the reading of the data associated with the {model:Device} element until the beginning of the next sampling of that data.
+Components::Device,uuid,The unique identifier for an XML element.
+Components::Device,name,The name of an element or a piece of equipment.
+References::Reference,idRef,A pointer to the {model:id} attribute of an element that contains the information to be associated with this XML element.
+References::Reference,name,The name of an element or a piece of equipment.
+DataItems::Source,componentId,The identifier attribute of the {model:Component} element that represents the physical part of a piece of equipment where the data represented by the {model:DataItem} element originated.
+DataItems::Source,dataItemId,The identifier attribute of the {model:DataItem} that represents the originally measured value of the data referenced by this data item.
+DataItems::Source,compositionId,The identifier attribute of the {model:Composition} element that the reported data is most closely associated. 

@@ -1,0 +1,335 @@
+Owner,Name,OwnedComment
+Observations::SampleTypes,Acceleration,The measurement of the rate of change of velocity.
+Observations::SampleTypes,AccumulatedTime,The measurement of accumulated time for an activity or event.
+Observations::EventTypes,ActiveAxes,The set of axes currently associated with a {model:Path} or {model:Controller} {term:Structural Element}.
+Observations::EventTypes,ActuatorState,Represents the operational state of an apparatus for moving or controlling a mechanism or system.
+Observations::EventTypes,Alarm,*DEPRECATED:* Replaced with {model:CONDITION} category data items in Version 1.1.0.
+Observations::SampleTypes,Amperage,The measurement of electrical current.
+Observations::SampleTypes,AlternatingAmperage,"The measurement of alternating voltage or current.   If not specified further in statistic, defaults to RMS voltage. "
+Observations::SampleTypes,DirectAmperage,The measurement of DC current or voltage.
+Observations::SampleTypes,ActualAmperage,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,TargetAmperage,The desired measure or count for a data item value.
+Observations::SampleTypes,Angle,The measurement of angular position.
+Observations::SampleTypes,CommandedAngle,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,ActualAngle,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,AngularAcceleration,The measurement rate of change of angular velocity.
+Observations::SampleTypes,AngularVelocity,The measurement of the rate of change of angular position.
+Observations::EventTypes,AssetChanged,The value of the {term:CDATA} for the event *MUST* be the {model:assetId} of the asset that has been added or changed. There will not be a separate message for new assets.
+Observations::EventTypes,AssetRemoved,The value of the {term:CDATA} for the event *MUST* be the {model:assetId} of the asset that has been removed. The asset will still be visible if requested with the {model:includeRemoved} parameter as described in the protocol section. When assets are removed they are not moved to the beginning of the most recently modified list. 
+Observations::EventTypes,Availability,Represents the {term:Agent}'s ability to communicate with the data source.
+Observations::EventTypes,AxisCoupling,"Describes the way the axes will be associated to each other. 
+  
+ This is used in conjunction with {model:COUPLED_AXES} to indicate the way they are interacting."
+Observations::SampleTypes,AxisFeedrate,The measurement of the feedrate of a linear axis.
+Observations::SampleTypes,ActualAxisFeedrate,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedAxisFeedrate,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,JogAxisFeedrate,"The feedrate specified by a logic or motion program, by a pre-set value, or set by a switch as the feedrate for the {model:Axes}. "
+Observations::SampleTypes,ProgrammedAxisFeedrate,The value of a signal or calculation specified by a logic or motion program or set by a switch.
+Observations::SampleTypes,RapidAxisFeedrate,The value of a signal or calculation issued to adjust the feedrate of a component or composition that is operating in a rapid positioning mode.
+Observations::SampleTypes,OverrideAxisFeedrate,The operators overridden value.
+Observations::EventTypes,AxisFeedrateOverride,The value of a signal or calculation issued to adjust the feedrate of an individual linear type axis.
+Observations::EventTypes,JogAxisFeedrateOverride,"The feedrate specified by a logic or motion program, by a pre-set value, or set by a switch as the feedrate for the {model:Axes}. "
+Observations::EventTypes,ProgrammedAxisFeedrateOverride,The value of a signal or calculation specified by a logic or motion program or set by a switch.
+Observations::EventTypes,RapidAxisFeedrateOverride,The value of a signal or calculation issued to adjust the feedrate of a component or composition that is operating in a rapid positioning mode.
+Observations::EventTypes,AxisInterlock,An indicator of the state of the axis lockout function when power has been removed and the axis is allowed to move freely.
+Observations::EventTypes,AxisState,An indicator of the controlled state of a {model:Linear} or {model:Rotary} component representing an axis.
+Observations::EventTypes,Block,The line of code or command being executed by a {model:Controller} {term:Structural Element}.
+Observations::EventTypes,BlockCount,The total count of the number of blocks of program code that have been executed since execution started.
+Observations::SampleTypes,CapacityFluid,The fluid capacity of an object or container.
+Observations::SampleTypes,CapacitySpatial,The geometric capacity of an object or container.
+Observations::EventTypes,ChuckInterlock,An indication of the state of an interlock function or control logic state intended to prevent the associated {model:CHUCK} component from being operated.
+Observations::EventTypes,ManualUnclampChuckInterlock,"An indication of the state of an operator controlled interlock that can inhibit the ability to initiate an unclamp action of an electronically controlled chuck.
+ The {term:Valid Data Value} *MUST* be {model:ACTIVE} or {model:INACTIVE}. 
+ When {model:MANUAL_UNCLAMP} is {model:ACTIVE}, it is expected that a chuck cannot be unclamped until {model:MANUAL_UNCLAMP} is set to {model:INACTIVE}. "
+Observations::EventTypes,ChuckState,An indication of the operating state of a mechanism that holds a part or stock material during a manufacturing process. It may also represent a mechanism that holds any other mechanism in place within a piece of equipment.
+Observations::SampleTypes,ClockTime,The value provided by a timing device at a specific point in time.
+Observations::EventTypes,CloseChuck,Service to close a chuck.
+Observations::EventTypes,CloseDoor,Service to close a door.
+Observations::EventTypes,Code,*DEPRECATED* in Version 1.1.
+Observations::ConditionTypes,Communications,An indication that the piece of equipment has experienced a communications failure.
+Observations::EventTypes,CompositionState,An indication of the operating condition of a mechanism represented by a {model:Composition} type element.
+Observations::EventTypes,ActionCompositionState,"An indication of the operating state of a mechanism represented by a {model:Composition} type component.
+ The operating state indicates whether the {model:Composition} element is activated or disabled. 
+ The {term:Valid Data Value} *MUST* be {model:ACTIVE} or {model:INACTIVE}."
+Observations::EventTypes,LateralCompositionState,"An indication of the position of a mechanism that may move in a lateral direction.   The mechanism is represented by a {model:Composition} type component. 
+ The position information indicates whether the {model:Composition} element is positioned to the right, to the left, or is in transition.  
+ The {term:Valid Data Value} *MUST* be {model:RIGHT}, {model:LEFT}, or {model:TRANSITIONING}."
+Observations::EventTypes,MotionCompositionState,"An indication of the open or closed state of a mechanism.   The mechanism is represented by a {model:Composition} type component. 
+ The operating state indicates whether the state of the {model:Composition} element is open, closed, or unlatched.   
+ The {term:Valid Data Value} *MUST* be {model:OPEN}, {model:UNLATCHED}, or {model:CLOSED}."
+Observations::EventTypes,SwitchedCompositionState,"An indication of the activation state of a mechanism represented by a {model:Composition} type component.
+ The activation state indicates whether the {model:Composition} element is activated or not.
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}."
+Observations::EventTypes,VerticalCompositionState,"An indication of the position of a mechanism that may move in a vertical direction. The mechanism is represented by a {model:Composition} type component. 
+ The position information indicates whether the {model:Composition} element is positioned to the top, to the bottom, or is in transition.  
+ The {term:Valid Data Value} *MUST* be {model:UP}, {model:DOWN}, or {model:TRANSITIONING}."
+Observations::SampleTypes,Concentration,The measurement of the percentage of one component within a mixture of components
+Observations::SampleTypes,Conductivity,The measurement of the ability of a material to conduct electricity.
+Observations::EventTypes,ControllerMode,The current operating mode of the {model:Controller} component.
+Observations::EventTypes,ControllerModeOverride,A setting or operator selection that changes the behavior of a piece of equipment.
+Observations::EventTypes,DryRunControllerModeOverride,"A setting or operator selection used to execute a test mode to confirm the execution of machine functions. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}. 
+ When {model:DRY_RUN} is {model:ON}, the equipment performs all of its normal functions, except no part or product is produced.  If the equipment has a spindle, spindle operation is suspended."
+Observations::EventTypes,SingleBlockControllerModeOverride,"A setting or operator selection that changes the behavior of the controller on a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}.
+ Program execution is paused after each {model:BLOCK} of code is executed when {model:SINGLE_BLOCK} is {model:ON}.   
+ When {model:SINGLE_BLOCK} is {model:ON}, {model:EXECUTION} *MUST* change to {model:INTERRUPTED} after completion of each {model:BLOCK} of code. "
+Observations::EventTypes,MachineAxisLockControllerModeOverride,"A setting or operator selection that changes the behavior of the controller on a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}. 
+ When {model:MACHINE_AXIS_LOCK} is {model:ON}, program execution continues normally, but no equipment motion occurs "
+Observations::EventTypes,OptionalStopControllerModeOverride,"A setting or operator selection that changes the behavior of the controller on a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}.
+ The program execution is stopped after a specific program block is executed when {model:OPTIONAL_STOP} is {model:ON}.    
+ In the case of a G-Code program, a program {model:BLOCK} containing a M01 code designates the command for an {model:OPTIONAL_STOP}. 
+ {model:EXECUTION} *MUST* change to {model:OPTIONAL_STOP} after a program block specifying an optional stop is executed and the {model:OPTIONAL_STOP} selection is {model:ON}."
+Observations::EventTypes,ToolChangeStopControllerModeOverride,"A setting or operator selection that changes the behavior of the controller on a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}. 
+ Program execution is paused when a command is executed requesting a cutting tool to be changed. 
+ {model:EXECUTION} *MUST* change to {model:INTERRUPTED} after completion of the command requesting a cutting tool to be changed and {model:TOOL_CHANGE_STOP} is {model:ON}."
+Observations::EventTypes,CoupledAxes,Refers to the set of associated axes.
+Observations::SampleTypes,CuttingSpeed, The speed difference (relative velocity) between the cutting mechanism and the surface of the workpiece it is operating on.
+Observations::SampleTypes,ActualCuttingSpeed,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedCuttingSpeed,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,ProgrammedCuttingSpeed,The value of a signal or calculation specified by a logic or motion program or set by a switch.
+Observations::ConditionTypes,DataRange,An indication that the value of the data associated with a measured value or a calculation is outside of an expected range.
+Observations::EventTypes,DateCode,"The time and date code associated with a material or other physical item.
+  
+ {model:DATE_CODE} *MUST* be reported in ISO 8601 format."
+Observations::EventTypes,ManufactureDateCode,The time and date code relating to the production of a material or other physical item.
+Observations::EventTypes,ExpirationDateCode,The time and date code relating to the expiration or end of useful life for a material or other physical item.
+Observations::EventTypes,FirstUseDateCode,The time and date code relating the first use of a material or other physical item.
+Observations::SampleTypes,Density,The volumetric mass of a material per unit volume of that material.
+Observations::SampleTypes,DepositionAccelerationVolumetric,The rate of change in spatial volume of material deposited in an additive manufacturing process.
+Observations::SampleTypes,ActualDepositionAccelerationVolumetric,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedDepositionAccelerationVolumetric,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,DepositionDensity,The density of the material deposited in an additive manufacturing process per unit of volume.
+Observations::SampleTypes,ActualDepositionDensity,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedDepositionDensity,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,DepositionMass,The mass of the material deposited in an additive manufacturing process.
+Observations::SampleTypes,ActualDepositionMass,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedDepositionMass,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,DepositionRateVolumetric,The rate at which a spatial volume of material is deposited in an additive manufacturing process.
+Observations::SampleTypes,ActualDepositionRateVolumetric,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedDepositionRateVolumetric,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,DepositionVolume,The spatial volume of material to be deposited in an additive manufacturing process.
+Observations::SampleTypes,ActualDepositionVolume,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedDepositionVolume,A value specified by the {model:Controller} type component.
+Observations::EventTypes,DeviceUuid,"The identifier of another piece of equipment that is temporarily associated with a component of this piece of equipment to perform a particular function.
+  
+ The {term:Valid Data Value} *MUST* be a NMTOKEN XML type."
+Observations::EventTypes,Direction,The direction of motion.
+Observations::EventTypes,RotaryDirection,"The rotational direction of a rotary motion using the right hand rule convention.
+ The {term:Valid Data Value} *MUST* be {model:CLOCKWISE} or {model:COUNTER_CLOCKWISE}."
+Observations::EventTypes,LinearDirection,The direction of motion of a linear motion.
+Observations::SampleTypes,Displacement,The measurement of the change in position of an object.
+Observations::EventTypes,DoorState,The operational state of a {model:DOOR} type component or composition element.
+Observations::SampleTypes,ElectricalEnergy,The measurement of electrical energy consumption by a component.
+Observations::EventTypes,EmergencyStop,"The current state of the emergency stop signal for a piece of equipment, controller path, or any other component or subsystem of a piece of equipment."
+Observations::EventTypes,EndOfBar,An indication of whether the end of a piece of bar stock being feed by a bar feeder has been reached.
+Observations::EventTypes,PrimaryEndOfBar,"Specific applications *MAY* reference one or more locations on a piece of bar stock as the indication for the {model:END_OF_BAR}. The main or most important location *MUST* be designated as the {model:PRIMARY} indication for the {model:END_OF_BAR}.   
+ If no {model:subType} is specified, {model:PRIMARY} *MUST* be the default {model:END_OF_BAR} indication."
+Observations::EventTypes,AuxiliaryEndOfBar,"When multiple locations on a piece of bar stock are referenced as the indication for the {model:END_OF_BAR}, the additional location(s) *MUST* be designated as {model:AUXILIARY} indication(s) for the {model:END_OF_BAR}.  "
+Observations::EventTypes,EquipmentMode,"An indication that a piece of equipment, or a sub-part of a piece of equipment, is performing specific types of activities."
+Observations::EventTypes,LoadedEquipmentMode,Subparts of a piece of equipment are under load.
+Observations::EventTypes,WorkingEquipmentMode,"A piece of equipment performing any activity, the equipment is active and performing a function under load or not."
+Observations::EventTypes,OperatingEquipmentMode,A piece of equipment are powered or performing any activity.
+Observations::EventTypes,PoweredEquipmentMode,"Primary  power is  applied  to the  piece  of  equipment and,  as  a minimum, the controller or logic portion of the piece of equipment is powered and functioning or components that are required to remain on are powered."
+Observations::EventTypes,DelayEquipmentMode,A piece of equipment waiting for an event or an action to occur.
+Observations::SampleTypes,EquipmentTimer,The measurement of the amount of time a piece of equipment or a sub-part of a piece of equipment has performed specific activities.
+Observations::SampleTypes,LoadedEquipmentTimer,Subparts of a piece of equipment are under load.
+Observations::SampleTypes,WorkingEquipmentTimer,"A piece of equipment performing any activity, the equipment is active and performing a function under load or not."
+Observations::SampleTypes,OperatingEquipmentTimer,A piece of equipment are powered or performing any activity.
+Observations::SampleTypes,PoweredEquipmentTimer,"Primary  power is  applied  to the  piece  of  equipment and,  as  a minimum, the controller or logic portion of the piece of equipment is powered and functioning or components that are required to remain on are powered."
+Observations::SampleTypes,DelayEquipmentTimer,A piece of equipment waiting for an event or an action to occur.
+Observations::EventTypes,Execution,The execution status of the {model:Controller}.
+Observations::SampleTypes,FillLevel,The measurement of the amount of a substance remaining compared to the planned maximum amount of that substance.
+Observations::SampleTypes,Flow,The measurement of the rate of flow of a fluid.
+Observations::SampleTypes,Frequency,The measurement of the number of occurrences of a repeating event per unit time.
+Observations::EventTypes,FunctionalMode,The current intended production status of the device or component.
+Observations::SampleTypes,GlobalPosition,*DEPRECATED* in Version 1.1
+Observations::EventTypes,Hardness,The measurement of the hardness of a material.
+Observations::EventTypes,RockwellHardness,A scale to measure the resistance to deformation of a surface.
+Observations::EventTypes,VickersHardness,A scale to measure the resistance to deformation of a surface.
+Observations::EventTypes,ShoreHardness,A scale to measure the resistance to deformation of a surface.
+Observations::EventTypes,BrinellHardness,A scale to measure the resistance to deformation of a surface.
+Observations::EventTypes,LeebHardness,A scale to measure the elasticity of a surface.
+Observations::EventTypes,MohsHardness,A scale to measure the resistance to scratching of a surface.
+Observations::ConditionTypes,Hardware,An indication of a fault associated with the hardware subsystem of the {term:Structural Element}.
+Observations::EventTypes,InterfaceState,An indication of the operational state of an {model:Interface} component.
+Observations::SampleTypes,Length,The measurement of the length of an object.
+Observations::SampleTypes,StandardLength,The standard or original length of an object.
+Observations::SampleTypes,RemainingLength,Remaining measure of an object or an action.
+Observations::SampleTypes,UseableLength,The remaining useable length of an object.
+Observations::SampleTypes,Level,*DEPRECATED* in Version 1.2.  See {model:FILL_LEVEL}
+Observations::EventTypes,Line,*DEPRECATED* in Version 1.4.0.
+Observations::EventTypes,MaximumLine,Maximum value of a data entity or attribute.
+Observations::EventTypes,MinimumLine,The minimum value of a data entity or attribute.
+Observations::SampleTypes,LinearForce,The measurement of the push or pull introduced by an actuator or exerted on an object.
+Observations::EventTypes,LineLabel,An optional identifier for a {model:BLOCK} of code in a {model:PROGRAM}.
+Observations::EventTypes,LineNumber,A reference to the position of a block of program code within a control program.
+Observations::EventTypes,AbsoluteLineNumber,The position of a block of program code relative to the beginning of the control program.
+Observations::EventTypes,IncrementalLineNumber,The position of a block of program code relative to the occurrence of the last {model:LINE_LABEL} encountered in the control program.
+Observations::SampleTypes,Load,The measurement of the actual versus the standard rating of a piece of equipment.
+Observations::ConditionTypes,LogicProgram,An indication that an error occurred in the logic program or programmable logic controller (PLC) associated with a piece of equipment.
+Observations::SampleTypes,Mass,The measurement of the mass of an object(s) or an amount of material.
+Observations::EventTypes,Material,The identifier of a material used or consumed in the manufacturing process.
+Observations::EventTypes,MaterialChange,Service to change the type of material or product being loaded or fed to a piece of equipment.
+Observations::EventTypes,MaterialFeed,Service to advance material or feed product to a piece of equipment from a continuous or bulk source. 
+Observations::EventTypes,MaterialLayer,"Identifies the layers of material applied to a part or product as part of an additive manufacturing process.
+  
+ The {term:Valid Data Value} *MUST* be an integer."
+Observations::EventTypes,ActualMaterialLayer,The measured value of the data item type given by a sensor or encoder.
+Observations::EventTypes,TargetMaterialLayer,The desired measure or count for a data item value.
+Observations::EventTypes,MaterialLoad,Service to load a piece of material or product.
+Observations::EventTypes,MaterialRetract,Service to remove or retract material or product.
+Observations::EventTypes,MaterialUnload,Service to unload a piece of material or product.
+Observations::EventTypes,Message,Any text string of information to be transferred from a piece of equipment to a client software application.
+Observations::ConditionTypes,MotionProgram,An indication that an error occurred in the motion program associated with a piece of equipment.
+Observations::EventTypes,OpenChuck,Service to open a chuck. 
+Observations::EventTypes,OpenDoor,Service to open a door. 
+Observations::EventTypes,OperatorId,The identifier of the person currently responsible for operating the piece of equipment.
+Observations::EventTypes,PalletId,The identifier for a pallet.
+Observations::EventTypes,PartChange,Service to change the part or product associated with a piece of equipment to a different part or product.  
+Observations::EventTypes,PartCount,The count of parts produced.
+Observations::EventTypes,AllPartCount,"The count of all the parts produced.  If the subtype is not given, this is the default."
+Observations::EventTypes,GoodPartCount,Indicates the count of correct parts made.
+Observations::EventTypes,BadPartCount,Indicates the count of incorrect parts produced.
+Observations::EventTypes,TargetPartCount,The desired measure or count for a data item value.
+Observations::EventTypes,RemainingPartCount,Remaining measure of an object or an action.
+Observations::EventTypes,PartDetect,"An indication designating whether a part or work piece has been detected or is present.
+  
+ The {term:Valid Data Value} *MUST* be {model:PRESENT} or {model:NOT_PRESENT}."
+Observations::EventTypes,PartId,An identifier of a part in a manufacturing operation.
+Observations::EventTypes,PartNumber,"An identifier of a part or product moving through the manufacturing process. 
+ The {term:Valid Data Value} *MUST* be a text string. "
+Observations::SampleTypes,PathFeedrate,"The measurement of the feedrate for the axes, or a single axis, associated with a {model:Path} component-a vector."
+Observations::SampleTypes,ActualPathFeedrate,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedPathFeedrate,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,JogPathFeedrate,"The feedrate specified by a logic or motion program, by a pre-set value, or set by a switch as the feedrate for the {model:Axes}. "
+Observations::SampleTypes,ProgrammedPathFeedrate,The value of a signal or calculation specified by a logic or motion program or set by a switch.
+Observations::SampleTypes,RapidPathFeedrate,The value of a signal or calculation issued to adjust the feedrate of a component or composition that is operating in a rapid positioning mode.
+Observations::SampleTypes,OverridePathFeedrate,The operators overridden value.
+Observations::EventTypes,PathFeedrateOverride,The value of a signal or calculation issued to adjust the feedrate for the axes associated with a {model:Path} component that may represent a single axis or the coordinated movement of multiple axes.
+Observations::EventTypes,JogPathFeedrateOverride,"The feedrate specified by a logic or motion program, by a pre-set value, or set by a switch as the feedrate for the {model:Axes}. "
+Observations::EventTypes,ProgrammedPathFeedrateOverride,The value of a signal or calculation specified by a logic or motion program or set by a switch.
+Observations::EventTypes,RapidPathFeedrateOverride,The value of a signal or calculation issued to adjust the feedrate of a component or composition that is operating in a rapid positioning mode.
+Observations::SampleTypes,PathFeedratePerRevolution,"The feedrate for the axes, or a single axis."
+Observations::SampleTypes,ActualPathFeedratePerRevolution,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedPathFeedratePerRevolution,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,ProgrammedPathFeedratePerRevolution,The value of a signal or calculation specified by a logic or motion program or set by a switch.
+Observations::EventTypes,PathMode,Describes the operational relationship between a {model:Path} {term:Structural Element} and another {model:Path} {term:Structural Element} for pieces of equipment comprised of multiple logical groupings of controlled axes or other logical operations.
+Observations::SampleTypes,PathPosition,"A measured or calculated position of a control point associated with a {model:Controller} element, or {model:Path} element if provided, of a piece of equipment."
+Observations::SampleTypes,ActualPathPosition,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedPathPosition,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,TargetPathPosition,The desired measure or count for a data item value.
+Observations::SampleTypes,ProbePathPosition,The position provided by a measurement probe.
+Observations::SampleTypes,PH,A measure of the acidity or alkalinity of a solution.
+Observations::SampleTypes,Position,A measured or calculated position of a {model:Component} element as reported by a piece of equipment.
+Observations::SampleTypes,ActualPosition,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedPosition,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,ProgrammedPosition,The value of a signal or calculation specified by a logic or motion program or set by a switch.
+Observations::SampleTypes,TargetPosition,The desired measure or count for a data item value.
+Observations::SampleTypes,PowerFactor,The measurement of the ratio of real power flowing to a load to the apparent power in that AC circuit.
+Observations::EventTypes,PowerState,The indication of the status of the source of energy for a {term:Structural Element} to allow it to perform its intended function or the state of an enabling signal providing permission for the {term:Structural Element} to perform its functions.
+Observations::EventTypes,LinePowerState,The state of the power source for the {term:Structural Element}.
+Observations::EventTypes,ControlPowerState,The state of the enabling signal or control logic that enables or disables the function or operation of the {term:Structural Element}.
+Observations::EventTypes,PowerStatus,*DEPRECATED* in Version 1.1.0.
+Observations::SampleTypes,Pressure,The measurement of force per unit area exerted by a gas or liquid.
+Observations::EventTypes,ProcessTime,"The time and date associated with an activity or event.
+  
+ {model:PROCESS_TIME} *MUST* be reported in ISO 8601 format."
+Observations::EventTypes,StartProcessTime,The time and date associated with the beginning of an activity or event.
+Observations::EventTypes,CompleteProcessTime,Completion of an action.
+Observations::EventTypes,TargetCompletionProcessTime,The projected time and date associated with the end or completion of an activity or event.
+Observations::SampleTypes,ProcessTimer,The measurement of the amount of time a piece of equipment has performed different types of activities associated with the process being performed at that piece of equipment.
+Observations::SampleTypes,ProcessProcessTimer,"The measurement of the time from the beginning of production of a part or product on a piece of equipment until the time that production is complete for that part or product on that piece of equipment.  This includes the time that the piece of equipment is running, producing parts or products, or in the process of producing parts."
+Observations::SampleTypes,DelayProcessTimer,A piece of equipment waiting for an event or an action to occur.
+Observations::EventTypes,Program,The name of the logic or motion program being executed by the {model:Controller} component.
+Observations::EventTypes,ProgramComment,"A comment or non-executable statement in the control program.
+ The {term:Valid Data Value} *MUST* be a text string."
+Observations::EventTypes,ProgramEdit,"An indication of the status of the {model:Controller} components program editing mode. 
+ On many controls, a program can be edited while another program is currently being executed."
+Observations::EventTypes,ProgramEditName,"The name of the program being edited. 
+ This is used in conjunction with {model:PROGRAM_EDIT} when in {model:ACTIVE} state. 
+ The {term:Valid Data Value} *MUST* be a text string."
+Observations::EventTypes,ProgramHeader,The non-executable header section of the control program.
+Observations::EventTypes,ProgramLocation,The Uniform Resource Identifier (URI) for the source file associated with {model:PROGRAM}.
+Observations::EventTypes,ScheduleProgramLocation,The identity of a control program that is used to specify the order of execution of other programs.
+Observations::EventTypes,MainProgramLocation,The identity of the primary logic or motion program currently being executed. It is the starting nest level in a call structure and may contain calls to sub programs.
+Observations::EventTypes,ActiveProgramLocation,The value of the {term:Data Entity} that is engaging.
+Observations::EventTypes,ProgramLocationType,"Defines whether the logic or motion program defined by {model:PROGRAM} is being executed from the local memory of the controller or from an outside source.
+  
+ The {term:Valid Data Value} *MUST* be {model:LOCAL} or {model:EXTERNAL}."
+Observations::EventTypes,ScheduleProgramLocationType,The identity of a control program that is used to specify the order of execution of other programs.
+Observations::EventTypes,MainProgramLocationType,The identity of the primary logic or motion program currently being executed. It is the starting nest level in a call structure and may contain calls to sub programs.
+Observations::EventTypes,ActiveProgramLocationType,The value of the {term:Data Entity} that is engaging.
+Observations::EventTypes,ProgramNestLevel,"An indication of the nesting level within a control program that is associated with the code or instructions that is currently being executed.
+  
+ If an Initial Value is not defined, the nesting level associated with the highest or initial nesting level of the program *MUST* default to zero (0).
+  
+ The value reported for {model:PROGRAM_NEST_LEVEL} *MUST* be an integer."
+Observations::SampleTypes,Resistance,The measurement of the degree to which a substance opposes the passage of an electric current.
+Observations::EventTypes,RotaryMode,The current operating mode for a {model:Rotary} type axis.
+Observations::SampleTypes,RotaryVelocity,The measurement of the rotational speed of a rotary axis.
+Observations::SampleTypes,ActualRotaryVelocity,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedRotaryVelocity,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,ProgrammedRotaryVelocity,The value of a signal or calculation specified by a logic or motion program or set by a switch.
+Observations::SampleTypes,OverrideRotaryVelocity,The operators overridden value.
+Observations::EventTypes,RotaryVelocityOverride,"The value of a command issued to adjust the programmed velocity for a {model:Rotary} type axis.
+ This command represents a percentage change to the velocity calculated by a logic or motion program or set by a switch for a {model:Rotary} type axis."
+Observations::EventTypes,SerialNumber,"The serial number associated with a {model:Component}, {model:Asset}, or {model:Device}. The {term:Valid Data Value} *MUST* be a text string."
+Observations::SampleTypes,SoundLevel,The measurement of a sound level or sound pressure level relative to atmospheric pressure.
+Observations::SampleTypes,NoScaleSoundLevel,No weighting factor on the frequency scale
+Observations::SampleTypes,AScaleSoundLevel,A Scale weighting factor.   This is the default weighting factor if no factor is specified
+Observations::SampleTypes,BScaleSoundLevel,B Scale weighting factor
+Observations::SampleTypes,CScaleSoundLevel,C Scale weighting factor
+Observations::SampleTypes,DScaleSoundLevel,D Scale weighting factor
+Observations::EventTypes,SpindleInterlock,An indication of the status of the spindle for a piece of equipment when power has been removed and it is free to rotate.
+Observations::SampleTypes,SpindleSpeed,*DEPRECATED* in Version 1.2.  Replaced by {model:ROTARY_VELOCITY}
+Observations::SampleTypes,ActualSpindleSpeed,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,CommandedSpindleSpeed,A value specified by the {model:Controller} type component.
+Observations::SampleTypes,OverrideSpindleSpeed,The operators overridden value.
+Observations::SampleTypes,Strain,The measurement of the amount of deformation per unit length of an object when a load is applied.
+Observations::ConditionTypes,System,"A general purpose indication associated with an electronic component of a piece of equipment or a controller that represents a fault that is not associated with the operator, program, or hardware."
+Observations::SampleTypes,Temperature,The measurement of temperature.
+Observations::SampleTypes,Tension,The measurement of a force that stretches or elongates an object.
+Observations::SampleTypes,Tilt,The measurement of angular displacement. 
+Observations::EventTypes,ToolAssetId,The identifier of an individual tool asset.The {term:Valid Data Value} *MUST* be a text string.
+Observations::EventTypes,ToolGroup,An identifier for the tool group associated with a specific tool. Commonly used to designate spare tools.
+Observations::EventTypes,ToolId,*DEPRECATED* in Version 1.2.0.   See {model:TOOL_ASSET_ID}. *DEPRECATED:The identifier of the tool currently in use for a given {model:Path}.*
+Observations::EventTypes,ToolNumber,"The identifier assigned by the {model:Controller} component to a cutting tool when in use by a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be a text string."
+Observations::EventTypes,ToolOffset,A reference to the tool offset variables applied to the active cutting tool associated with a {model:Path} in a {model:Controller} type component.
+Observations::EventTypes,RadialToolOffset,A reference to a radial type tool offset variable.
+Observations::EventTypes,LengthToolOffset,A reference to a length type tool offset variable.
+Observations::SampleTypes,Torque,The measurement of the turning force exerted on an object or by an object.
+Observations::EventTypes,User,The identifier of the person currently responsible for operating the piece of equipment.
+Observations::EventTypes,OperatorUser,The identifier of the person currently responsible for operating the piece of equipment.
+Observations::EventTypes,MaintenanceUser,Action related to maintenance on the piece of equipment.
+Observations::EventTypes,SetUpUser,The identifier of the person currently responsible for preparing a piece of equipment for production or restoring the piece of equipment to a neutral state after production.
+Observations::EventTypes,Variable, A data value whose meaning may change over time due to changes in the opertion of a piece of equipment or the process being executed on that piece of equipment.
+Observations::SampleTypes,Velocity,The measurement of the rate of change of position of a {model:Component}.
+Observations::SampleTypes,Viscosity,The measurement of a fluids resistance to flow.
+Observations::SampleTypes,Voltage,The measurement of electrical potential between two points.
+Observations::SampleTypes,AlternatingVoltage,"The measurement of alternating voltage or current.   If not specified further in statistic, defaults to RMS voltage. "
+Observations::SampleTypes,DirectVoltage,The measurement of DC current or voltage.
+Observations::SampleTypes,ActualVoltage,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,TargetVoltage,The desired measure or count for a data item value.
+Observations::SampleTypes,VoltAmpere,"The measurement of the apparent power in an electrical circuit, equal to the product of root-mean-square (RMS) voltage and RMS current (commonly referred to as VA)."
+Observations::SampleTypes,VoltAmpereReactive,The measurement of reactive power in an AC electrical circuit (commonly referred to as VAR).
+Observations::SampleTypes,VolumeFluid,The fluid volume of an object or container.
+Observations::SampleTypes,ActualVolumeFluid,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,ConsumedVolumeFluid,The amount of bulk material consumed from an object or container during a manufacturing process.
+Observations::SampleTypes,VolumeSpatial,The geometric volume of an object or container.
+Observations::SampleTypes,ActualVolumeSpatial,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,ConsumedVolumeSpatial,The amount of bulk material consumed from an object or container during a manufacturing process.
+Observations::EventTypes,WaitState,"An indication of the reason that {model:EXECUTION} is reporting a value of {model:WAIT}.
+  
+ The {term:Valid Data Value} *MUST* be {model:POWERING_UP}, {model:POWERING_DOWN}, {model:PART_LOAD}, {model:PART_UNLOAD}, {model:TOOL_LOAD}, {model:TOOL_UNLOAD}, {model:MATERIAL_LOAD}, {model:MATERIAL_UNLOAD}, {model:SECONDARY_PROCESS}, {model:PAUSING}, or {model:RESUMING}."
+Observations::SampleTypes,Wattage,The measurement of power flowing through or dissipated by an electrical circuit or piece of equipment.
+Observations::SampleTypes,ActualWattage,The measured value of the data item type given by a sensor or encoder.
+Observations::SampleTypes,TargetWattage,The desired measure or count for a data item value.
+Observations::EventTypes,Wire,A string like piece or filament of relatively rigid or flexible material provided in a variety of diameters.
+Observations::EventTypes,WorkholdingId,"The identifier for the current workholding or part clamp in use by a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be a text string."
+Observations::EventTypes,WorkOffset,A reference to the offset variables for a work piece or part associated with a {model:Path} in a {model:Controller} type component.

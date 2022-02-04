@@ -1,0 +1,52 @@
+Owner,Name,OwnerComment
+Observations::EventTypes::ActuatorStateEnum,ACTIVE,The value of the {term:Data Entity} that is engaging.
+Observations::EventTypes::ActuatorStateEnum,INACTIVE,The value of the {term:Data Entity} that is not engaging.
+Observations::EventTypes::AvailabilityEnum,AVAILABLE,The value or status of an XML element when it is available.
+Observations::EventTypes::AvailabilityEnum,UNAVAILABLE,The value of the {term:Data Entity} either when the data is not received or the entity is incapable of providing data.
+Observations::EventTypes::AxisCouplingEnum,TANDEM,Elements are physically connected to each other and operate as a single unit.
+Observations::EventTypes::AxisCouplingEnum,SYNCHRONOUS,Physical or logical parts which are not physically connected to each other but are operating together.
+Observations::EventTypes::AxisCouplingEnum,MASTER,It provides information or state values that influences the operation of other {model:DataItem} of similar type.
+Observations::EventTypes::AxisCouplingEnum,SLAVE,The axis is a slave to the {model:COUPLED_AXES}
+Observations::EventTypes::AxisStateEnum,HOME,The component at its home position.
+Observations::EventTypes::AxisStateEnum,TRAVEL,The component is in motion.
+Observations::EventTypes::AxisStateEnum,PARKED,The component has been moved to a fixed position.
+Observations::EventTypes::AxisStateEnum,STOPPED,The component is stopped.
+Observations::EventTypes::ChuckStateEnum,OPEN,A component is open to the point of a positive confirmation.
+Observations::EventTypes::ChuckStateEnum,CLOSED,A component is closed to the point of a positive confirmation.
+Observations::EventTypes::ChuckStateEnum,UNLATCHED,An intermediate position.
+Observations::EventTypes::ControllerModeEnum,AUTOMATIC,The {model:Controller} is configured to automatically execute a program.
+Observations::EventTypes::ControllerModeEnum,MANUAL,Operations based on the instructions received from an external source.
+Observations::EventTypes::ControllerModeEnum,MANUAL_DATA_INPUT,The operator can enter a series of operations for the controller to perform.
+Observations::EventTypes::ControllerModeEnum,SEMI_AUTOMATIC,The controller  executes a single set of instructions from an active program and then stops until given a command to execute the next set of instructions.
+Observations::EventTypes::ControllerModeEnum,EDIT,The controller is currently functioning as a programming device and is not capable of executing an active program.
+Observations::EventTypes::ControllerModeOverrideEnum,ON,On state or value.
+Observations::EventTypes::ControllerModeOverrideEnum,OFF,Off state or value.
+Observations::EventTypes::EmergencyStopEnum,ARMED,"The emergency stop circuit is complete and the piece of equipment, component, or composition element is allowed to operate. "
+Observations::EventTypes::EmergencyStopEnum,TRIGGERED,"The operation of the piece of equipment, component, or composition element is inhibited."
+Observations::EventTypes::EndOfBarEnum,YES,The {model:END_OF_BAR} has been reached.
+Observations::EventTypes::EndOfBarEnum,NO,The {model:END_OF_BAR} has not been reached.
+Observations::EventTypes::ExecutionEnum,READY,A component is ready to engage.
+Observations::EventTypes::ExecutionEnum,ACTIVE,The value of the {term:Data Entity} that is engaging.
+Observations::EventTypes::ExecutionEnum,INTERRUPTED,The action of a {model:Component} has been suspended due to an external signal.
+Observations::EventTypes::ExecutionEnum,FEED_HOLD,Motion of a {model:Component} has been commanded to stop at its current position.
+Observations::EventTypes::ExecutionEnum,STOPPED,The component is stopped.
+Observations::EventTypes::ExecutionEnum,OPTIONAL_STOP,The controllers program has been intentionally stopped
+Observations::EventTypes::ExecutionEnum,PROGRAM_STOPPED,The execution of the {model:Controller}'s program has been stopped by a command from within the program.
+Observations::EventTypes::ExecutionEnum,PROGRAM_COMPLETED,The execution of the controllers program has been stopped by a command from within the program.
+Observations::EventTypes::FunctionalModeEnum,PRODUCTION,A {term:Structural Element} is currently producing product.
+Observations::EventTypes::FunctionalModeEnum,SETUP,A {term:Structural Element} is being prepared or modified to begin production of product.
+Observations::EventTypes::FunctionalModeEnum,TEARDOWN,"Typically, a {term:Structural Element} has completed the production of a product and is being modified or returned to a neutral state such that it may then be prepared to begin production of a different product."
+Observations::EventTypes::FunctionalModeEnum,MAINTENANCE,Action related to maintenance on the piece of equipment.
+Observations::EventTypes::FunctionalModeEnum,PROCESS_DEVELOPMENT,A {term:Structural Element} is being used to prove-out a new process.
+Observations::EventTypes::InterfaceStateEnum,ENABLED,A component is currently operational and performing as expected.
+Observations::EventTypes::InterfaceStateEnum,DISABLED,A component is currently not operational.
+Observations::EventTypes::PathModeEnum,INDEPENDENT,The path is operating independently and without the influence of another path.
+Observations::EventTypes::PathModeEnum,MASTER,It provides information or state values that influences the operation of other {model:DataItem} of similar type.
+Observations::EventTypes::PathModeEnum,SYNCHRONOUS,Physical or logical parts which are not physically connected to each other but are operating together.
+Observations::EventTypes::PathModeEnum,MIRROR,The axes associated with the path are mirroring the motion of the {model:MASTER} path.
+Observations::EventTypes::ProgramEditEnum,ACTIVE,The value of the {term:Data Entity} that is engaging.
+Observations::EventTypes::ProgramEditEnum,READY,A component is ready to engage.
+Observations::EventTypes::ProgramEditEnum,NOT_READY,A component is not ready to engage.
+Observations::EventTypes::RotaryModeEnum,SPINDLE,The axis is functioning as a spindle.
+Observations::EventTypes::RotaryModeEnum,INDEX,The axis is configured to index.
+Observations::EventTypes::RotaryModeEnum,CONTOUR,The position of the axis is being interpolated.

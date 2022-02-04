@@ -1,0 +1,158 @@
+Owner,Name,OwnedComment
+UnitEnum,AMPERE,Amps
+UnitEnum,CELSIUS,Degrees Celsius
+UnitEnum,COUNT,A count of something.
+UnitEnum,DECIBEL,Sound Level
+UnitEnum,DEGREE,Angle in degrees
+UnitEnum,DEGREE/SECOND,Angular degrees per second
+UnitEnum,DEGREE/SECOND^2,Angular acceleration in degrees per second squared
+UnitEnum,HERTZ,Frequency measured in cycles per second
+UnitEnum,JOULE,A measurement of energy.
+UnitEnum,KILOGRAM,Kilograms
+UnitEnum,LITER,Measurement of volume of a fluid
+UnitEnum,LITER/SECOND,Liters per second
+UnitEnum,MICRO_RADIAN,Measurement of Tilt
+UnitEnum,MILLIMETER,Millimeters
+UnitEnum,MILLIMETER_3D,"A point in space identified by X, Y, and Z positions and represented by a space-delimited set of numbers each expressed in millimeters."
+UnitEnum,MILLIMETER/REVOLUTION,Millimeters per revolution.
+UnitEnum,MILLIMETER/SECOND,Millimeters per second
+UnitEnum,MILLIMETER/SECOND^2,Acceleration in millimeters per second squared
+UnitEnum,NEWTON,Force in Newtons
+UnitEnum,NEWTON_METER,"Torque, a unit for force times distance."
+UnitEnum,OHM,Measure of Electrical Resistance
+UnitEnum,PASCAL,Pressure in Newtons per square meter
+UnitEnum,PASCAL_SECOND,Measurement of Viscosity
+UnitEnum,PERCENT,Percentage
+UnitEnum,PH,A measure of the acidity or alkalinity of a solution.
+UnitEnum,REVOLUTION/MINUTE,Revolutions per minute
+UnitEnum,SECOND,A measurement of time.
+UnitEnum,SIEMENS/METER,A measurement of Electrical Conductivity
+UnitEnum,VOLT,Volts
+UnitEnum,VOLT_AMPERE,"The measurement of the apparent power in an electrical circuit, equal to the product of root-mean-square (RMS) voltage and RMS current (commonly referred to as VA)."
+UnitEnum,VOLT_AMPERE_REACTIVE,The measurement of reactive power in an AC electrical circuit (commonly referred to as VAR).
+UnitEnum,WATT,Watts
+UnitEnum,WATT_SECOND,"Measurement of electrical energy, equal to one Joule"
+NativeUnitEnum,CENTIPOISE,A measure of Viscosity
+NativeUnitEnum,DEGREE/MINUTE,Rotational velocity in degrees per minute
+NativeUnitEnum,FAHRENHEIT,Temperature in Fahrenheit
+NativeUnitEnum,FOOT,Feet
+NativeUnitEnum,FOOT_3D,"A point in space identified by X, Y, and Z positions and represented by a space-delimited set of numbers each expressed in feet."
+NativeUnitEnum,FOOT/MINUTE,Feet per minute
+NativeUnitEnum,FOOT/SECOND,Feet per second
+NativeUnitEnum,FOOT/SECOND^2,Acceleration in feet per second squared
+NativeUnitEnum,GALLON/MINUTE,Gallons per minute.
+NativeUnitEnum,INCH,Inches
+NativeUnitEnum,INCH_3D,"A point in space identified by X, Y, and Z positions and represented by a space-delimited set of numbers each expressed in inches."
+NativeUnitEnum,INCH/MINUTE,Inches per minute
+NativeUnitEnum,INCH/SECOND,Inches per second
+NativeUnitEnum,INCH/SECOND^2,Acceleration in inches per second squared
+NativeUnitEnum,INCH_POUND,A measure of torque in inch pounds.
+NativeUnitEnum,KELVIN,A measurement of temperature
+NativeUnitEnum,KILOWATT,A measurement in kilowatt.
+NativeUnitEnum,KILOWATT_HOUR,Kilowatt hours which is 3.6 mega joules.
+NativeUnitEnum,LITER,Measurement of volume of a fluid
+NativeUnitEnum,LITER/MINUTE,Measurement of rate of flow of a fluid
+NativeUnitEnum,MILLIMETER/MINUTE,Velocity in millimeters per minute
+NativeUnitEnum,OTHER,Unsupported units
+NativeUnitEnum,POUND,US pounds
+NativeUnitEnum,POUND/INCH^2,Pressure in pounds per square inch (PSI).
+NativeUnitEnum,RADIAN,Angle in radians
+NativeUnitEnum,RADIAN/MINUTE,Velocity in radians per minute.
+NativeUnitEnum,RADIAN/SECOND,Velocity in radians per second
+NativeUnitEnum,RADIAN/SECOND^2,Rotational acceleration in radian per second squared
+NativeUnitEnum,REVOLUTION/SECOND,Rotational velocity in revolution per second
+DataItemSubTypeEnum,ABSOLUTE,The position of a block of program code relative to the beginning of the control program.
+DataItemSubTypeEnum,ACTION,"An indication of the operating state of a mechanism represented by a {model:Composition} type component.
+ The operating state indicates whether the {model:Composition} element is activated or disabled. 
+ The {term:Valid Data Value} *MUST* be {model:ACTIVE} or {model:INACTIVE}."
+DataItemSubTypeEnum,ACTUAL,The measured value of the data item type given by a sensor or encoder.
+DataItemSubTypeEnum,ALL,"The count of all the parts produced.  If the subtype is not given, this is the default."
+DataItemSubTypeEnum,ALTERNATING,"The measurement of alternating voltage or current.   If not specified further in statistic, defaults to RMS voltage. "
+DataItemSubTypeEnum,A_SCALE,A Scale weighting factor.   This is the default weighting factor if no factor is specified
+DataItemSubTypeEnum,AUXILIARY,"When multiple locations on a piece of bar stock are referenced as the indication for the {model:END_OF_BAR}, the additional location(s) *MUST* be designated as {model:AUXILIARY} indication(s) for the {model:END_OF_BAR}.  "
+DataItemSubTypeEnum,BAD,Indicates the count of incorrect parts produced.
+DataItemSubTypeEnum,BRINELL,A scale to measure the resistance to deformation of a surface.
+DataItemSubTypeEnum,B_SCALE,B Scale weighting factor
+DataItemSubTypeEnum,COMMANDED,A value specified by the {model:Controller} type component.
+DataItemSubTypeEnum,CONSUMED,The amount of bulk material consumed from an object or container during a manufacturing process.
+DataItemSubTypeEnum,CONTROL,The state of the enabling signal or control logic that enables or disables the function or operation of the {term:Structural Element}.
+DataItemSubTypeEnum,C_SCALE,C Scale weighting factor
+DataItemSubTypeEnum,DELAY,A piece of equipment waiting for an event or an action to occur.
+DataItemSubTypeEnum,DIRECT,The measurement of DC current or voltage.
+DataItemSubTypeEnum,DRY_RUN,"A setting or operator selection used to execute a test mode to confirm the execution of machine functions. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}. 
+ When {model:DRY_RUN} is {model:ON}, the equipment performs all of its normal functions, except no part or product is produced.  If the equipment has a spindle, spindle operation is suspended."
+DataItemSubTypeEnum,D_SCALE,D Scale weighting factor
+DataItemSubTypeEnum,EXPIRATION,The time and date code relating to the expiration or end of useful life for a material or other physical item.
+DataItemSubTypeEnum,FIRST_USE,The time and date code relating the first use of a material or other physical item.
+DataItemSubTypeEnum,GOOD,Indicates the count of correct parts made.
+DataItemSubTypeEnum,INCREMENTAL,The position of a block of program code relative to the occurrence of the last {model:LINE_LABEL} encountered in the control program.
+DataItemSubTypeEnum,JOG,"The feedrate specified by a logic or motion program, by a pre-set value, or set by a switch as the feedrate for the {model:Axes}. "
+DataItemSubTypeEnum,LATERAL,"An indication of the position of a mechanism that may move in a lateral direction.   The mechanism is represented by a {model:Composition} type component. 
+ The position information indicates whether the {model:Composition} element is positioned to the right, to the left, or is in transition.  
+ The {term:Valid Data Value} *MUST* be {model:RIGHT}, {model:LEFT}, or {model:TRANSITIONING}."
+DataItemSubTypeEnum,LEEB,A scale to measure the elasticity of a surface.
+DataItemSubTypeEnum,LENGTH,A reference to a length type tool offset variable.
+DataItemSubTypeEnum,LINE,The state of the power source for the {term:Structural Element}.
+DataItemSubTypeEnum,LINEAR,The direction of motion of a linear motion.
+DataItemSubTypeEnum,LOADED,Subparts of a piece of equipment are under load.
+DataItemSubTypeEnum,MACHINE_AXIS_LOCK,"A setting or operator selection that changes the behavior of the controller on a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}. 
+ When {model:MACHINE_AXIS_LOCK} is {model:ON}, program execution continues normally, but no equipment motion occurs "
+DataItemSubTypeEnum,MAIN,The identity of the primary logic or motion program currently being executed. It is the starting nest level in a call structure and may contain calls to sub programs.
+DataItemSubTypeEnum,MAINTENANCE,Action related to maintenance on the piece of equipment.
+DataItemSubTypeEnum,MANUAL_UNCLAMP,"An indication of the state of an operator controlled interlock that can inhibit the ability to initiate an unclamp action of an electronically controlled chuck.
+ The {term:Valid Data Value} *MUST* be {model:ACTIVE} or {model:INACTIVE}. 
+ When {model:MANUAL_UNCLAMP} is {model:ACTIVE}, it is expected that a chuck cannot be unclamped until {model:MANUAL_UNCLAMP} is set to {model:INACTIVE}. "
+DataItemSubTypeEnum,MANUFACTURE,The time and date code relating to the production of a material or other physical item.
+DataItemSubTypeEnum,MAXIMUM,Maximum value of a data entity or attribute.
+DataItemSubTypeEnum,MINIMUM,The minimum value of a data entity or attribute.
+DataItemSubTypeEnum,MOHS,A scale to measure the resistance to scratching of a surface.
+DataItemSubTypeEnum,MOTION,"An indication of the open or closed state of a mechanism.   The mechanism is represented by a {model:Composition} type component. 
+ The operating state indicates whether the state of the {model:Composition} element is open, closed, or unlatched.   
+ The {term:Valid Data Value} *MUST* be {model:OPEN}, {model:UNLATCHED}, or {model:CLOSED}."
+DataItemSubTypeEnum,NO_SCALE,No weighting factor on the frequency scale
+DataItemSubTypeEnum,OPERATING,A piece of equipment are powered or performing any activity.
+DataItemSubTypeEnum,OPERATOR,The identifier of the person currently responsible for operating the piece of equipment.
+DataItemSubTypeEnum,OPTIONAL_STOP,"A setting or operator selection that changes the behavior of the controller on a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}.
+ The program execution is stopped after a specific program block is executed when {model:OPTIONAL_STOP} is {model:ON}.    
+ In the case of a G-Code program, a program {model:BLOCK} containing a M01 code designates the command for an {model:OPTIONAL_STOP}. 
+ {model:EXECUTION} *MUST* change to {model:OPTIONAL_STOP} after a program block specifying an optional stop is executed and the {model:OPTIONAL_STOP} selection is {model:ON}."
+DataItemSubTypeEnum,OVERRIDE,The operators overridden value.
+DataItemSubTypeEnum,POWERED,"Primary  power is  applied  to the  piece  of  equipment and,  as  a minimum, the controller or logic portion of the piece of equipment is powered and functioning or components that are required to remain on are powered."
+DataItemSubTypeEnum,PRIMARY,"Specific applications *MAY* reference one or more locations on a piece of bar stock as the indication for the {model:END_OF_BAR}. The main or most important location *MUST* be designated as the {model:PRIMARY} indication for the {model:END_OF_BAR}.   
+ If no {model:subType} is specified, {model:PRIMARY} *MUST* be the default {model:END_OF_BAR} indication."
+DataItemSubTypeEnum,PROBE,The position provided by a measurement probe.
+DataItemSubTypeEnum,PROCESS,"The measurement of the time from the beginning of production of a part or product on a piece of equipment until the time that production is complete for that part or product on that piece of equipment.  This includes the time that the piece of equipment is running, producing parts or products, or in the process of producing parts."
+DataItemSubTypeEnum,PROGRAMMED,The value of a signal or calculation specified by a logic or motion program or set by a switch.
+DataItemSubTypeEnum,RADIAL,A reference to a radial type tool offset variable.
+DataItemSubTypeEnum,RAPID,The value of a signal or calculation issued to adjust the feedrate of a component or composition that is operating in a rapid positioning mode.
+DataItemSubTypeEnum,REMAINING,Remaining measure of an object or an action.
+DataItemSubTypeEnum,ROCKWELL,A scale to measure the resistance to deformation of a surface.
+DataItemSubTypeEnum,ROTARY,"The rotational direction of a rotary motion using the right hand rule convention.
+ The {term:Valid Data Value} *MUST* be {model:CLOCKWISE} or {model:COUNTER_CLOCKWISE}."
+DataItemSubTypeEnum,SCHEDULE,The identity of a control program that is used to specify the order of execution of other programs.
+DataItemSubTypeEnum,SET_UP,The identifier of the person currently responsible for preparing a piece of equipment for production or restoring the piece of equipment to a neutral state after production.
+DataItemSubTypeEnum,SHORE,A scale to measure the resistance to deformation of a surface.
+DataItemSubTypeEnum,SINGLE_BLOCK,"A setting or operator selection that changes the behavior of the controller on a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}.
+ Program execution is paused after each {model:BLOCK} of code is executed when {model:SINGLE_BLOCK} is {model:ON}.   
+ When {model:SINGLE_BLOCK} is {model:ON}, {model:EXECUTION} *MUST* change to {model:INTERRUPTED} after completion of each {model:BLOCK} of code. "
+DataItemSubTypeEnum,STANDARD,The standard or original length of an object.
+DataItemSubTypeEnum,START,The time and date associated with the beginning of an activity or event.
+DataItemSubTypeEnum,SWITCHED,"An indication of the activation state of a mechanism represented by a {model:Composition} type component.
+ The activation state indicates whether the {model:Composition} element is activated or not.
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}."
+DataItemSubTypeEnum,TARGET,The desired measure or count for a data item value.
+DataItemSubTypeEnum,TARGET_COMPLETION,The projected time and date associated with the end or completion of an activity or event.
+DataItemSubTypeEnum,TOOL_CHANGE_STOP,"A setting or operator selection that changes the behavior of the controller on a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be {model:ON} or {model:OFF}. 
+ Program execution is paused when a command is executed requesting a cutting tool to be changed. 
+ {model:EXECUTION} *MUST* change to {model:INTERRUPTED} after completion of the command requesting a cutting tool to be changed and {model:TOOL_CHANGE_STOP} is {model:ON}."
+DataItemSubTypeEnum,USEABLE,The remaining useable length of an object.
+DataItemSubTypeEnum,VERTICAL,"An indication of the position of a mechanism that may move in a vertical direction. The mechanism is represented by a {model:Composition} type component. 
+ The position information indicates whether the {model:Composition} element is positioned to the top, to the bottom, or is in transition.  
+ The {term:Valid Data Value} *MUST* be {model:UP}, {model:DOWN}, or {model:TRANSITIONING}."
+DataItemSubTypeEnum,VICKERS,A scale to measure the resistance to deformation of a surface.
+DataItemSubTypeEnum,WORKING,"A piece of equipment performing any activity, the equipment is active and performing a function under load or not."

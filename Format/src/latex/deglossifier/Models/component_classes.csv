@@ -1,0 +1,39 @@
+Owner,Name,ownedComment
+Components::ComponentTypes,Actuator,Redefined as a piece of equipment with the ability to be represented as a {term:Lower Level} component of a parent {model:Component} element or as a {model:Composition} element. See {model:ACTUATOR}
+Components::ComponentTypes,Auxiliaries,"An XML container used to organize information for {term:Lower Level} elements representing functional sub-systems that provide supplementary or extended capabilities for a piece of equipment, but they are not required for the basic operation of the equipment."
+Components::ComponentTypes,Axes,An XML container used to organize the {term:Structural Elements} of a piece of equipment that perform linear or rotational motion.
+Components::ComponentTypes,BarFeeder,{model:BarFeeder} is an XML container that represents the information for a unit involved in delivering bar stock to a piece of equipment.
+Components::ComponentTypes,Chuck,Chuck is an XML container that provides the information about a mechanism that holds a part or stock material in place.
+Components::ComponentTypes,Controller,An XML container used to organize information about an intelligent or computational function within a piece of equipment.
+Components::ComponentTypes,Coolant,{model:Coolant} is an XML container that represents the information for a system comprised of all the parts involved in distribution and management of fluids that remove heat from a piece of equipment.
+Components::ComponentTypes,Deposition,"{model:Deposition} is an XML container that represents the information for a system that manages the addition of material or state change of material being performed in an additive manufacturing process.  For example, this could describe the portion of a piece of equipment that manages a material extrusion process or a vat polymerization process."
+Components::ComponentTypes,Dielectric,{model:Dielectric} is an XML container that represents the information for a system that manages a chemical mixture used in a manufacturing process being performed at that piece of equipment.
+Components::ComponentTypes,Door,{model:Door} is an XML container that represents the information for a mechanical mechanism or closure that can cover.
+Components::ComponentTypes,Electric,{model:Electric} is an XML container that represents the information for the main power supply for device piece of equipment and the distribution of that power throughout the equipment. 
+Components::ComponentTypes,Enclosure,{model:Enclosure} is an XML container that represents the information for a structure used to contain or isolate a piece of equipment or area.
+Components::ComponentTypes,EndEffector,{model:EndEffector} is an XML container that represents the information for those functions that form the last link segment of a piece of equipment. It is the part of a piece of equipment that interacts with the manufacturing process.
+Components::ComponentTypes,Environmental,"{model:Environmental} is an XML container that represents the information for a unit or function involved in monitoring, managing, or conditioning the environment around or within a piece of equipment."
+Components::ComponentTypes,Feeder,{model:Feeder} is an XML container that represents the information for a system that manages the delivery of materials within a piece of equipment. 
+Components::ComponentTypes,Hydraulic,{model:Hydraulic} is an XML container that represents the information for a system comprised of all the parts involved in moving and distributing pressurized liquid throughout the piece of equipment.
+Components::ComponentTypes,Interface,Each {model:Interface} contains {term:Data Entities} available from the piece of equipment that may be needed to coordinate activities with associated pieces of equipment.
+Components::ComponentTypes,Interfaces,An XML container that organizes information used to coordinate actions and activities between pieces of equipment that communicate information between each other. 
+Components::ComponentTypes,Linear,"A {model:Linear} axis represents the movement of a physical piece of equipment, or a portion of the equipment, in a straight line. "
+Components::ComponentTypes,Loader,"{model:Loader} is an XML container that represents the information for a unit comprised of all the parts involved in moving and distributing materials, parts, tooling, and other items to or from a piece of equipment."
+Components::ComponentTypes,Lubrication,{model:Lubrication} is an XML container that represents the information for a system comprised of all the parts involved in distribution and management of fluids used to lubricate portions of the piece of equipment.
+Components::ComponentTypes,Materials,"{model:Materials} is an XML container that provides information about materials or other items consumed or used by the piece of equipment for production of parts, materials, or other types of goods."
+Components::ComponentTypes,Path,{model:Path} is an XML container that represents the information for an independent operation or function within a {model:Controller}.
+Components::ComponentTypes,Personnel,"{model:Personnel} is an XML container that provides information about an individual or individuals who either control, support, or otherwise interface with a piece of equipment.
+"
+Components::ComponentTypes,Pneumatic,{model:Pneumatic} is an XML container that represents the information for a system comprised of all the parts involved in moving and distributing pressurized gas throughout the piece of equipment.
+Components::ComponentTypes,Power,{model:Power} was *DEPRECATED* in MTConnect Version 1.1 and was replaced by the {term:Data Entity} called {model:AVAILABILITY}.
+Components::ComponentTypes,ProcessPower,{model:ProcessPower} is an XML container that represents the information for a power source associated with a piece of equipment that supplies energy to the manufacturing process separate from the {model:Electric} system.
+Components::ComponentTypes,Protective,Protective is an XML container that represents the information for those functions that detect or prevent harm or damage to equipment or personnel.
+Components::ComponentTypes,Resources,"An XML container used to organize information for {term:Lower Level} elements representing types of items, materials, and personnel that support the operation of a piece of equipment or work to be performed at a location. {model:Resources} also represents materials or other items consumed or transformed by a piece of equipment for production of parts or other types of goods."
+Components::ComponentTypes,Rotary,A {model:Rotary} axis represents any non-linear or rotary movement of a physical piece of equipment or a portion of the equipment. 
+Components::ComponentTypes,Sensor,The {term:sensor unit} is modeled as a {term:Lower Level} {model:Component} called {model:Sensor}.
+Components::ComponentTypes,Stock,{model:Stock} is an XML container that represents the information for the material that is used in a manufacturing process and to which work is applied in a machine or piece of equipment to produce parts.
+Components::ComponentTypes,Systems,An XML container used to organize information for {term:Lower Level} elements representing the major sub-systems that are permanently integrated into a piece of equipment.
+Components::ComponentTypes,ToolingDelivery,"{model:ToolingDelivery} is an XML container that represents the information for a unit involved in managing, positioning, storing, and delivering tooling within a piece of equipment.
+"
+Components::ComponentTypes,WasteDisposal,"{model:WasteDisposal} is an XML container that represents the information for a unit comprised of all the parts involved in removing manufacturing byproducts from a piece of equipment.
+"

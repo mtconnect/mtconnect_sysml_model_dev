@@ -1,0 +1,171 @@
+Owner,Name,Description
+DataTypes::SampleEnum,ACCELERATION,The measurement of the rate of change of velocity.
+DataTypes::SampleEnum,ACCUMULATED_TIME,The measurement of accumulated time for an activity or event.
+DataTypes::EventEnum,ACTIVE_AXES,The set of axes currently associated with a {model:Path} or {model:Controller} {term:Structural Element}.
+DataTypes::EventEnum,ACTUATOR_STATE,Represents the operational state of an apparatus for moving or controlling a mechanism or system.
+DataTypes::EventEnum,ALARM,*DEPRECATED:* Replaced with {model:CONDITION} category data items in Version 1.1.0.
+DataTypes::SampleEnum,AMPERAGE,The measurement of electrical current.
+DataTypes::SampleEnum,ANGLE,The measurement of angular position.
+DataTypes::SampleEnum,ANGULAR_ACCELERATION,The measurement rate of change of angular velocity.
+DataTypes::SampleEnum,ANGULAR_VELOCITY,The measurement of the rate of change of angular position.
+DataTypes::EventEnum,ASSET_CHANGED,The value of the {term:CDATA} for the event *MUST* be the {model:assetId} of the asset that has been added or changed. There will not be a separate message for new assets.
+DataTypes::EventEnum,ASSET_REMOVED,The value of the {term:CDATA} for the event *MUST* be the {model:assetId} of the asset that has been removed. The asset will still be visible if requested with the {model:includeRemoved} parameter as described in the protocol section. When assets are removed they are not moved to the beginning of the most recently modified list. 
+DataTypes::EventEnum,AVAILABILITY,Represents the {term:Agent}'s ability to communicate with the data source.
+DataTypes::EventEnum,AXIS_COUPLING,"Describes the way the axes will be associated to each other. 
+  
+ This is used in conjunction with {model:COUPLED_AXES} to indicate the way they are interacting."
+DataTypes::SampleEnum,AXIS_FEEDRATE,The measurement of the feedrate of a linear axis.
+DataTypes::EventEnum,AXIS_FEEDRATE_OVERRIDE,The value of a signal or calculation issued to adjust the feedrate of an individual linear type axis.
+DataTypes::EventEnum,AXIS_INTERLOCK,An indicator of the state of the axis lockout function when power has been removed and the axis is allowed to move freely.
+DataTypes::EventEnum,AXIS_STATE,An indicator of the controlled state of a {model:Linear} or {model:Rotary} component representing an axis.
+DataTypes::EventEnum,BLOCK,The line of code or command being executed by a {model:Controller} {term:Structural Element}.
+DataTypes::EventEnum,BLOCK_COUNT,The total count of the number of blocks of program code that have been executed since execution started.
+DataTypes::SampleEnum,CAPACITY_FLUID,The fluid capacity of an object or container.
+DataTypes::SampleEnum,CAPACITY_SPATIAL,The geometric capacity of an object or container.
+DataTypes::EventEnum,CHUCK_INTERLOCK,An indication of the state of an interlock function or control logic state intended to prevent the associated {model:CHUCK} component from being operated.
+DataTypes::EventEnum,CHUCK_STATE,An indication of the operating state of a mechanism that holds a part or stock material during a manufacturing process. It may also represent a mechanism that holds any other mechanism in place within a piece of equipment.
+DataTypes::SampleEnum,CLOCK_TIME,The value provided by a timing device at a specific point in time.
+DataTypes::EventEnum,CLOSE_CHUCK,Service to close a chuck.
+DataTypes::EventEnum,CLOSE_DOOR,Service to close a door.
+DataTypes::EventEnum,CODE,*DEPRECATED* in Version 1.1.
+DataTypes::ConditionEnum,COMMUNICATIONS,An indication that the piece of equipment has experienced a communications failure.
+DataTypes::EventEnum,COMPOSITION_STATE,An indication of the operating condition of a mechanism represented by a {model:Composition} type element.
+DataTypes::SampleEnum,CONCENTRATION,The measurement of the percentage of one component within a mixture of components
+DataTypes::SampleEnum,CONDUCTIVITY,The measurement of the ability of a material to conduct electricity.
+DataTypes::EventEnum,CONTROLLER_MODE,The current operating mode of the {model:Controller} component.
+DataTypes::EventEnum,CONTROLLER_MODE_OVERRIDE,A setting or operator selection that changes the behavior of a piece of equipment.
+DataTypes::EventEnum,COUPLED_AXES,Refers to the set of associated axes.
+DataTypes::SampleEnum,CUTTING_SPEED, The speed difference (relative velocity) between the cutting mechanism and the surface of the workpiece it is operating on.
+DataTypes::ConditionEnum,DATA_RANGE,An indication that the value of the data associated with a measured value or a calculation is outside of an expected range.
+DataTypes::EventEnum,DATE_CODE,"The time and date code associated with a material or other physical item.
+  
+ {model:DATE_CODE} *MUST* be reported in ISO 8601 format."
+DataTypes::SampleEnum,DENSITY,The volumetric mass of a material per unit volume of that material.
+DataTypes::SampleEnum,DEPOSITION_ACCELERATION_VOLUMETRIC,The rate of change in spatial volume of material deposited in an additive manufacturing process.
+DataTypes::SampleEnum,DEPOSITION_DENSITY,The density of the material deposited in an additive manufacturing process per unit of volume.
+DataTypes::SampleEnum,DEPOSITION_MASS,The mass of the material deposited in an additive manufacturing process.
+DataTypes::SampleEnum,DEPOSITION_RATE_VOLUMETRIC,The rate at which a spatial volume of material is deposited in an additive manufacturing process.
+DataTypes::SampleEnum,DEPOSITION_VOLUME,The spatial volume of material to be deposited in an additive manufacturing process.
+DataTypes::EventEnum,DEVICE_UUID,"The identifier of another piece of equipment that is temporarily associated with a component of this piece of equipment to perform a particular function.
+  
+ The {term:Valid Data Value} *MUST* be a NMTOKEN XML type."
+DataTypes::EventEnum,DIRECTION,The direction of motion.
+DataTypes::SampleEnum,DISPLACEMENT,The measurement of the change in position of an object.
+DataTypes::EventEnum,DOOR_STATE,The operational state of a {model:DOOR} type component or composition element.
+DataTypes::SampleEnum,ELECTRICAL_ENERGY,The measurement of electrical energy consumption by a component.
+DataTypes::EventEnum,EMERGENCY_STOP,"The current state of the emergency stop signal for a piece of equipment, controller path, or any other component or subsystem of a piece of equipment."
+DataTypes::EventEnum,END_OF_BAR,An indication of whether the end of a piece of bar stock being feed by a bar feeder has been reached.
+DataTypes::EventEnum,EQUIPMENT_MODE,"An indication that a piece of equipment, or a sub-part of a piece of equipment, is performing specific types of activities."
+DataTypes::SampleEnum,EQUIPMENT_TIMER,The measurement of the amount of time a piece of equipment or a sub-part of a piece of equipment has performed specific activities.
+DataTypes::EventEnum,EXECUTION,The execution status of the {model:Controller}.
+DataTypes::SampleEnum,FILL_LEVEL,The measurement of the amount of a substance remaining compared to the planned maximum amount of that substance.
+DataTypes::SampleEnum,FLOW,The measurement of the rate of flow of a fluid.
+DataTypes::SampleEnum,FREQUENCY,The measurement of the number of occurrences of a repeating event per unit time.
+DataTypes::EventEnum,FUNCTIONAL_MODE,The current intended production status of the device or component.
+DataTypes::SampleEnum,GLOBAL_POSITION,*DEPRECATED* in Version 1.1
+DataTypes::EventEnum,HARDNESS,The measurement of the hardness of a material.
+DataTypes::ConditionEnum,HARDWARE,An indication of a fault associated with the hardware subsystem of the {term:Structural Element}.
+DataTypes::EventEnum,INTERFACE_STATE,An indication of the operational state of an {model:Interface} component.
+DataTypes::SampleEnum,LENGTH,The measurement of the length of an object.
+DataTypes::SampleEnum,LEVEL,*DEPRECATED* in Version 1.2.  See {model:FILL_LEVEL}
+DataTypes::EventEnum,LINE,*DEPRECATED* in Version 1.4.0.
+DataTypes::SampleEnum,LINEAR_FORCE,The measurement of the push or pull introduced by an actuator or exerted on an object.
+DataTypes::EventEnum,LINE_LABEL,An optional identifier for a {model:BLOCK} of code in a {model:PROGRAM}.
+DataTypes::EventEnum,LINE_NUMBER,A reference to the position of a block of program code within a control program.
+DataTypes::SampleEnum,LOAD,The measurement of the actual versus the standard rating of a piece of equipment.
+DataTypes::ConditionEnum,LOGIC_PROGRAM,An indication that an error occurred in the logic program or programmable logic controller (PLC) associated with a piece of equipment.
+DataTypes::SampleEnum,MASS,The measurement of the mass of an object(s) or an amount of material.
+DataTypes::EventEnum,MATERIAL,The identifier of a material used or consumed in the manufacturing process.
+DataTypes::EventEnum,MATERIAL_CHANGE,Service to change the type of material or product being loaded or fed to a piece of equipment.
+DataTypes::EventEnum,MATERIAL_FEED,Service to advance material or feed product to a piece of equipment from a continuous or bulk source. 
+DataTypes::EventEnum,MATERIAL_LAYER,"Identifies the layers of material applied to a part or product as part of an additive manufacturing process.
+  
+ The {term:Valid Data Value} *MUST* be an integer."
+DataTypes::EventEnum,MATERIAL_LOAD,Service to load a piece of material or product.
+DataTypes::EventEnum,MATERIAL_RETRACT,Service to remove or retract material or product.
+DataTypes::EventEnum,MATERIAL_UNLOAD,Service to unload a piece of material or product.
+DataTypes::EventEnum,MESSAGE,Any text string of information to be transferred from a piece of equipment to a client software application.
+DataTypes::ConditionEnum,MOTION_PROGRAM,An indication that an error occurred in the motion program associated with a piece of equipment.
+DataTypes::EventEnum,OPEN_CHUCK,Service to open a chuck. 
+DataTypes::EventEnum,OPEN_DOOR,Service to open a door. 
+DataTypes::EventEnum,OPERATOR_ID,The identifier of the person currently responsible for operating the piece of equipment.
+DataTypes::EventEnum,PALLET_ID,The identifier for a pallet.
+DataTypes::EventEnum,PART_CHANGE,Service to change the part or product associated with a piece of equipment to a different part or product.  
+DataTypes::EventEnum,PART_COUNT,The count of parts produced.
+DataTypes::EventEnum,PART_DETECT,"An indication designating whether a part or work piece has been detected or is present.
+  
+ The {term:Valid Data Value} *MUST* be {model:PRESENT} or {model:NOT_PRESENT}."
+DataTypes::EventEnum,PART_ID,An identifier of a part in a manufacturing operation.
+DataTypes::EventEnum,PART_NUMBER,"An identifier of a part or product moving through the manufacturing process. 
+ The {term:Valid Data Value} *MUST* be a text string. "
+DataTypes::SampleEnum,PATH_FEEDRATE,"The measurement of the feedrate for the axes, or a single axis, associated with a {model:Path} component-a vector."
+DataTypes::EventEnum,PATH_FEEDRATE_OVERRIDE,The value of a signal or calculation issued to adjust the feedrate for the axes associated with a {model:Path} component that may represent a single axis or the coordinated movement of multiple axes.
+DataTypes::SampleEnum,PATH_FEEDRATE_PER_REVOLUTION,"The feedrate for the axes, or a single axis."
+DataTypes::EventEnum,PATH_MODE,Describes the operational relationship between a {model:Path} {term:Structural Element} and another {model:Path} {term:Structural Element} for pieces of equipment comprised of multiple logical groupings of controlled axes or other logical operations.
+DataTypes::SampleEnum,PATH_POSITION,"A measured or calculated position of a control point associated with a {model:Controller} element, or {model:Path} element if provided, of a piece of equipment."
+DataTypes::SampleEnum,PH,A measure of the acidity or alkalinity of a solution.
+DataTypes::SampleEnum,POSITION,A measured or calculated position of a {model:Component} element as reported by a piece of equipment.
+DataTypes::SampleEnum,POWER_FACTOR,The measurement of the ratio of real power flowing to a load to the apparent power in that AC circuit.
+DataTypes::EventEnum,POWER_STATE,The indication of the status of the source of energy for a {term:Structural Element} to allow it to perform its intended function or the state of an enabling signal providing permission for the {term:Structural Element} to perform its functions.
+DataTypes::EventEnum,POWER_STATUS,*DEPRECATED* in Version 1.1.0.
+DataTypes::SampleEnum,PRESSURE,The measurement of force per unit area exerted by a gas or liquid.
+DataTypes::EventEnum,PROCESS_TIME,"The time and date associated with an activity or event.
+  
+ {model:PROCESS_TIME} *MUST* be reported in ISO 8601 format."
+DataTypes::SampleEnum,PROCESS_TIMER,The measurement of the amount of time a piece of equipment has performed different types of activities associated with the process being performed at that piece of equipment.
+DataTypes::EventEnum,PROGRAM,The name of the logic or motion program being executed by the {model:Controller} component.
+DataTypes::EventEnum,PROGRAM_COMMENT,"A comment or non-executable statement in the control program.
+ The {term:Valid Data Value} *MUST* be a text string."
+DataTypes::EventEnum,PROGRAM_EDIT,"An indication of the status of the {model:Controller} components program editing mode. 
+ On many controls, a program can be edited while another program is currently being executed."
+DataTypes::EventEnum,PROGRAM_EDIT_NAME,"The name of the program being edited. 
+ This is used in conjunction with {model:PROGRAM_EDIT} when in {model:ACTIVE} state. 
+ The {term:Valid Data Value} *MUST* be a text string."
+DataTypes::EventEnum,PROGRAM_HEADER,The non-executable header section of the control program.
+DataTypes::EventEnum,PROGRAM_LOCATION,The Uniform Resource Identifier (URI) for the source file associated with {model:PROGRAM}.
+DataTypes::EventEnum,PROGRAM_LOCATION_TYPE,"Defines whether the logic or motion program defined by {model:PROGRAM} is being executed from the local memory of the controller or from an outside source.
+  
+ The {term:Valid Data Value} *MUST* be {model:LOCAL} or {model:EXTERNAL}."
+DataTypes::EventEnum,PROGRAM_NEST_LEVEL,"An indication of the nesting level within a control program that is associated with the code or instructions that is currently being executed.
+  
+ If an Initial Value is not defined, the nesting level associated with the highest or initial nesting level of the program *MUST* default to zero (0).
+  
+ The value reported for {model:PROGRAM_NEST_LEVEL} *MUST* be an integer."
+DataTypes::SampleEnum,RESISTANCE,The measurement of the degree to which a substance opposes the passage of an electric current.
+DataTypes::EventEnum,ROTARY_MODE,The current operating mode for a {model:Rotary} type axis.
+DataTypes::SampleEnum,ROTARY_VELOCITY,The measurement of the rotational speed of a rotary axis.
+DataTypes::EventEnum,ROTARY_VELOCITY_OVERRIDE,"The value of a command issued to adjust the programmed velocity for a {model:Rotary} type axis.
+ This command represents a percentage change to the velocity calculated by a logic or motion program or set by a switch for a {model:Rotary} type axis."
+DataTypes::EventEnum,SERIAL_NUMBER,"The serial number associated with a {model:Component}, {model:Asset}, or {model:Device}. The {term:Valid Data Value} *MUST* be a text string."
+DataTypes::SampleEnum,SOUND_LEVEL,The measurement of a sound level or sound pressure level relative to atmospheric pressure.
+DataTypes::EventEnum,SPINDLE_INTERLOCK,An indication of the status of the spindle for a piece of equipment when power has been removed and it is free to rotate.
+DataTypes::SampleEnum,SPINDLE_SPEED,*DEPRECATED* in Version 1.2.  Replaced by {model:ROTARY_VELOCITY}
+DataTypes::SampleEnum,STRAIN,The measurement of the amount of deformation per unit length of an object when a load is applied.
+DataTypes::ConditionEnum,SYSTEM,"A general purpose indication associated with an electronic component of a piece of equipment or a controller that represents a fault that is not associated with the operator, program, or hardware."
+DataTypes::SampleEnum,TEMPERATURE,The measurement of temperature.
+DataTypes::SampleEnum,TENSION,The measurement of a force that stretches or elongates an object.
+DataTypes::SampleEnum,TILT,The measurement of angular displacement. 
+DataTypes::EventEnum,TOOL_ASSET_ID,The identifier of an individual tool asset.The {term:Valid Data Value} *MUST* be a text string.
+DataTypes::EventEnum,TOOL_GROUP,An identifier for the tool group associated with a specific tool. Commonly used to designate spare tools.
+DataTypes::EventEnum,TOOL_ID,*DEPRECATED* in Version 1.2.0.   See {model:TOOL_ASSET_ID}. *DEPRECATED:The identifier of the tool currently in use for a given {model:Path}.*
+DataTypes::EventEnum,TOOL_NUMBER,"The identifier assigned by the {model:Controller} component to a cutting tool when in use by a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be a text string."
+DataTypes::EventEnum,TOOL_OFFSET,A reference to the tool offset variables applied to the active cutting tool associated with a {model:Path} in a {model:Controller} type component.
+DataTypes::SampleEnum,TORQUE,The measurement of the turning force exerted on an object or by an object.
+DataTypes::EventEnum,USER,The identifier of the person currently responsible for operating the piece of equipment.
+DataTypes::EventEnum,VARIABLE, A data value whose meaning may change over time due to changes in the opertion of a piece of equipment or the process being executed on that piece of equipment.
+DataTypes::SampleEnum,VELOCITY,The measurement of the rate of change of position of a {model:Component}.
+DataTypes::SampleEnum,VISCOSITY,The measurement of a fluids resistance to flow.
+DataTypes::SampleEnum,VOLTAGE,The measurement of electrical potential between two points.
+DataTypes::SampleEnum,VOLT_AMPERE,"The measurement of the apparent power in an electrical circuit, equal to the product of root-mean-square (RMS) voltage and RMS current (commonly referred to as VA)."
+DataTypes::SampleEnum,VOLT_AMPERE_REACTIVE,The measurement of reactive power in an AC electrical circuit (commonly referred to as VAR).
+DataTypes::SampleEnum,VOLUME_FLUID,The fluid volume of an object or container.
+DataTypes::SampleEnum,VOLUME_SPATIAL,The geometric volume of an object or container.
+DataTypes::EventEnum,WAIT_STATE,"An indication of the reason that {model:EXECUTION} is reporting a value of {model:WAIT}.
+  
+ The {term:Valid Data Value} *MUST* be {model:POWERING_UP}, {model:POWERING_DOWN}, {model:PART_LOAD}, {model:PART_UNLOAD}, {model:TOOL_LOAD}, {model:TOOL_UNLOAD}, {model:MATERIAL_LOAD}, {model:MATERIAL_UNLOAD}, {model:SECONDARY_PROCESS}, {model:PAUSING}, or {model:RESUMING}."
+DataTypes::SampleEnum,WATTAGE,The measurement of power flowing through or dissipated by an electrical circuit or piece of equipment.
+DataTypes::EventEnum,WIRE,A string like piece or filament of relatively rigid or flexible material provided in a variety of diameters.
+DataTypes::EventEnum,WORKHOLDING_ID,"The identifier for the current workholding or part clamp in use by a piece of equipment. 
+ The {term:Valid Data Value} *MUST* be a text string."
+DataTypes::EventEnum,WORK_OFFSET,A reference to the offset variables for a work piece or part associated with a {model:Path} in a {model:Controller} type component.

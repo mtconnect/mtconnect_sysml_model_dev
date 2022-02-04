@@ -1,0 +1,43 @@
+Owner,Name,ownedComment
+Components::Compositions::CompositionTypeEnum,ACTUATOR,"A mechanism for moving or controlling a mechanical part of a piece of equipment.   
+ It takes energy usually provided by air, electric current, or liquid and converts the energy into some kind of motion. "
+Components::Compositions::CompositionTypeEnum,AMPLIFIER,"An electronic component or circuit for amplifying power, electric current, or voltage."
+Components::Compositions::CompositionTypeEnum,BALLSCREW,A mechanical structure for transforming rotary motion into linear motion.
+Components::Compositions::CompositionTypeEnum,BELT,An endless flexible band used to transmit motion for a piece of equipment or to convey materials and objects.
+Components::Compositions::CompositionTypeEnum,BRAKE,"A mechanism for slowing or stopping a moving object by the absorption or transfer of the energy of momentum, usually by means of friction, electrical force, or magnetic force."
+Components::Compositions::CompositionTypeEnum,CHAIN,An interconnected series of objects that band together and are used to transmit motion for a piece of equipment or to convey materials and objects.
+Components::Compositions::CompositionTypeEnum,CHOPPER,A mechanism used to break material into smaller pieces.
+Components::Compositions::CompositionTypeEnum,CHUCK,"A mechanism that holds a part, stock material, or any other item in place."
+Components::Compositions::CompositionTypeEnum,CHUTE,An inclined channel for conveying material.
+Components::Compositions::CompositionTypeEnum,CIRCUIT_BREAKER,A mechanism for interrupting an electric circuit.
+Components::Compositions::CompositionTypeEnum,CLAMP,"A mechanism used to strengthen, support, or fasten objects in place."
+Components::Compositions::CompositionTypeEnum,COMPRESSOR,A pump or other mechanism for reducing volume and increasing pressure of gases in order to condense the gases to drive pneumatically powered pieces of equipment.
+Components::Compositions::CompositionTypeEnum,DOOR,A mechanical mechanism or closure that can cover a physical access portal into a piece of equipment allowing or restricting access to other parts of the equipment.
+Components::Compositions::CompositionTypeEnum,DRAIN,"A mechanism that allows material to flow for the purpose of drainage from, for example, a vessel or tank."
+Components::Compositions::CompositionTypeEnum,ENCODER,A mechanism used to measure rotary position.
+Components::Compositions::CompositionTypeEnum,EXPOSURE_UNIT,A mechanism for emitting a type of radiation
+Components::Compositions::CompositionTypeEnum,EXTRUSION_UNIT,A mechanism for dispensing liquid or powered materials
+Components::Compositions::CompositionTypeEnum,FAN,Any mechanism for producing a current of air.
+Components::Compositions::CompositionTypeEnum,FILTER,Any substance or structure through which liquids or gases are passed to remove suspended impurities or to recover solids.
+Components::Compositions::CompositionTypeEnum,GALVANOMOTOR,An electromechanical actuator that produces deflection of a beam of light or energy in response to electric current through its coil in a magnetic field.
+Components::Compositions::CompositionTypeEnum,GRIPPER,"A mechanism that holds a part, stock material, or any other item in place."
+Components::Compositions::CompositionTypeEnum,HOPPER,"A chamber or bin in which materials are stored temporarily, typically being filled through the top and dispensed through the bottom."
+Components::Compositions::CompositionTypeEnum,LINEAR_POSITION_FEEDBACK,A mechanism that measures linear motion or position.
+Components::Compositions::CompositionTypeEnum,MOTOR,"A mechanism that converts electrical, pneumatic, or hydraulic energy into mechanical energy."
+Components::Compositions::CompositionTypeEnum,OIL,A viscous liquid.
+Components::Compositions::CompositionTypeEnum,POWER_SUPPLY,A unit that provides power to electric mechanisms.
+Components::Compositions::CompositionTypeEnum,PULLEY,A mechanism or wheel that turns in a frame or block and serves to change the direction of or to transmit force.
+Components::Compositions::CompositionTypeEnum,PUMP,"An apparatus raising, driving, exhausting, or compressing fluids or gases by means of a piston, plunger, or set of rotating vanes."
+Components::Compositions::CompositionTypeEnum,REEL,A rotary storage unit for material
+Components::Compositions::CompositionTypeEnum,SENSING_ELEMENT,A mechanism that provides a signal or measured value.
+Components::Compositions::CompositionTypeEnum,SPREADER,A mechanism for flattening or spreading materials
+Components::Compositions::CompositionTypeEnum,STORAGE_BATTERY,"A component consisting of one or more cells, in which chemical energy is converted into electricity and used as a source of power. "
+Components::Compositions::CompositionTypeEnum,SWITCH,A mechanism for turning on or off an electric current or for making or breaking a circuit.
+Components::Compositions::CompositionTypeEnum,TABLE,A surface for holding an object or material
+Components::Compositions::CompositionTypeEnum,TANK,A receptacle or container for holding material.
+Components::Compositions::CompositionTypeEnum,TENSIONER,A mechanism that provides or applies a stretch or strain to another mechanism.
+Components::Compositions::CompositionTypeEnum,TRANSFORMER,A mechanism that transforms electric energy from a source to a secondary circuit.
+Components::Compositions::CompositionTypeEnum,VALVE,"Any mechanism for halting or controlling the flow of a liquid, gas, or other material through a passage, pipe, inlet, or outlet."
+Components::Compositions::CompositionTypeEnum,VAT,A container for liquid or powdered materials
+Components::Compositions::CompositionTypeEnum,WATER,A fluid.
+Components::Compositions::CompositionTypeEnum,WIRE,A string like piece or filament of relatively rigid or flexible material provided in a variety of diameters.

@@ -1,0 +1,34 @@
+Owner,Name,OwnedComment
+AssetModel::CuttingToolModel::Measurements,BodyDiameterMax,The largest diameter of the body of a Tool Item. 
+AssetModel::CuttingToolModel::Measurements,BodyLengthMax,"The distance measured along the X axis from that point of the item closest to the workpiece, including the Cutting Item for a Tool Item but excluding a protruding locking mechanism for an Adaptive Item, to either the front of the flange on a flanged body or the beginning of the connection interface feature on the machine side for cylindrical or prismatic shanks."
+AssetModel::CuttingToolModel::Measurements,DepthOfCutMax,The maximum engagement of the cutting edge or edges with the workpiece measured perpendicular to the feed motion. 
+AssetModel::CuttingToolModel::Measurements,CuttingDiameterMax,The maximum diameter of a circle on which the defined point Pk of each of the master inserts is located on a Tool Item. The normal of the machined peripheral surface points towards the axis of the Cutting Tool. 
+AssetModel::CuttingToolModel::Measurements,FlangeDiameterMax,The dimension between two parallel tangents on the outside edge of a flange. 
+AssetModel::CuttingToolModel::Measurements,OverallToolLength,The largest length dimension of the Cutting Tool including the master insert where applicable.  
+AssetModel::CuttingToolModel::Measurements,ShankDiameter,The dimension of the diameter of a cylindrical portion of a Tool Item or an Adaptive Item that can participate in a connection. 
+AssetModel::CuttingToolModel::Measurements,ShankHeight,The dimension of the height of the shank. 
+AssetModel::CuttingToolModel::Measurements,ShankLength,The dimension of the length of the shank. 
+AssetModel::CuttingToolModel::Measurements,UsableLengthMax,Maximum length of a Cutting Tool that can be used in a particular cutting operation including the non-cutting portions of the tool.
+AssetModel::CuttingToolModel::Measurements,ProtrudingLength,The dimension from the yz-plane to the furthest point of the Tool Item or Adaptive Item measured in the -X direction. 
+AssetModel::CuttingToolModel::Measurements,Weight,The total weight of the Cutting Tool in grams. The force exerted by the mass of the Cutting Tool. 
+AssetModel::CuttingToolModel::Measurements,FunctionalLength,"The distance from the gauge plane or from the end of the shank to the furthest point on the tool, if a gauge plane does not exist, to the cutting reference point determined by the main function of the tool. The {model:CuttingTool} functional length will be the length of the entire tool, not a single Cutting Item. Each {model:CuttingItem} can have an independent {model:FunctionalLength} represented in its measurements. "
+AssetModel::CuttingToolModel::Measurements,CuttingReferencePoint,The theoretical sharp point of the Cutting Tool from which the major functional dimensions are taken. 
+AssetModel::CuttingToolModel::Measurements,CuttingEdgeLength,The theoretical length of the cutting edge of a Cutting Item over sharp corners.
+AssetModel::CuttingToolModel::Measurements,DriveAngle,Angle between the driving mechanism locator on a Tool Item and the main cutting edge. 
+AssetModel::CuttingToolModel::Measurements,FlangeDiameter,The dimension between two parallel tangents on the outside edge of a flange. 
+AssetModel::CuttingToolModel::Measurements,FunctionalWidth,The distance between the cutting reference point and the rear backing surface of a turning tool or the axis of a boring bar.
+AssetModel::CuttingToolModel::Measurements,IncribedCircleDiameter,The diameter of a circle to which all edges of a equilateral and round regular insert are tangential. 
+AssetModel::CuttingToolModel::Measurements,PointAngle,The angle between the major cutting edge and the same cutting edge rotated by 180 degrees about the tool axis.
+AssetModel::CuttingToolModel::Measurements,ToolCuttingEdgeAngle,The angle between the tool cutting edge plane and the tool feed plane measured in a plane parallel the xy-plane. 
+AssetModel::CuttingToolModel::Measurements,ToolLeadAngle,The angle between the tool cutting edge plane and a plane perpendicular to the tool feed plane measured in a plane parallel the xy-plane. 
+AssetModel::CuttingToolModel::Measurements,ToolOrientation,The angle of the tool with respect to the workpiece for a given process. The value is application specific. 
+AssetModel::CuttingToolModel::Measurements,WiperEdgeLength,The measure of the length of a wiper edge of a Cutting Item.
+AssetModel::CuttingToolModel::Measurements,StepDiameterLength,The length of a portion of a stepped tool that is related to a corresponding cutting diameter measured from the cutting reference point of that cutting diameter to the point on the next cutting edge at which the diameter starts to change.
+AssetModel::CuttingToolModel::Measurements,StepIncludedAngle,The angle between a major edge on a step of a stepped tool and the same cutting edge rotated 180 degrees about its tool axis.
+AssetModel::CuttingToolModel::Measurements,CuttingDiameter,The diameter of a circle on which the defined point Pk located on this Cutting Tool. The normal of the machined peripheral surface points towards the axis of the Cutting Tool.
+AssetModel::CuttingToolModel::Measurements,CuttingHeight,The distance from the basal plane of the Tool Item to the cutting point. 
+AssetModel::CuttingToolModel::Measurements,CornerRadius,The nominal radius of a rounded corner measured in the X Y-plane. 
+AssetModel::CuttingToolModel::Measurements,FunctionalLength,"The distance from the gauge plane or from the end of the shank of the Cutting Tool, if a gauge plane does not exist, to the cutting reference point determined by the main function of the tool. This measurement will be with reference to the Cutting Tool and *MUSTNOT* exist without a Cutting Tool."
+AssetModel::CuttingToolModel::Measurements,ChamferFlatLength,The flat length of a chamfer. 
+AssetModel::CuttingToolModel::Measurements,ChamferWidth,The width of the chamfer. 
+AssetModel::CuttingToolModel::Measurements,InsertWidth,W1 is used for the insert width when an inscribed circle diameter is not practical.
