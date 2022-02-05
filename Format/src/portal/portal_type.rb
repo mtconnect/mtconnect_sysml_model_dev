@@ -96,7 +96,7 @@ class PortalType < Type
     $logger.debug "Adding constraints to #{@name}"
 
     rows = @constraints.map do |const|
-      [ convert_markdown_to_html(const.documentation), "<code>#{const.ocl}</code>" ]
+      [ convert_markdown_to_html(const.documentation), convert_markdown_to_html("~~~~\n#{const.ocl}\n~~~~") ]
     end
 
     # Add to the end of the grid
