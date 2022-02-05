@@ -23,19 +23,13 @@ module Extensions
   end
 
   def introduced
-    if defined? @introduced
-      @introduced
-    else
-      @introduced = version_for('normative')
-    end
+    return @introduced if defined? @introduced
+    @introduced = version_for('normative')
   end
 
   def deprecated
-    if defined? @deprecated
-      @deprecated
-    else
-      @deprecated = version_for('deprecated')
-    end
+    return @deprecated if defined? @deprecated
+    @deprecated = version_for('deprecated')
   end
 
   def xmi_documentation(e)

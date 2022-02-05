@@ -14,7 +14,6 @@ class PortalType < Type
 
   @@types_by_pid = Hash.new
 
-
   def self.type_for_pid(id)
     @@types_by_pid[id]
   end
@@ -181,11 +180,8 @@ class PortalType < Type
           int = rel.introduced
           dep = rel.deprecated
         end
-        int ||= introduced
-        dep ||= deprecated
-
-        row[:int] = int
-        row[:dep] = dep
+        row[:int] = int || introduced
+        row[:dep] = dep || deprecated
       end
       
     end

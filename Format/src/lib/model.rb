@@ -6,7 +6,7 @@ require 'stereotype'
 class Model
   include Extensions
   
-  attr_reader :name, :documentation, :types, :xmi
+  attr_reader :name, :documentation, :types, :xmi, :parent_name
 
   @@skip_models = {}
   @@models = {}
@@ -44,9 +44,25 @@ class Model
     @xmi = e
     @types = []
 
+    @parent_name = e.parent['name']
     @documentation = xmi_documentation(e)
 
     @@models[@name] = self
+  end
+
+  def parent
+    unless defined? @parent
+      if @parent_name != 'MTConnect'
+        @parent = @@models[@parent_name]
+      else
+        @parent = nil
+      end
+    end
+    @parent
+  end
+
+  def root
+    parent.nil? ? self : parent.root
   end
 
   def model

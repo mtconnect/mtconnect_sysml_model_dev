@@ -412,11 +412,18 @@ class Type
   end
 
   def get_parent
-    if !defined?(@parent)
-      @parent = nil
-      @relations.each do |r|
-        if r.is_a?(Relation::Generalization)
-          @parent = r.target.type if r.target
+    return @parent if defined? @parent
+    
+    @parent = nil
+    glossary = @model.root.name == 'Glossary'
+    @relations.each do |r|
+      if r.is_a?(Relation::Generalization)
+        if r.target
+          target_glossary = r.target.type.model.root.name == 'Glossary'
+          if glossary == target_glossary
+            @parent = r.target.type
+            break
+          end
         end
       end
     end
@@ -456,22 +463,20 @@ class Type
   end
 
   def introduced
-    if defined? @introduced
-      @introduced
-    else
-      super
-      if @introduced and @introduced !~ /^[0-9]/
-        @version_properties = @introduced
-        @introduced = derive_version('normative', @version_properties)
+    return @introduced if defined? @introduced
 
-        # Check for deprecated
-        unless @deprecated
-          @deprecated = version_for('deprecated')
-          @deprecated = derive_version('deprecated', @version_properties) unless @deprecated
-        end
+    super
+    if @introduced and @introduced !~ /^[0-9]/
+      @version_properties = @introduced
+      @introduced = derive_version('normative', @version_properties)
+      
+      # Check for deprecated
+      unless @deprecated
+        @deprecated = version_for('deprecated')
+        @deprecated = derive_version('deprecated', @version_properties) unless @deprecated
       end
-      @introduced
     end
+    @introduced
   end
 
   def deprecated
