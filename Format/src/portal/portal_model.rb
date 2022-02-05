@@ -110,8 +110,8 @@ class PortalModel < Model
       
       grid << gen_characteristics(*chars)
 
-      rows = @types.map { |type| [ format_obj(type), type.introduced, type.deprecated ] }      
-      grid << create_panel('Blocks', { Name: 300, Introduced: 84, Deprecated: 84 }, rows)
+      rows = @types.sort_by { |type| type.name }.map { |type| [ format_obj(type), type.introduced, type.deprecated ] }      
+      grid << create_panel('Blocks', { Name: 300, Introduced: 84, Deprecated: 84 }, rows) unless rows.empty?
     end
   end
   
