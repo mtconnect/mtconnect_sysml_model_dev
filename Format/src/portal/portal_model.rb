@@ -86,18 +86,23 @@ class PortalModel < Model
 
   def document_model
     return unless @content
-    
-    if @stereotypes
-      @content['title'] = "#{@stereotypes} #{@name}"
-    end
 
-    $logger.debug "Documenting model: #{@name}"
+    if @stereotypes
+      stereos = "<em>#{@stereotypes.map { |s| s.html }.join(' ')}</em>" 
+      name = "#{stereos} #{@name}"
+    else
+      name = @name
+    end
+    @content['title'] = name
+
+    $logger.debug "Documenting model: #{name}"
+    @tree['text'] = name if @tree
 
     grid = @content['grid_panel'] if @content
     if grid and grid.empty?
       # Create documentation w/ characteristics section
 
-      chars = [['Name', format_target(@pid, @name, PackageIcon)]]
+      chars = [['Name', format_target(@pid, @name, PackageIcon, name)]]
       if @documentation and !@documentation.empty?
         content = "<p>#{convert_markdown_to_html(@documentation)}</p>"
         chars << ['Documentation', content]

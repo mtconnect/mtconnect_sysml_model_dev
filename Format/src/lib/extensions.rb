@@ -32,6 +32,11 @@ module Extensions
     @deprecated = version_for('deprecated')
   end
 
+  def informative
+    return @informative if defined? @informative
+    @informative = @stereotypes.detect { |s| s.name == 'informative' } if @stereotypes
+  end
+  
   def xmi_documentation(e)
     recurse = lambda { |v| [ v['body'], v.xpath('./ownedComment').map { |c| [ c['body'], recurse.call(c) ] } ] }
     e.xpath('./ownedComment').map do |c1|

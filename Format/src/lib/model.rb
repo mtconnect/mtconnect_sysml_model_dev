@@ -6,7 +6,7 @@ require 'stereotype'
 class Model
   include Extensions
   
-  attr_reader :name, :documentation, :types, :xmi, :parent_name
+  attr_reader :name, :documentation, :types, :xmi, :parent_name, :stereotypes
 
   @@skip_models = {}
   @@models = {}
@@ -46,6 +46,7 @@ class Model
 
     @parent_name = e.parent['name']
     @documentation = xmi_documentation(e)
+    @stereotypes = xmi_stereotype(e)
 
     @@models[@name] = self
   end

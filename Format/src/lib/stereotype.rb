@@ -30,6 +30,10 @@ class Stereotype
     "<<#{@name}>>"
   end
 
+  def html
+    "&lt;&lt;#{@name}&gt;&gt;"
+  end
+
   def inspect
     to_s
   end
