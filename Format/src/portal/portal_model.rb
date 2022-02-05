@@ -85,7 +85,7 @@ class PortalModel < Model
   end
 
   def document_model
-    return unless @content
+    return if @content.nil? or @name == 'MTConnect'
 
     if informative
       stereos = "<em>#{informative.html}</em>" 
