@@ -87,8 +87,8 @@ class PortalModel < Model
   def document_model
     return unless @content
 
-    if @stereotypes
-      stereos = "<em>#{@stereotypes.map { |s| s.html }.join(' ')}</em>" 
+    if informative
+      stereos = "<em>#{informative.html}</em>" 
       name = "#{stereos} #{@name}"
     else
       name = @name
