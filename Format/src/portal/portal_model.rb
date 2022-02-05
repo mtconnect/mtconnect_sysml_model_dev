@@ -103,20 +103,10 @@ class PortalModel < Model
         chars << ['Documentation', content]
       end
       
-      grid << gen_characteristics(*chars)      
-      
-      rows = @types.map do |type|
-        dep = type.deprecated
-        { name: format_obj(type), introduced: type.introduced.to_s, deprecated: dep.to_s }
-      end
+      grid << gen_characteristics(*chars)
 
-      blocks = { title: 'Blocks', hideHeaders: false, collapsible: true,
-                 data_store: { fields: ['name', 'introduced', 'deprecated'], data: rows },
-                 columns: [ { text: 'Name ', dataIndex: 'name', flex: 0, width: 300 },
-                            { text: 'Introduced', dataIndex: 'introduced', flex: 0, width: 84 },
-                            { text: 'Deprecated', dataIndex: 'deprecated', flex: 0, width: 84 } ] }
-
-      grid << blocks
+      rows = @types.map { |type| [ format_obj(type), type.introduced, type.deprecated ] }      
+      grid << create_panel('Blocks', { Name: 300, Introduced: 84, Deprecated: 84 }, rows)
     end
   end
   

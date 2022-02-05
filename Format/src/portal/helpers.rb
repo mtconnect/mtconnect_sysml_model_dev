@@ -90,14 +90,41 @@ module PortalHelpers
       format_name(obj.name, icon, text)
     end            
   end
+
+  def create_panel(title, columns, rows, hide: false, collapse: true)
+    fields = Array(0...(columns.length)).map { |i| "col#{i}" }
+    columns = columns.map.with_index do |col, i|
+      case col
+      when String
+        name = col
+        width = -1
+        
+      when Array
+        name, width = col
+        width ||= -1
+        
+      else
+        name = "col#{i}"
+        width = -1 
+      end
+      flex = width == -1 ? 1 : 0
+      { text:"#{name} ", dataIndex: "col#{i}", flex: flex, width: width }
+    end
+
+    data = rows.map do |row|
+      Hash[*fields.zip(row).flatten]
+    end
+
+    panel = { title: "#{title} ", hideHeaders: hide, collapsible: collapse,
+              data_store: { fields: fields, data: data },
+              columns: columns }
+  end
   
-  def gen_characteristics(*rows)
-    data = rows.map { |col1, col2| { col0: "#{col1} ", col1: col2 } }
+  def gen_characteristics(*rows)        
+    rows << ['Introduced', introduced] if introduced
+    rows << ['Deprecated', deprecated] if deprecated
     
-    { title: 'Characteristics ', hideHeaders: true, collapsible: true,
-      data_store: { fields: ['col0', 'col1'], data: data },
-      columns: [ { text: 'col0', dataIndex: 'col0', flex: 0, width: 192 },
-                 { text: 'col1', dataIndex: 'col1', flex: 1, width: -1 } ] }    
+    create_panel('Characteristics', { name: 192, text: -1 }, rows, hide: true)
   end
 
   def add_entry
