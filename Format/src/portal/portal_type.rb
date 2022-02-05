@@ -182,15 +182,16 @@ class PortalType < Type
           [ i, par.name, format_obj(type), par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
         end
       end.compact
-      panels << create_panel('Parameters', { '#': 50, Name: 200, Type: 200, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
-
-      if result
-        panels << create_panel('Result', { Type: 250, Documentation: -1 }, [result])
-      end
+      panels << create_panel('Parameters', { '#': 50, Name: 200, Type: 150, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
+      panels << create_panel('Result', { Type: 250, Documentation: -1 }, [result]) if result
       
       content = { title: op.name, path: path, html_panel: [], grid_panel: panels, image_panel: [] }
       @doc.content[op.pid] = content
       children << { text: op.name, qtitle: op.pid, icon: EnumLiteralIcon, expanded: false, leaf: true }
+
+      entry = { id: op.pid, 'name' => "#{op.name} : <i>Opeeration</i>", type: 'operation' }
+      @doc.search['all'] << entry
+      @doc.search['block'] << entry    
     end
 
   end

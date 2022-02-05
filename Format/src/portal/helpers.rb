@@ -122,8 +122,8 @@ module PortalHelpers
     create_panel('Characteristics', { name: 192, text: -1 }, rows, hide: true)
   end
 
-  def add_entry
-    entry = { id: @pid, 'name' => "#{@name} : <i>Block</i>", type: "block" }
+  def add_entry(type = 'block')
+    entry = { id: @pid, 'name' => "#{@name} : <i>#{type.capitalize}</i>", type: type }
     @doc.search['all'] << entry
     @doc.search['block'] << entry
   end
