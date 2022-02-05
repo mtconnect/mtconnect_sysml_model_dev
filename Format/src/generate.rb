@@ -35,7 +35,7 @@ parser.parse!
 $logger = Logger.new(STDOUT)
 $logger.level = Options[:debug] ? Logger::DEBUG : Logger::INFO 
 $logger.formatter = proc do |severity, datetime, progname, msg|
-  "#{severity}: #{msg}\n"
+  "#{Time.now} #{severity}: #{msg}\n"
 end
 
 unless ARGV.first

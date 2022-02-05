@@ -13,7 +13,7 @@ class WebReport
   end
 
   def js_to_json(file)
-    puts "Reading #{file}"
+    $logger.info "Reading #{file}"
     data = File.read(file)
     
     data.gsub!(/^\};/, '},')

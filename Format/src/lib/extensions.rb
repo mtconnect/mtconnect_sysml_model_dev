@@ -51,10 +51,7 @@ module Extensions
       lower = '0' unless lower
     end
 
-
     # $logger.debug "  Multiplicity for #{r.to_s}: #{lower} #{upper}"
-
-    [lower == upper ? upper : "#{lower}..#{upper}",
-     optional = lower == '0']
+    [lower == upper ? upper : "#{lower}..#{upper}", lower == '0']
   end
 end

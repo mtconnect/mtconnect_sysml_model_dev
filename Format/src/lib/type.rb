@@ -338,10 +338,6 @@ class Type
     rel
   end
 
-  def is_opc?
-    @model.is_opc?
-  end
-
   def is_aliased?
     @aliased
   end
