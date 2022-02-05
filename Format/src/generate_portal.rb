@@ -92,6 +92,7 @@ class PortalGenerator
     PortalModel.add_characteristics    
     PortalModel.add_constraints
     PortalModel.add_version_to_attributes
+    PortalModel.generate_operations
 
     @doc.write(output)
     @doc.update_resources(resource, res_formatted)

@@ -56,10 +56,7 @@ module PortalHelpers
     end                    
   end
 
-  def format_obj(obj)
-    dep = obj.deprecated
-    pid = obj.pid
-    
+  def format_obj(obj)    
     case obj
     when PortalType, Type::LazyPointer
       if obj.enumeration?
@@ -74,21 +71,19 @@ module PortalHelpers
     when Type::Literal
       icon = EnumLiteralIcon
 
+    when Operation
+      icon = EnumLiteralIcon
+
+    when String
+      return obj
+      
     else
       $logger.error "!!!! Unknown type: #{obj.class}"
     end
 
-    if dep
-      text = "<strike>#{obj.name}</strike>"
-    else
-      text = obj.name
-    end
-    
-    if pid
-      format_target(pid, obj.name, icon, text)
-    else
-      format_name(obj.name, icon, text)
-    end            
+    pid = obj.pid
+    text = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name    
+    pid ? format_target(pid, obj.name, icon, text) : format_name(obj.name, icon, text)
   end
 
   def create_panel(title, columns, rows, hide: false, collapse: true)

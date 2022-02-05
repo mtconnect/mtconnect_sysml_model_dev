@@ -1,7 +1,7 @@
 $: << File.dirname(__FILE__)
 
 require 'extensions'
-  
+
 module Relation
   @@connections = {}
   
@@ -37,9 +37,9 @@ module Relation
     when 'uml:Slot'
       Slot.new(owner, r)
       
-    when 'uml:Comment'
+    when 'uml:Comment', 'uml:Operation'
       nil
-      
+
     else
       $logger.error "!! Unknown relation type: #{r.name} :: #{r['xmi:id']} - #{r['xmi:type']} for #{owner.name}"
       nil
@@ -92,7 +92,7 @@ module Relation
       @type = r['xmi:type']
       @xmi = r
       @constraints = {}
-       
+      
       @multiplicity, @optional = get_multiplicity(r)
       @assoc = r['association']
       @visibility = r['visibility'] ? r['visibility'] : 'public'

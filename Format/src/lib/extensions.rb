@@ -41,13 +41,13 @@ module Extensions
 
   def get_multiplicity(r)
     lower = upper = '1'
-    if r.at('upperValue')
-      upper = r.at('upperValue')['value']
+    if u = r.at('upperValue')
+      upper = u['value']
       upper = '0' unless upper
     end
 
-    if r.at('lowerValue')
-      lower = r.at('lowerValue')['value']
+    if l = r.at('lowerValue')
+      lower = l['value']
       lower = '0' unless lower
     end
 

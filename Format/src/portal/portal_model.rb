@@ -166,4 +166,12 @@ class PortalModel < Model
       m.types.each { |t| t.add_version_to_attributes }
     end
   end
+
+  def self.generate_operations
+    $logger.info "Adding operations"
+
+    @@models.each do |k, m|
+      m.types.each { |t| t.generate_operations }
+    end
+  end
 end

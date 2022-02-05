@@ -3,7 +3,7 @@ $: << File.dirname(__FILE__)
 require 'logger'
 require 'relation'
 require 'extensions'
-
+require 'operation'
 
 class Type
   include Extensions
@@ -261,12 +261,9 @@ class Type
 
   def find_operations
     @operations = @xmi.xpath('./ownedOperation').map do |op|
-      name = op['name']
-      doc = xmi_documentation(op)
-      
-      $logger.warn "Could not find docs for for #{@name}::#{name}" unless doc
-      [name, doc]
-    end    
+      next unless op['xmi:type'] == 'uml:Operation'    
+      Operation.new(op)
+    end.compact
   end
 
   def collect_attributes
@@ -478,5 +475,11 @@ class Type
   def deprecated
     introduced
     super
+  end
+
+  def add_operations
+    return if @operations.empty?
+
+    
   end
 end

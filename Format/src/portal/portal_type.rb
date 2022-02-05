@@ -35,6 +35,7 @@ class PortalType < Type
   def associate_content(doc, node, path)
     @path = (path.dup << node['text']).freeze
     @doc = doc
+    @tree = node
     @pid = node['qtitle']
     @content = @doc.content[@pid]
 
@@ -51,9 +52,8 @@ class PortalType < Type
 
   def enumeration_rows
     i = 0
-    literals.sort_by { |lit| lit.name }.map do |lit|
-      i += 1
-      [ i, format_obj(lit), lit.introduced, lit.deprecated, convert_markdown_to_html(lit.description) ]
+    literals.sort_by { |lit| lit.name }.map.with_index do |lit, i|
+      [ i = 1, format_obj(lit), lit.introduced, lit.deprecated, convert_markdown_to_html(lit.description) ]
     end
   end
 
@@ -156,5 +156,42 @@ class PortalType < Type
     @model.tree['children'] << { text: @name, qtitle: @pid, icon: icon, expanded: false, leaf: true }
 
     add_entry    
+  end
+
+  def generate_operations
+    return if @operations.empty?
+
+    @tree['leaf'] = false
+    children = @tree['children'] = []
+    
+    fname, path = root_path        
+    @operations.each do |op|
+      panels = []
+      panels << gen_characteristics(['Name', format_obj(op)],
+                                            ['Documentation', convert_markdown_to_html(op.documentation)])
+
+      result = nil
+      rows = op.parameters.map.with_index do |par, i|
+        type = Type.type_for_id(par.type) || par.type || 'string'
+
+        if par.direction == 'return'
+          result = [ format_obj(type), convert_markdown_to_html(par.documentation) ]
+          nil
+        else
+          dflt = par.default ? convert_markdown_to_html("`#{par.default}`") : ''
+          [ i, par.name, format_obj(type), par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
+        end
+      end.compact
+      panels << create_panel('Parameters', { '#': 50, Name: 200, Type: 200, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
+
+      if result
+        panels << create_panel('Result', { Type: 250, Documentation: -1 }, [result])
+      end
+      
+      content = { title: op.name, path: path, html_panel: [], grid_panel: panels, image_panel: [] }
+      @doc.content[op.pid] = content
+      children << { text: op.name, qtitle: op.pid, icon: EnumLiteralIcon, expanded: false, leaf: true }
+    end
+
   end
 end
