@@ -43,7 +43,11 @@ class PortalModel < Model
         if child['qtitle'] =~ /^(Structure|Package)_/
           cp = path.dup << child['text']
           v = @@model_paths[cp]
-          v.associate_content(doc, child, path)
+          if v
+            v.associate_content(doc, child, path)
+          else
+            $logger.error "Cannot find portal content for #{cp.inspect}"
+          end
         end
       end
     end
@@ -59,6 +63,7 @@ class PortalModel < Model
     if @name != 'MTConnect'
       @path = xmi_path(@xmi) << @name
       @@model_paths[@path] = self
+      $logger.debug "Adding Path: #{@path} for #{@name}"
       @types.each do |t|
         pth = @path.dup << t.name
         @@model_paths[pth] = t

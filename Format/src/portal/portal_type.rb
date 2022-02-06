@@ -168,7 +168,7 @@ class PortalType < Type
     @operations.each do |op|
       panels = []
       panels << gen_characteristics(['Name', format_obj(op)],
-                                            ['Documentation', convert_markdown_to_html(op.documentation)])
+                                    ['Documentation', convert_markdown_to_html(op.documentation)])
 
       result = nil
       rows = op.parameters.map.with_index do |par, i|
@@ -179,10 +179,12 @@ class PortalType < Type
           nil
         else
           dflt = par.default ? convert_markdown_to_html("`#{par.default}`") : ''
-          [ i, par.name, format_obj(type), par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
+          int = par.introduced || op.introduced
+          dep = par.deprecated || op.deprecated
+          [ i, par.name, int, dep, format_obj(type), par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
         end
       end.compact
-      panels << create_panel('Parameters', { '#': 50, Name: 200, Type: 150, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
+      panels << create_panel('Parameters', { '#': 50, Name: 200, Int: 64, Dep: 64, Type: 150, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
       panels << create_panel('Result', { Type: 250, Documentation: -1 }, [result]) if result
       
       content = { title: op.name, path: path, html_panel: [], grid_panel: panels, image_panel: [] }
