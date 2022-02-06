@@ -163,12 +163,13 @@ class PortalType < Type
 
     @tree['leaf'] = false
     children = @tree['children'] = []
+    op_rows = []
     
     fname, path = root_path        
-    @operations.each do |op|
+    @operations.each_with_index do |op, i|
       panels = []
       panels << gen_characteristics(['Name', format_obj(op)],
-                                    ['Documentation', convert_markdown_to_html(op.documentation)])
+                                    ['Documentation', docs = convert_markdown_to_html(op.documentation)])
 
       result = nil
       rows = op.parameters.map.with_index do |par, i|
@@ -181,7 +182,7 @@ class PortalType < Type
           dflt = par.default ? convert_markdown_to_html("`#{par.default}`") : ''
           int = par.introduced || op.introduced
           dep = par.deprecated || op.deprecated
-          [ i, par.name, int, dep, format_obj(type), par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
+          [ i + 1, par.name, int, dep, format_obj(type), par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
         end
       end.compact
       panels << create_panel('Parameters', { '#': 50, Name: 200, Int: 64, Dep: 64, Type: 150, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
@@ -192,9 +193,13 @@ class PortalType < Type
       children << { text: op.name, qtitle: op.pid, icon: EnumLiteralIcon, expanded: false, leaf: true }
 
       entry = { id: op.pid, 'name' => "#{op.name} : <i>Opeeration</i>", type: 'operation' }
+
+      op_rows << [ i + 1, format_obj(op), op.introduced, op.deprecated, result[0], docs ]
+      
       @doc.search['all'] << entry
       @doc.search['block'] << entry    
     end
 
+    @content['grid_panel'] << create_panel('Operatiuons', { '#': 50, Name: 200, Int: 64, Dep: 64, Result: 150, Documentation: -1 }, op_rows)    
   end
 end
