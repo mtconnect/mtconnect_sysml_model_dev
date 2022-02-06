@@ -6,12 +6,6 @@ require 'portal/portal_model'
 require 'portal/helpers'
 require 'portal/web_report'
 
-# Icon constants here
-EnumTypeIcon = 'images/enum_type_icon.png'.freeze
-EnumLiteralIcon = 'images/enum_literal_icon.png'.freeze
-PackageIcon = 'images/package_icon.png'.freeze
-BlockIcon = 'images/block_class_icon.png'.freeze
-  
 class Hash
   def path(*args)
     o = self

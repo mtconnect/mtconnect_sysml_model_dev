@@ -1,4 +1,11 @@
 
+# Icon constants here
+EnumTypeIcon = 'images/enum_type_icon.png'.freeze
+EnumLiteralIcon = 'images/enum_literal_icon.png'.freeze
+PackageIcon = 'images/package_icon.png'.freeze
+BlockIcon = 'images/block_class_icon.png'.freeze
+OperationIcon = 'images/operation_icon.png'.freeze
+
 module PortalHelpers
   def convert_markdown_to_html(content)
     data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
@@ -72,7 +79,7 @@ module PortalHelpers
       icon = EnumLiteralIcon
 
     when Operation
-      icon = EnumLiteralIcon
+      icon = OperationIcon
 
     when String
       return obj

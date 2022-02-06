@@ -194,7 +194,7 @@ class PortalType < Type
       
       content = { title: op.name, path: path, html_panel: [], grid_panel: panels, image_panel: [] }
       @doc.content[op.pid] = content
-      children << { text: op.name, qtitle: op.pid, icon: EnumLiteralIcon, expanded: false, leaf: true }
+      children << { text: op.name, qtitle: op.pid, icon: OperationIcon, expanded: false, leaf: true }
 
       entry = { id: op.pid, 'name' => "#{op.name} : <i>Opeeration</i>", type: 'operation' }
 
