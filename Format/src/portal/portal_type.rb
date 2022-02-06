@@ -6,6 +6,10 @@ class Type::Literal
   include PortalHelpers
 end
 
+class Operation
+  include PortalHelpers
+end
+
 class PortalType < Type
   include Document
   include PortalHelpers
@@ -168,8 +172,8 @@ class PortalType < Type
     fname, path = root_path        
     @operations.each_with_index do |op, i|
       panels = []
-      panels << gen_characteristics(['Name', format_obj(op)],
-                                    ['Documentation', docs = convert_markdown_to_html(op.documentation)])
+      panels << op.gen_characteristics(['Name', format_obj(op)],
+                                       ['Documentation', docs = convert_markdown_to_html(op.documentation)])
 
       result = nil
       rows = op.parameters.map.with_index do |par, i|
