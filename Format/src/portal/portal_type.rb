@@ -46,12 +46,8 @@ class PortalType < Type
     @@types_by_pid[@pid] = self
   end
 
-  def root_path
-    root = @model.path.map { |m| PortalModel.model_for_name(m).format_target }.join(' / ')    
-    @path = (@model.path.dup << @name).freeze
-    fname = format_target
-    path = "#{root} / #{fname}"
-    [fname, path]
+  def formatted_path
+    "#{@model.formatted_path} / #{format_target}"
   end
 
   def enumeration_rows
@@ -64,22 +60,19 @@ class PortalType < Type
   def generate_enumeration
     return unless enumeration?
 
-    fname, path = root_path
-
     characteristics = gen_characteristics
     literals = create_panel('Enumeration Literals',
                             { '#': 50, Name: 300, Introduced: 84, Deprecated: 84, Documentation: -1},
                             enumeration_rows)
 
-    add_tree_node(name, path, [characteristics, literals], EnumTypeIcon)
+    add_tree_node([characteristics, literals])
   end
 
   def generate_stereotype
     return unless @type == 'uml:Stereotype'
 
-    fname, path = root_path
     characteristics = gen_characteristics
-    add_tree_node(name, path, [characteristics], BlockIcon)
+    add_tree_node([characteristics])
   end
 
   def add_characteristics
@@ -148,17 +141,19 @@ class PortalType < Type
     end
   end
 
-  def add_tree_node(name, path, panels, icon)
+  def add_tree_node(panels)
     _, pre = @type.split(':')
     @pid = "#{pre}__#{@id}"
     @doc = @model.doc
     @@types_by_pid[@pid] = self
-    
-    @content = { title: name, path: path, html_panel: [], grid_panel: panels, image_panel: [] }
-    @doc.content[@pid] = @content
-    @model.tree['children'] << { text: @name, qtitle: @pid, icon: icon, expanded: false, leaf: true }
+    icon = icon_for_obj(self)
 
-    add_entry    
+    n = decorated(@name)
+    @content = { title: n, path: formatted_path, html_panel: [], grid_panel: panels, image_panel: [] }
+    @doc.content[@pid] = @content
+    @model.tree['children'] << { text: n, qtitle: @pid, icon: icon, expanded: false, leaf: true }
+
+    add_entry(pre.downcase)
   end
 
   def generate_operations
@@ -168,11 +163,9 @@ class PortalType < Type
     children = @tree['children'] = []
     op_rows = []
     
-    fname, path = root_path        
+    path = formatted_path
     @operations.each_with_index do |op, i|
-      panels = []
-      panels << op.gen_characteristics
-
+      panels = [op.gen_characteristics]
       result = nil
       rows = op.parameters.map.with_index do |par, i|
         type = Type.type_for_id(par.type) || par.type || 'string'
@@ -184,13 +177,14 @@ class PortalType < Type
           dflt = par.default ? convert_markdown_to_html("`#{par.default}`") : ''
           int = par.introduced || op.introduced
           dep = par.deprecated || op.deprecated
-          [ i + 1, par.name, int, dep, type.format_target, par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
+          pn = dep ? "<strike>#{par.name}</strike>" : par.name
+          [ i + 1, pn, int, dep, type.format_target, par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
         end
       end.compact
       panels << create_panel('Parameters', { '#': 50, Name: 200, Int: 64, Dep: 64, Type: 150, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
       panels << create_panel('Result', { Type: 250, Documentation: -1 }, [result]) if result
       
-      content = { title: op.name, path: path, html_panel: [], grid_panel: panels, image_panel: [] }
+      content = { title: op.name, path: "#{path} / #{op.format_target}", html_panel: [], grid_panel: panels, image_panel: [] }
       @doc.content[op.pid] = content
       children << { text: op.name, qtitle: op.pid, icon: OperationIcon, expanded: false, leaf: true }
 

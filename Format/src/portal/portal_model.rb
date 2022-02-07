@@ -107,6 +107,15 @@ class PortalModel < Model
       grid << create_panel('Blocks', { Name: 300, Introduced: 84, Deprecated: 84 }, rows) unless rows.empty?
     end
   end
+
+  def model_path
+    return @model_path if defined? @model_path
+    @model_path = @path.map { |m| PortalModel.model_for_name(m) }
+  end
+
+  def formatted_path
+    model_path.map { |m| m.format_target }.join(' / ')
+  end
   
   def self.document_models
     $logger.info "Documenting models"
