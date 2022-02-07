@@ -207,12 +207,12 @@ class WebReport
               if dc and row[dc] != " </br>"
                 row[dc] = convert_markdown_to_html(row[dc])
                 if nc and row[dc] =~ /deprecated/i
-                  row[nc] = deprecate(row[nc])
+                  row[nc] = deprecate_html(row[nc])
                 end              
               end
               
               if tc and row[tc] =~ /([A-Za-z]+Enum)</ and type = PortalType.type_for_name($1)
-                row[tc] = format_obj(type)
+                row[tc] = type.format_target
               end
             end
           end

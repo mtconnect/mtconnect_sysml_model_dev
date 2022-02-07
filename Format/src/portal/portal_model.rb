@@ -92,12 +92,7 @@ class PortalModel < Model
   def document_model
     return if @content.nil? or @name == 'MTConnect'
 
-    if informative
-      stereos = "<em>#{informative.html}</em>" 
-      name = "#{stereos} #{@name}"
-    else
-      name = @name
-    end
+    name = decorated
     @content['title'] = name
 
     $logger.debug "Documenting model: #{name}"
@@ -106,16 +101,9 @@ class PortalModel < Model
     grid = @content['grid_panel'] if @content
     if grid and grid.empty?
       # Create documentation w/ characteristics section
+      grid << gen_characteristics
 
-      chars = [['Name', format_target(@pid, @name, PackageIcon, name)]]
-      if @documentation and !@documentation.empty?
-        content = "<p>#{convert_markdown_to_html(@documentation)}</p>"
-        chars << ['Documentation', content]
-      end
-      
-      grid << gen_characteristics(*chars)
-
-      rows = @types.sort_by { |type| type.name }.map { |type| [ format_obj(type), type.introduced, type.deprecated ] }      
+      rows = @types.sort_by { |type| type.name }.map { |type| [ type.format_target, type.introduced, type.deprecated ] }      
       grid << create_panel('Blocks', { Name: 300, Introduced: 84, Deprecated: 84 }, rows) unless rows.empty?
     end
   end

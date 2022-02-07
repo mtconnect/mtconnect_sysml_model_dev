@@ -47,9 +47,9 @@ class PortalType < Type
   end
 
   def root_path
-    root = @model.path.map { |m| format_obj(PortalModel.model_for_name(m)) }.join(' / ')    
+    root = @model.path.map { |m| PortalModel.model_for_name(m).format_target }.join(' / ')    
     @path = (@model.path.dup << @name).freeze
-    fname = format_obj(self)
+    fname = format_target
     path = "#{root} / #{fname}"
     [fname, path]
   end
@@ -57,7 +57,7 @@ class PortalType < Type
   def enumeration_rows
     i = 0
     literals.sort_by { |lit| lit.name }.map.with_index do |lit, i|
-      [ i = 1, format_obj(lit), lit.introduced, lit.deprecated, convert_markdown_to_html(lit.description) ]
+      [ i = 1, lit.format_target, lit.introduced, lit.deprecated, convert_markdown_to_html(lit.description) ]
     end
   end
 
@@ -66,7 +66,7 @@ class PortalType < Type
 
     fname, path = root_path
 
-    characteristics = gen_characteristics(['Name', fname])
+    characteristics = gen_characteristics
     literals = create_panel('Enumeration Literals',
                             { '#': 50, Name: 300, Introduced: 84, Deprecated: 84, Documentation: -1},
                             enumeration_rows)
@@ -78,8 +78,7 @@ class PortalType < Type
     return unless @type == 'uml:Stereotype'
 
     fname, path = root_path
-    characteristics = gen_characteristics(['Name', fname],
-                                          ['Documentation', convert_markdown_to_html(@documentation)])
+    characteristics = gen_characteristics
     add_tree_node(name, path, [characteristics], BlockIcon)
   end
 
@@ -87,7 +86,7 @@ class PortalType < Type
     if @content
       data = @content.path('grid_panel', 0, 'data_store', 'data')
       if data
-        data.unshift({ col0: 'Parent', col1: format_obj(@parent) }) if @parent
+        data.unshift({ col0: 'Parent', col1: @parent.format_target }) if @parent
         data << { col0: 'Introduced', col1: introduced } if introduced
         data << { col0: 'Deprecated', col1: deprecated } if deprecated
       end
@@ -172,21 +171,20 @@ class PortalType < Type
     fname, path = root_path        
     @operations.each_with_index do |op, i|
       panels = []
-      panels << op.gen_characteristics(['Name', format_obj(op)],
-                                       ['Documentation', docs = convert_markdown_to_html(op.documentation)])
+      panels << op.gen_characteristics
 
       result = nil
       rows = op.parameters.map.with_index do |par, i|
         type = Type.type_for_id(par.type) || par.type || 'string'
 
         if par.direction == 'return'
-          result = [ format_obj(type), convert_markdown_to_html(par.documentation) ]
+          result = [ type.format_target, convert_markdown_to_html(par.documentation) ]
           nil
         else
           dflt = par.default ? convert_markdown_to_html("`#{par.default}`") : ''
           int = par.introduced || op.introduced
           dep = par.deprecated || op.deprecated
-          [ i + 1, par.name, int, dep, format_obj(type), par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
+          [ i + 1, par.name, int, dep, type.format_target, par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
         end
       end.compact
       panels << create_panel('Parameters', { '#': 50, Name: 200, Int: 64, Dep: 64, Type: 150, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
@@ -198,7 +196,7 @@ class PortalType < Type
 
       entry = { id: op.pid, 'name' => "#{op.name} : <i>Opeeration</i>", type: 'operation' }
 
-      op_rows << [ i + 1, format_obj(op), op.introduced, op.deprecated, result[0], docs ]
+      op_rows << [ i + 1, op.format_target, op.introduced, op.deprecated, result[0], convert_markdown_to_html(op.documentation) ]
       
       @doc.search['all'] << entry
       @doc.search['block'] << entry    

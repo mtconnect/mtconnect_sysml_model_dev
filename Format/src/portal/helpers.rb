@@ -18,17 +18,17 @@ module PortalHelpers
     col['width'] = width if col
   end
 
-  def format_name(name, icon, text = name)
+  def format_name_html(name, icon, text = name)
     "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
       "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
       "</span> #{text}</div></br>"
   end
 
-  def deprecated_format_name(name, icon)
-    format_name(name, icon, "<strike>#{name}</strike>")
+  def deprecated_format_name_html(name, icon)
+    format_name_html(name, icon, "<strike>#{name}</strike>")
   end
 
-  def format_target(id, name, icon, text = name)
+  def format_target_html(id, name, icon, text = name)
     "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
       "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
       "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
@@ -36,10 +36,10 @@ module PortalHelpers
   end
 
   def deprecated_format_target(id, name, icon)
-    format_target(id, name, icon, "<strike>#{name}</strike>")
+    format_target_html(id, name, icon, "<strike>#{name}</strike>")
   end
   
-  def deprecate(text)
+  def deprecate_html(text)
     text.sub(%r{> (.+?)</div></br>$}, '> <strike>\1</strike>\2</div>')
   end
 
@@ -63,7 +63,8 @@ module PortalHelpers
     end                    
   end
 
-  def format_obj(obj)    
+  def icon_for_obj(obj)
+    icon = nil
     case obj
     when PortalType, Type::LazyPointer
       if obj.enumeration?
@@ -81,16 +82,45 @@ module PortalHelpers
     when Operation
       icon = OperationIcon
 
-    when String
-      return obj
-      
     else
       $logger.error "!!!! Unknown type: #{obj.class}"
     end
+    icon
+  end
 
+  def decorated(text = @name)
+    text = deprecated ? "<strike>#{text}</strike>" : text
+    if @stereotypes
+      sts = @stereotypes.select { |s| s.name != 'normative' and s.name != 'deprecated' }.map { |s| s.html }
+    end
+    if sts.nil? or sts.empty?
+      text
+    else
+      "<em>#{sts.join(' ')}</em> #{text}"
+    end
+  end
+
+  def format_target_obj(obj)
+    return obj if String === obj
+    icon = icon_for_obj(obj)
     pid = obj.pid
-    text = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name    
-    pid ? format_target(pid, obj.name, icon, text) : format_name(obj.name, icon, text)
+    text = decorated(obj.name)
+    pid ? format_target_html(pid, obj.name, icon, text) : format_name_html(obj.name, icon, text)
+  end
+  
+  def format_name_obj(obj)    
+    return obj if String === obj
+    icon = icon_for_obj(obj)
+    text = decorated(obj.name)
+    format_name_html(obj.name, icon, text)
+  end
+
+  def format_target
+    format_target_obj(self)
+  end
+
+  def format_name
+    format_name_obj(self)
   end
 
   def create_panel(title, columns, rows, hide: false, collapse: true)
@@ -122,7 +152,11 @@ module PortalHelpers
               columns: columns }
   end
   
-  def gen_characteristics(*rows)        
+  def gen_characteristics
+    rows = [['Name', format_name]]
+    if @documentation and !@documentation.empty?
+      rows << ['Documentation', convert_markdown_to_html(@documentation)]
+    end
     rows << ['Introduced', introduced] if introduced
     rows << ['Deprecated', deprecated] if deprecated
     
