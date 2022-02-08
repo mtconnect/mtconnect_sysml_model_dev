@@ -215,13 +215,14 @@ module Relation
     class Assoc
       include Extensions
 
-      attr_reader :name, :type, :documentation, :stereotypes
+      attr_reader :name, :type, :documentation, :stereotypes, :is_derived
       
       def initialize(e)
         @name = e['name']
         @type = e['xmi:type']
         @documentation = xmi_documentation(e)
         @stereotypes=  xmi_stereotype(e)
+        @is_derived = e['isDerived']
       end
     end
     
@@ -232,20 +233,16 @@ module Relation
       @final_target = @target = End.new(r, Type::LazyPointer.new(tid))
       
       aid = r['association']
-      assoc = r.document.at("//packagedElement[@xmi:id='#{aid}']")
-      
+      assoc = r.document.at("//packagedElement[@xmi:id='#{aid}']")      
       @association = Assoc.new(assoc)
-      @association_name = assoc['name']
       @redefinesProperty = r.at('./redefinedProperty') ? true : false    
-      @association_doc = xmi_documentation(assoc)
       
       src = assoc.at('./ownedEnd')
       return if not src
-      @assoc_type = assoc['type']
+      
       @source = End.new(src, owner)
-      @is_derived = assoc['isDerived']
 
-      if @assoc_type == 'uml:AssociationClass'
+      if @association.type == 'uml:AssociationClass'
         @target = End.new(r, Type::LazyPointer.new(aid))
       end
 
