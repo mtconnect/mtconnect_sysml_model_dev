@@ -43,6 +43,8 @@ class PortalType < Type
     @pid = node['qtitle']
     @content = @doc.content[@pid]
 
+    @tree['text'] = @content['title'] = decorated
+
     @@types_by_pid[@pid] = self
   end
 
