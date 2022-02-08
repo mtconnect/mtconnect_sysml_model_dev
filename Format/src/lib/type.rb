@@ -234,13 +234,11 @@ class Type
 
     @aliased = false
 
-    @relations = if @type == 'uml:Enumeration' and defined? e.ownedLiteral
-                   collect_enumerations
-                   []
-                 else
-                   @relations = collect_attributes
-                 end
+    if @type == 'uml:Enumeration' and defined? e.ownedLiteral
+      collect_enumerations
+    end
 
+    @relations = collect_attributes || []
     @constraints = collect_constraints(@xmi)
     @invariants = {}
     @children = []
@@ -268,7 +266,7 @@ class Type
 
   def collect_attributes
     @xmi.element_children.map do |r|
-      if r.name != 'ownedAttribute' or r['type']
+      if (r.name != 'ownedLiteral' and r.name != 'ownedAttribute') or r['type']
         Relation.create_association(self, r)
       end
     end.compact   
@@ -340,7 +338,7 @@ class Type
   end
 
   def enumeration?
-    !@literals.empty?
+    @type == 'uml:Enumeration'
   end
 
   def resolve_types

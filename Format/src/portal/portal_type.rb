@@ -59,7 +59,7 @@ class PortalType < Type
 
   def generate_enumeration
     return unless enumeration?
-
+    
     characteristics = gen_characteristics
     literals = create_panel('Enumeration Literals',
                             { '#': 50, Name: 300, Introduced: 84, Deprecated: 84, Documentation: -1},
