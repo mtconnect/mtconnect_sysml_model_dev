@@ -192,12 +192,17 @@ class PortalType < Type
     path = formatted_path
     @operations.each_with_index do |op, i|
       panels = [op.gen_characteristics]
-      result = nil
+      results = []
+      ret = nil
       rows = op.parameters.map.with_index do |par, i|
         type = Type.type_for_id(par.type) || par.type || 'string'
 
-        if par.direction == 'return'
-          result = [ type.format_target, convert_markdown_to_html(par.documentation) ]
+        if par.direction == 'return' 
+          results << [ 'Result', type.format_target, convert_markdown_to_html(par.documentation) ]
+          ret = type.format_target
+          nil
+        elsif par.direction == 'out'
+          results << [ par.name, type.format_target, convert_markdown_to_html(par.documentation) ]
           nil
         else
           dflt = par.default ? convert_markdown_to_html("`#{par.default}`") : ''
@@ -208,7 +213,7 @@ class PortalType < Type
         end
       end.compact
       panels << create_panel('Parameters', { '#': 50, Name: 200, Int: 64, Dep: 64, Type: 150, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
-      panels << create_panel('Result', { Type: 250, Documentation: -1 }, [result]) if result
+      panels << create_panel('Result', { Name: 200, Type: 250, Documentation: -1 }, results) unless results.empty?
       
       content = { title: op.name, path: "#{path} / #{op.format_target}", html_panel: [], grid_panel: panels, image_panel: [] }
       @doc.content[op.pid] = content
@@ -216,7 +221,7 @@ class PortalType < Type
 
       entry = { id: op.pid, 'name' => "#{op.name} : <i>Opeeration</i>", type: 'operation' }
 
-      op_rows << [ i + 1, op.format_target, op.introduced, op.deprecated, result[0], convert_markdown_to_html(op.documentation) ]
+      op_rows << [ i + 1, op.format_target, op.introduced, op.deprecated, ret, convert_markdown_to_html(op.documentation) ]
       
       @doc.search['all'] << entry
       @doc.search['block'] << entry    

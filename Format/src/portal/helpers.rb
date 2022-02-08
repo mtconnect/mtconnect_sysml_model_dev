@@ -154,7 +154,7 @@ module PortalHelpers
   
   def gen_characteristics
     rows = []
-    rows << ['Parent', get_parent.name ] if respond_to? :get_parent and get_parent
+    rows << ['Parent', get_parent.format_target ] if respond_to? :get_parent and get_parent
     rows << ['Name', format_name]
     if @documentation and !@documentation.empty?
       rows << ['Documentation', convert_markdown_to_html(@documentation)]
