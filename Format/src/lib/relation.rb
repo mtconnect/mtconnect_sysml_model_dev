@@ -135,10 +135,6 @@ module Relation
       false
     end
 
-    def is_derived?
-      false
-    end
-
     def resolve_types
       if @target.nil?
         $logger.error "    !!!! cannot resolve type for #{@owner.name}::#{@name} no target"
@@ -222,7 +218,6 @@ module Relation
         @type = e['xmi:type']
         @documentation = xmi_documentation(e)
         @stereotypes=  xmi_stereotype(e)
-        @is_derived = e['isDerived']
       end
     end
     
@@ -261,10 +256,6 @@ module Relation
       true
     end
 
-    def is_derived?
-      @is_derived
-    end
-    
     def link_target(reference, type)
       @target = Connection.new(reference, type)
     end
