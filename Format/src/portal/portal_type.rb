@@ -114,6 +114,11 @@ class PortalType < Type
       nc = columns.detect { |col| col['text'].start_with?('Name') }
       next unless nc and nc.include?('dataIndex')
 
+      dc = columns.detect { |col| col['text'].start_with?('Documentation') }['dataIndex']
+      unless dc
+        $logger.error "Cannot find Documentaiton for relation"
+      end
+
       ind = nc['dataIndex']
       fields = panel.path('data_store', 'fields')
       pos = fields.index(ind) + 1
@@ -130,11 +135,32 @@ class PortalType < Type
         html = Nokogiri::HTML(row[ind])
         name, type = html.text.split(':').map { |s| s.strip }
 
+        ints, deps = [], []
+
         rel = relation(name)
         if rel
-          int = rel.introduced
-          dep = rel.deprecated
+          ints << rel.introduced
+          deps << rel.deprecated
+          if Relation::Association === rel
+            assoc = rel.association
+            ints << assoc.introduced
+            deps << assoc.deprecated
+
+            doc = assoc.documentation
+            if doc and row[dc] == ' </br>'
+              row[dc] = convert_markdown_to_html(doc)
+            end
+          end
+          ints << rel.target.introduced
+          deps << rel.target.deprecated
         end
+        int = ints.compact.max
+        dep = deps.compact.max
+
+        if dep
+          row[ind] = deprecate_html(row[ind])
+        end
+
         row[:int] = int || introduced
         row[:dep] = dep || deprecated
       end      

@@ -40,8 +40,14 @@ class WebReport
     data = File.read(resource).sub(/^window\.resource =/, '').gsub(/^([ \t]+[a-z_]+)[ ]+:/, '\1:')
     res = eval(data)
     lp = res.path(:logo_panel, :logo)
-    lp['height'] = '60px'
-    lp['width'] = '205px'
+    lp[:src] = "images/logo.png"
+    lp[:height] = '60px'
+    lp[:width] = '205px'
+
+    ver = res.path(:logo_panel, :banner)
+    ver[:src] = 'images/version_number.png'
+    ver[:height] = '60px'
+    ver[:width] = '249px'
     
     $logger.info "Rewriting the resource file: #{res_formatted}"
     File.open(res_formatted, 'w') do |f|
@@ -145,7 +151,6 @@ class WebReport
 
   def add_license(comment)
     legal = convert_markdown_to_html(comment)
-
     
     # Add the legal docs to the landing page
     panel = @doc.path('window.index_page_json', 'html_panel', 0)

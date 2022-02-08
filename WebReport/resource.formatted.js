@@ -24,14 +24,12 @@ window.resource = {
   "logo_panel": {
     "logo": {
       "src": "images/logo.png",
-      "width": "125px",
-      "height": "35px",
-      "height": "60px",
-      "width": "205px"
+      "width": "205px",
+      "height": "60px"
     },
     "banner": {
-      "src": "images/process_portal.png",
-      "width": "224px",
+      "src": "images/version_number.png",
+      "width": "249px",
       "height": "60px"
     }
   },

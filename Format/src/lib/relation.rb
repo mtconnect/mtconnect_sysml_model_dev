@@ -75,6 +75,14 @@ module Relation
         @type = type
       end
 
+      def introduced
+        nil
+      end
+
+      def deprecated
+        nil
+      end
+
       def resolve_type
         if @type.resolved?
           @type_id = @type.id
@@ -203,6 +211,19 @@ module Relation
         @optional
       end
     end
+
+    class Assoc
+      include Extensions
+
+      attr_reader :name, :type, :documentation, :stereotypes
+      
+      def initialize(e)
+        @name = e['name']
+        @type = e['xmi:type']
+        @documentation = xmi_documentation(e)
+        @stereotypes=  xmi_stereotype(e)
+      end
+    end
     
     def initialize(owner, r)
       super(owner, r)
@@ -213,6 +234,7 @@ module Relation
       aid = r['association']
       assoc = r.document.at("//packagedElement[@xmi:id='#{aid}']")
       
+      @association = Assoc.new(assoc)
       @association_name = assoc['name']
       @redefinesProperty = r.at('./redefinedProperty') ? true : false    
       @association_doc = xmi_documentation(assoc)
