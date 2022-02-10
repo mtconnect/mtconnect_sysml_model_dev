@@ -226,9 +226,9 @@ class PortalModel < Model
               nil
             end
       [name, row] if row
-    end.compact.sort_by { |name, row| name }.map { |name, row| row }
+    end.compact.sort_by { |name, row| name }.map.with_index { |v, i| v[1].unshift(i + 1) }
 
-    panel = create_panel("Version #{version} Entities", { Entity: -1 }, rows)
+    panel = create_panel("Version #{version} Entities", { '#': 64, Entity: -1 }, rows)
 
     n = "Version #{version} Additions and Deprecations"
     vid = "_Version_#{version}"
