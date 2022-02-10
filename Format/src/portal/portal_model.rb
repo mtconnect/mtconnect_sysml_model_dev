@@ -189,31 +189,37 @@ class PortalModel < Model
       o = LazyPointer.new(n['base_Element'])
       o.obj if o.resolve
     end.map do |obj|
+      dep = 'Deprecated ' if obj.deprecated
       row = case obj
             when PortalType
               name = obj.name
-              [ obj.format_target, '' ]
+              [ "#{dep}#{obj.format_target}", '' ]
               
             when Relation::Relation
               owner = obj.owner
               name = owner.name + obj.name
-              [ "#{owner.format_target} #{obj.name}" ]
+              if obj.deprecated
+                f = "<strike>#{obj.name}</strike>"
+              else
+                f = obj.name
+              end
+              [ "#{dep}#{owner.format_target} #{f}" ]
               
             when Type::Literal
               owner = obj.owner
               name = owner.name + obj.name
-              [ "#{owner.format_target} <code>#{obj.name}</code>" ]
+              [ "#{dep}#{owner.format_target} <code>#{obj.name}</code>" ]
               
             when Operation
               name = block.name + obj.name
               block = obj.owner
-              [ "#{block.format_target} #{obj.format_target}" ]
+              [ "#{dep}#{block.format_target} #{obj.format_target}" ]
               
             when Operation::Parameter
               owner = obj.owner
               block = owner.owner
               name = block.name + owner.name + obj.name
-              [ "#{block.format_target} #{owner.format_target}(#{obj.name})" ]
+              [ "#{dep}#{block.format_target} #{owner.format_target}(#{obj.name})" ]
               
             else
               $logger.warn "Cannot find info for #{obj.class} #{obj.name}"
