@@ -80,6 +80,7 @@ class PortalType < Type
   def add_characteristics
     if @content
       data = @content.path('grid_panel', 0, 'data_store', 'data')
+
       if data
         data.unshift({ col0: 'Parent', col1: @parent.format_target }) if @parent
         data << { col0: 'Introduced', col1: introduced } if introduced

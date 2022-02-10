@@ -67,8 +67,10 @@ class PortalModel < Model
       @@model_paths[@path] = self
       $logger.debug "Adding Path: #{@path} for #{@name}"
       @types.each do |t|
-        pth = @path.dup << t.name
-        @@model_paths[pth] = t
+        if t.type != 'uml:Association'
+          pth = @path.dup << t.name
+          @@model_paths[pth] = t
+        end
       end
     end
   end
