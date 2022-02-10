@@ -193,7 +193,16 @@ class PortalModel < Model
       row = case obj
             when PortalType
               name = obj.name
-              t = obj.type == 'uml:Stereotype' ? 'Stereotype' : 'Block' 
+              t = case obj.type
+                  when 'uml:Stereotype'
+                    'Stereotype'
+
+                  when 'uml:Enumeration'
+                    'Enumeration'
+                    
+                  else
+                    'Block'
+                  end
               [ t, "#{dep}#{obj.format_target}" ]
               
             when Relation::Relation
