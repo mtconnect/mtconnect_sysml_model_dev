@@ -38,6 +38,8 @@ class PortalModel < Model
     @content = @doc.content[@pid]
     @tree = node
 
+    @tree['text'] = @content['title'] = decorated
+
     if node.include?('children')
       node['children'].each do |child|
         if child['qtitle'] =~ /^(Structure|Package)_/
@@ -92,11 +94,7 @@ class PortalModel < Model
   def document_model
     return if @content.nil? or @name == 'MTConnect'
 
-    name = decorated
-    @content['title'] = name
-
     $logger.debug "Documenting model: #{name}"
-    @tree['text'] = name if @tree
 
     grid = @content['grid_panel'] if @content
     if grid and grid.empty?

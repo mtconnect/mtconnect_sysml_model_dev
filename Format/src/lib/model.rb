@@ -49,6 +49,8 @@ class Model
     @stereotypes = xmi_stereotype(e)
 
     @@models[@name] = self
+
+    LazyPointer.register(@id, self)
   end
 
   def parent
@@ -121,7 +123,7 @@ class Model
 
     $logger.debug "Getting associations for #{@name}"
     @xmi.xpath('./packagedElement[@xmi:type="uml:Realization" or @xmi:type="uml:Dependency" or @xmi:type="uml:Association" or @xmi:type="uml:InformationFlow"]').each do |e|
-      self.class.type_class.add_free_association(e)
+      self.class.type_class.add_free_association(self, e)
     end
 
     if depth == 0

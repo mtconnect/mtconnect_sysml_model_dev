@@ -7,9 +7,13 @@ module Relation
   
   def self.clear
   end
-  
+
+
+  @@unhandled = Set.new(%w{memberEnd classifier Extension ownedConnector templateBinding ownedTemplateSignature ownedBehavior})
   def self.create_association(owner, r)
-    return nil if r.name == 'memberEnd' or r.name == 'classifier'
+
+    
+    return nil if @@unhandled.include?(r.name)
 
     case r['xmi:type']
     when 'uml:Generalization'
@@ -113,6 +117,8 @@ module Relation
       @source = Connection.new('Source', owner)
       @source.multiplicity = @multiplicity
       @target = nil
+
+      LazyPointer.register(@id, self)
     end
 
     def value
@@ -171,12 +177,16 @@ module Relation
           end
         end
         if id = v['instance']
-          lit = Type::Literal.literal_for_id(id)
-          if lit
+          
+          if lit = Type::Literal.literal_for_id(id)
             lit.name
+          elsif t = Type.type_for_id(id)
+            t.name
           else
-            puts "!!! Scanning for #{id}"
-            a.document.root.at("//*[@xmi:id='#{id}']")['name']
+            # puts "!!! Scanning for #{id}"
+            LazyPointer.new(id)
+            # puts Thread.current.backtrace.join("\n")
+            # a.document.root.at("//*[@xmi:id='#{id}']")['name']
           end
         end
       end
@@ -225,7 +235,7 @@ module Relation
       super(owner, r)
 
       tid = r['type']
-      @final_target = @target = End.new(r, Type::LazyPointer.new(tid))
+      @final_target = @target = End.new(r, LazyPointer.new(tid))
       
       aid = r['association']
       assoc = r.document.at("//packagedElement[@xmi:id='#{aid}']")      
@@ -238,7 +248,7 @@ module Relation
       @source = End.new(src, owner)
 
       if @association.type == 'uml:AssociationClass'
-        @target = End.new(r, Type::LazyPointer.new(aid))
+        @target = End.new(r, LazyPointer.new(aid))
       end
 
       @name = @target.name || @name || @source.name
@@ -289,7 +299,7 @@ module Relation
       $logger.debug "  Searching for docs for #{owner.name}::#{name}"
 
       type = a['type']
-      @target = Connection.new('type', Type::LazyPointer.new(type))
+      @target = Connection.new('type', LazyPointer.new(type))
 
     rescue
       $logger.error "Error creating relation: #{a.to_s}"
@@ -316,7 +326,7 @@ module Relation
         cli = r.at("./client")
         cid = cli['xmi:idref']
 
-        owner = Type::LazyPointer.new(cid)
+        owner = LazyPointer.new(cid)
       end
       
       super(owner, r)
@@ -324,7 +334,7 @@ module Relation
       sup = r.at("./supplier")
       sid = sup['xmi:idref']
 
-      @target = Connection.new('Target', Type::LazyPointer.new(sid))
+      @target = Connection.new('Target', LazyPointer.new(sid))
     end
 
     def reflow(source, target)
@@ -338,7 +348,7 @@ module Relation
     def initialize(owner, r)
       super(owner, r)
       
-      @target = Connection.new('Target', Type::LazyPointer.new(r['general'])) if r['general']
+      @target = Connection.new('Target', LazyPointer.new(r['general'])) if r['general']
       @name = 'Supertype' unless @name
     end
 
@@ -382,6 +392,9 @@ module Relation
         
         @name = @relation.name
         @target = @relation.target
+      end
+      if LazyPointer === @value
+        @value = @value.name
       end
       
     rescue

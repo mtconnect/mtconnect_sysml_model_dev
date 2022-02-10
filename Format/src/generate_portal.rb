@@ -31,8 +31,7 @@ class PortalGenerator
                        "Simulation",  #from the XMI
                        "MTConnect",
                        "Agent Architecture",
-                       "Development Process",
-                       "Examples"
+                       "Development Process"
     ]
   end
 

@@ -66,7 +66,7 @@ module PortalHelpers
   def icon_for_obj(obj)
     icon = nil
     case obj
-    when PortalType, Type::LazyPointer
+    when PortalType, LazyPointer
       if obj.enumeration?
         icon = EnumTypeIcon
       else

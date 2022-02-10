@@ -68,7 +68,7 @@ class WebReport
               'Interface Interaction Model',
               'Profile',
               'Glossary' ]
-    @struct.sort_by! { |node| order.index(node['text']) }
+    @struct.sort_by! { |node| order.index(node['text']) || (order.length + 1) }
     
     $logger.info "Writing out #{file}"
     File.open(file, 'w') do |f|
@@ -132,16 +132,19 @@ class WebReport
     diagrams = find_section('Diagrams')
     behavior = find_section('Behavior')
     structure = find_section('Structure')
+    constraints = find_section('Constraints')
 
     # Parallel recures diagrams and structure combining common nodes
     # puts "\n----------------------------------"
     merge(diagrams, structure)
     # puts "\n----------------------------------"
     merge(behavior, structure)
+    merge(constraints, structure)
 
     @tree.delete_if { |node| node['title'] == 'Diagrams' } 
     @tree.delete_if { |node| node['title'] == 'Interfaces' } 
     @tree.delete_if { |node| node['title'] == 'Behavior' }
+    @tree.delete_if { |node| node['title'] == 'Constraints' }
   end
 
   def find_section(sect)

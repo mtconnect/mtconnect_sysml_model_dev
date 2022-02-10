@@ -89,7 +89,7 @@ class PortalType < Type
   end
 
   def add_constraints
-    return unless @constraints and !@constraints.empty?
+    return unless @content and @constraints and !@constraints.empty?
 
     $logger.debug "Adding constraints to #{@name}"
 

@@ -4,6 +4,7 @@ require 'logger'
 require 'relation'
 require 'extensions'
 require 'operation'
+require 'lazy_pointer'
 
 class Type
   include Extensions
@@ -33,89 +34,6 @@ class Type
     end
   end
 
-  class LazyPointer
-    @@pointers = []
-
-    def self.resolve
-      @@pointers.each do |o|
-        o.resolve
-      end
-    end
-
-    def _type
-      @type
-    end
-
-    def initialize(obj)
-      @tid = @type = nil
-      @lazy_lambdas = []
-
-      case obj
-      when String
-        @tid = obj
-        @type = Type.type_for_id(@tid)
-        @@pointers << self unless @type
-
-        raise "ID required when String" if @tid.nil? or @tid.empty?
-
-      when Type
-        @type = obj
-        @tid = @type.id
-
-      else
-        raise "Pointer created for unknown type: #{obj.class} '#{@tid}' '#{@type}'"
-      end
-    end
-
-    def lazy(&block)
-      if @type
-        @type.instance_eval(&block)
-      else
-        @lazy_lambdas << block
-      end
-    end
-
-    def id
-      @tid
-    end
-
-    def resolved?
-      !@type.nil?
-    end
-
-    def internal?
-      @tid =~ /^EA/
-    end
-
-    def resolve
-      unless @type
-        @type = Type.type_for_id(@tid)
-        if @type.nil?
-          $logger.debug " --> Looking up type for #{@tid}"
-          @type = Type.type_for_name(@tid)          
-        end
-        
-        if @type
-          @lazy_lambdas.each do |block|
-            @type.instance_eval(&block)
-          end
-        else
-          $logger.warn "Warn: Cannot find type for #{@tid}"
-        end
-      end
-      
-      !@type.nil?
-    end
-
-    def method_missing(m, *args, &block)
-      unless @type
-        #raise "!!! Calling #{m} on unresolved type #{@tid}" #TODO: template parameters
-      else
-        @type.send(m, *args, &block)
-      end
-    end    
-  end
-
   @@types_by_id = {}
   @@types_by_name = {}
 
@@ -132,22 +50,28 @@ class Type
     @@types_by_name[name]
   end
 
-  def self.add_free_association(assoc)
+  def self.add_free_association(model, assoc)
     case assoc['xmi:type']
     when 'uml:Association'
-      comment = assoc.at('./ownedComment')
-      doc = comment['body'].gsub(/<[\/]?[a-z]+>/, '') if comment and comment.key?('body')
+      $logger.debug "Adding free association: #{assoc['name'].inspect} for #{assoc['xmi:id']}"
 
-      if doc
-        oend = assoc.at('./ownedEnd')
-        tid = oend['type'] if oend
-        owner = LazyPointer.new(tid) if tid
-        if owner
-          aid = oend['association']
-          owner.lazy { owner.relation_by_assoc(aid).documentation = doc }
+      if assoc['name'] and !assoc['name'].empty?
+        model.class.type_class.new(model, assoc)        
+      else
+        comment = assoc.at('./ownedComment')
+        doc = comment['body'].gsub(/<[\/]?[a-z]+>/, '') if comment and comment.key?('body')
+        
+        if doc
+          if oend = assoc.at('./ownedEnd')
+            if tid = oend['type']
+              owner = LazyPointer.new(tid)
+              aid = oend['association']
+              owner.lazy { owner.relation_by_assoc(aid).documentation = doc }
+            end
+          end
         end
       end
-
+        
     when 'uml:InformationFlow'
       rel = assoc.at('./realization')
       if rel
@@ -190,7 +114,7 @@ class Type
   end
 
   def self.connect_model
-    Type::LazyPointer.resolve
+    LazyPointer.resolve
     connect_children
     resolve_types
   end
@@ -246,14 +170,18 @@ class Type
     # puts "Adding type #{@name} for id #{@id}"
     @@types_by_id[@id] = self
     @@types_by_name[@name] = self
+
+    LazyPointer.register(@id, self)
     
     @classifier = nil
     if @type == 'uml:InstanceSpecification'
       klass = @xmi.at('./classifier')
       @classifier = LazyPointer.new(klass['xmi:idref']) if klass
+      @name = '' unless @name
+    else
+      raise "Unknown name for #{@xmi.to_s}" unless @name
     end
 
-    raise "Unknown name for #{@xmi.to_s}" unless @name
     @model.add_type(self)
   end
 
