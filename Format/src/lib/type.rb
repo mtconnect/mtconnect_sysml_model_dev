@@ -205,6 +205,10 @@ class Type
     true
   end
 
+  def abstract?
+    @abstract
+  end
+
   def collect_enumerations
     suffix = ' ' + @name.sub(/^MT/, '').sub(/Type$/, '').downcase
     @xmi.ownedLiteral.each do |lit|
