@@ -101,7 +101,9 @@ class PortalModel < Model
       # Create documentation w/ characteristics section
       grid << gen_characteristics
 
-      rows = @types.sort_by { |type| type.name }.map { |type| [ type.format_target, type.introduced, type.deprecated ] }      
+      rows = @types.select { |type| type.content }.sort_by { |type| type.name }.map do |type|
+        [ type.format_target, type.introduced, type.deprecated ]
+      end
       grid << create_panel('Blocks', { Name: 300, Introduced: 84, Deprecated: 84 }, rows) unless rows.empty?
     end
   end
