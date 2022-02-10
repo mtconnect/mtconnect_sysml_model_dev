@@ -71,7 +71,7 @@ class PortalGenerator
       Stereotype.new(m)
     end
 
-    @top = PortalModel.new(@xmi)
+    @top = PortalModel.new(nil, @xmi)
     @top.find_data_types
     @top.find_definitions
 

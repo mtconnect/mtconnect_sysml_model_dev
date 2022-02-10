@@ -2,11 +2,12 @@ $: << File.dirname(__FILE__)
 
 require 'type'
 require 'stereotype'
+require 'lazy_pointer'
 
 class Model
   include Extensions
   
-  attr_reader :name, :documentation, :types, :xmi, :parent_name, :stereotypes
+  attr_reader :name, :documentation, :types, :xmi, :parent_name, :stereotypes, :children, :parent
 
   @@skip_models = {}
   @@models = {}
@@ -35,33 +36,28 @@ class Model
 
   def self.clear
     @@models.clear
+    LazyPointer.clear
   end
 
-  def initialize(e)
+  def initialize(parent, e)
     @id = e['xmi:id']
     @name = e['name']
     @type = e['xmi:type']
     @xmi = e
     @types = []
+    @children = []
 
-    @parent_name = e.parent['name']
+    @parent = @parent
+    if @parent
+      @parent_name = @parent.name
+      @parent.children << self
+    end
     @documentation = xmi_documentation(e)
     @stereotypes = xmi_stereotype(e)
 
     @@models[@name] = self
 
     LazyPointer.register(@id, self)
-  end
-
-  def parent
-    unless defined? @parent
-      if @parent_name != 'MTConnect'
-        @parent = @@models[@parent_name]
-      else
-        @parent = nil
-      end
-    end
-    @parent
   end
 
   def root
@@ -95,7 +91,7 @@ class Model
     @xmi.xpath('./packagedElement[@xmi:type="uml:Package" or @xmi:type="uml:Profile"]').each do |e|
       unless @@skip_models.include?(e['name'])
         $logger.debug "Recursing model for enumerations: #{e['name']}"
-        model = self.class.new(e)
+        model = self.class.new(self, e)
         model.find_data_types(depth + 1)
       else
         $logger.info "Skipping model #{e['name']}"

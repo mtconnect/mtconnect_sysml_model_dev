@@ -27,7 +27,7 @@ class PortalModel < Model
     @@models_by_pid[id]
   end
 
-  def initialize(e)
+  def initialize(p, e)
     super
   end
 
