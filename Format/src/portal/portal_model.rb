@@ -183,4 +183,51 @@ class PortalModel < Model
       m.types.each { |t| t.generate_operations }
     end
   end
+
+  def collect_versioned(version)
+    rows = @xmi.parent.xpath("./Profile:normative[@version='#{version}']|./Profile:deprecated[@version='#{version}']").map do |n|
+      o = LazyPointer.new(n['base_Element'])
+      o.obj if o.resolve
+    end.map do |obj|
+      row = case obj
+            when PortalType
+              name = obj.name
+              [ obj.format_target, '' ]
+              
+            when Relation::Relation
+              owner = obj.owner
+              name = owner.name
+              [ "#{owner.format_target} #{obj.name}" ]
+              
+            when Type::Literal
+              owner = obj.owner
+              name = owner.name
+              [ "#{owner.format_target} <code>#{obj.name}</code>" ]
+              
+            when Operation
+              name = obj.name
+              block = obj.owner
+              [ "#{block.format_target} #{obj.format_target}" ]
+              
+            when Operation::Parameter
+              owner = obj.owner
+              block = owner.owner
+              name = owner.name
+              [ "#{block.format_target} #{owner.format_target}" ]
+              
+            else
+              $logger.warn "Cannot find info for #{obj.class} #{obj.name}"
+              nil
+            end
+      [name, row] if row
+    end.compact.sort_by { |name, row| name }.map { |name, row| row }
+
+    panel = create_panel("Version #{version} Entities", { Entity: -1 }, rows)
+
+    n = "Version #{version} Additions and Deprecations"
+    vid = "_Version_#{version}"
+    vc = { title: n, path: n, html_panel: [], grid_panel: [ panel ], image_panel: [] }
+    @doc.content[vid] = vc
+    @doc.struct << { text: n, qtitle: vid, icon: PackageIcon, expanded: false, leaf: true }
+  end
 end

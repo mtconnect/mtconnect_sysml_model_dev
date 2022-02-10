@@ -18,7 +18,7 @@ class Type
   class Literal
     include Extensions
     
-    attr_reader :pid, :name, :value, :description, :stereotypes
+    attr_reader :pid, :name, :value, :description, :stereotypes, :owner
 
     @@literals = Hash.new
     
@@ -26,11 +26,12 @@ class Type
       @@literals[id]
     end
     
-    def initialize(id, name, value, description, suffix = '', stereotypes)
-      @pid, @name, @value, @description, @stereotypes = id, name, value, description, stereotypes
+    def initialize(owner, id, name, value, description, suffix = '', stereotypes)
+      @owner, @pid, @name, @value, @description, @stereotypes = owner, id, name, value, description, stereotypes
       base = name.gsub('_', '').downcase
 
       @@literals[@pid] = self
+      LazyPointer.register(id, self)
     end
   end
 
@@ -188,7 +189,7 @@ class Type
   def find_operations
     @operations = @xmi.xpath('./ownedOperation').map do |op|
       next unless op['xmi:type'] == 'uml:Operation'    
-      Operation.new(op)
+      Operation.new(self, op)
     end.compact
   end
 
@@ -213,14 +214,14 @@ class Type
         description = xmi_documentation(literal)
         stereotypes = xmi_stereotype(literal)
         id = literal['xmi:id']
-        @literals[name] = Literal.new(id, name, value, description, suffix, stereotypes)
+        @literals[name] = Literal.new(self, id, name, value, description, suffix, stereotypes)
         break
       else
         name, value = lit['name'].sub(/\^/,'\^').split('=')
         description = xmi_documentation(lit)
         id = lit['xmi:id']
         stereotypes = xmi_stereotype(lit)
-        @literals[name] = Literal.new(id, name, value, description, suffix, stereotypes)
+        @literals[name] = Literal.new(self, id, name, value, description, suffix, stereotypes)
       end
     end
   end

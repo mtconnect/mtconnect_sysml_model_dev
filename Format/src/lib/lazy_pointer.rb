@@ -1,6 +1,8 @@
 
 
 class LazyPointer
+  attr_reader :obj
+  
   @@pointers = []
   @@objects = Hash.new
 
@@ -68,7 +70,7 @@ class LazyPointer
           @obj.instance_eval(&block)
         end
       else
-        $logger.warn "Cannot find type for #{@id}"
+        $logger.warn "Cannot find object for #{@id}"
       end
     end
     

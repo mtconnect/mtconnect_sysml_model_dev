@@ -86,6 +86,7 @@ class PortalGenerator
     PortalModel.add_constraints
     PortalModel.add_version_to_attributes
     PortalModel.generate_operations
+    @top.collect_versioned('2.0')
 
     @doc.write(output)
     @doc.update_resources(resource, res_formatted)
