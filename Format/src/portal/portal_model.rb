@@ -193,33 +193,33 @@ class PortalModel < Model
       row = case obj
             when PortalType
               name = obj.name
-              [ "#{dep}#{obj.format_target}", '' ]
+              t = obj.type == 'uml:Stereotype' ? 'Stereotype' : 'Block' 
+              [ t, "#{dep}#{obj.format_target}" ]
               
             when Relation::Relation
               owner = obj.owner
               name = owner.name + obj.name
-              if obj.deprecated
-                f = "<strike>#{obj.name}</strike>"
-              else
-                f = obj.name
-              end
-              [ "#{dep}#{owner.format_target} #{f}" ]
+              f = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name
+              t = Relation::Attribute === obj ? 'Property' : 'Relation'
+              [ t, "#{dep}#{owner.format_target} #{f}" ]
               
             when Type::Literal
               owner = obj.owner
               name = owner.name + obj.name
-              [ "#{dep}#{owner.format_target} <code>#{obj.name}</code>" ]
+              f = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name
+              [ 'Literal', "#{dep}#{owner.format_target} <code>#{f}</code>" ]
               
             when Operation
               name = block.name + obj.name
               block = obj.owner
-              [ "#{dep}#{block.format_target} #{obj.format_target}" ]
+              [ 'Operation', "#{dep}#{block.format_target} #{obj.format_target}" ]
               
             when Operation::Parameter
               owner = obj.owner
               block = owner.owner
               name = block.name + owner.name + obj.name
-              [ "#{dep}#{block.format_target} #{owner.format_target}(#{obj.name})" ]
+              f = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name
+              [ 'Parameter', "#{dep}#{block.format_target} #{owner.format_target}(#{f})" ]
               
             else
               $logger.warn "Cannot find info for #{obj.class} #{obj.name}"
@@ -228,7 +228,7 @@ class PortalModel < Model
       [name, row] if row
     end.compact.sort_by { |name, row| name }.map.with_index { |v, i| v[1].unshift(i + 1) }
 
-    panel = create_panel("Version #{version} Entities", { '#': 64, Entity: -1 }, rows)
+    panel = create_panel("Version #{version} Entities", { '#': 64, Type: 100, Entity: -1 }, rows)
 
     n = "Version #{version} Additions and Deprecations"
     vid = "_Version_#{version}"
