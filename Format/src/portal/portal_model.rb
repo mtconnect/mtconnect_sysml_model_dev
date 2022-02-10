@@ -196,24 +196,24 @@ class PortalModel < Model
               
             when Relation::Relation
               owner = obj.owner
-              name = owner.name
+              name = owner.name + obj.name
               [ "#{owner.format_target} #{obj.name}" ]
               
             when Type::Literal
               owner = obj.owner
-              name = owner.name
+              name = owner.name + obj.name
               [ "#{owner.format_target} <code>#{obj.name}</code>" ]
               
             when Operation
-              name = obj.name
+              name = block.name + obj.name
               block = obj.owner
               [ "#{block.format_target} #{obj.format_target}" ]
               
             when Operation::Parameter
               owner = obj.owner
               block = owner.owner
-              name = owner.name
-              [ "#{block.format_target} #{owner.format_target}" ]
+              name = block.name + owner.name + obj.name
+              [ "#{block.format_target} #{owner.format_target}(#{obj.name})" ]
               
             else
               $logger.warn "Cannot find info for #{obj.class} #{obj.name}"
