@@ -55,7 +55,7 @@ class PortalType < Type
   def enumeration_rows
     i = 0
     literals.sort_by { |lit| lit.name }.map.with_index do |lit, i|
-      [ i = 1, lit.format_name, lit.introduced, lit.deprecated, convert_markdown_to_html(lit.description) ]
+      [ i + 1, lit.format_name, lit.introduced, lit.deprecated, convert_markdown_to_html(lit.description) ]
     end
   end
 
