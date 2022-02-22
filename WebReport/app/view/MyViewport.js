@@ -716,7 +716,6 @@ function createHelpButtonPanel()
                                       {
                                           id: 'helpPanel',
                                           itemId: 'helpPanel',
-                                          width: 85,
                                           layout: "hbox",
                                           bodyStyle: 'background:transparent;',
                                           autoRender: true,
@@ -808,10 +807,8 @@ function createHelpButtonPanel()
     if(commentEnabled !== "" && commentEnabled!== "NA")
     {
         helpButtonPanel.add({
-                                xtype: 'image',
-                                src: 'images/mail_icon.png',
-                                width: imageWidth,
-                                height: imageHeight,
+                                xtype: 'button',
+                         	text: "Add Review Comment",
                                 title: window.resource.help_panel.commentText,
                                 listeners: {
                                     render: function ()

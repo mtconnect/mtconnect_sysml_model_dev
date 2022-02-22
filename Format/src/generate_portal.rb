@@ -53,12 +53,17 @@ class PortalGenerator
     mtconnect = File.expand_path('../MTConnect.png', File.dirname(__FILE__))
     src_images = File.expand_path('../images', File.dirname(__FILE__))
     dest_images = File.expand_path("#{dir}/images", File.dirname(__FILE__))
+    src_app = File.expand_path('../app', File.dirname(__FILE__))
+    dest_app = File.expand_path("#{dir}/app/view", File.dirname(__FILE__))
     
     # Install our logo
     FileUtils.cp(mtconnect, logo)
     
     $logger.info "Copying images to #{dest_images}"
     FileUtils.cp_r(Dir.glob("#{src_images}/*"), dest_images)
+
+    $logger.info "Copying JavaScript to #{dest_app}"
+    FileUtils.cp_r(Dir.glob("#{src_app}/*"), dest_app)
 
     
     @doc = WebReport.new(file)

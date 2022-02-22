@@ -43,8 +43,18 @@ module PortalHelpers
     text.sub(%r{> (.+?)</div></br>$}, '> <strike>\1</strike>\2</div>')
   end
 
+  def find_block(name)
+    if name.include?('::')
+      package, name = name.split('::')
+      model = PortalModel.model_for_name(package)
+      return model.types.find { |t| t.name == name } if model
+    end
+
+    PortalType.type_for_name(name)
+  end
+
   def format_block(block)
-    if b = PortalType.type_for_name(block)
+    if b = find_block(block)
       "<a><span style=\"vertical-align: middle;\">" \
       "<img src='#{BlockIcon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span>" \
       "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{b.pid}');return false;\"> #{block}</a>"            
@@ -61,6 +71,23 @@ module PortalHelpers
     else
       "<em>#{package}</em>"                
     end                    
+  end
+
+  def format_operation(name)
+    operation, block, package = name.split('::').reverse
+    if package
+      model = PortalModel.model_for_name(package)
+      type = model.types.find { |t| t.name == block } if model
+    else
+      type = PortalType.type_for_name(name)
+    end
+
+    op = type.operations.find { |o| o.name == operation } if type
+    if op
+      op.format_target
+    else
+      "<code>#{block}::#{operation}</code>"
+    end
   end
 
   def icon_for_obj(obj)

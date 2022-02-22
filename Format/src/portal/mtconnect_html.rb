@@ -58,8 +58,14 @@ module Kramdown
             plural = ActiveSupport::Inflector.pluralize(args)
             "<em>#{plural}</em>"
 
+          when 'operation'
+            format_operation(args)
+
           when 'block', 'property'
             format_block(args)
+
+          when 'package'
+            format_package(args)
 
           when 'def'
             @@definitions.path(*args.split(':')) || "<code>#{args}</code>"

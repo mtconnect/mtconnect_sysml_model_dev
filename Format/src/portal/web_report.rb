@@ -57,6 +57,8 @@ class WebReport
   end
 
   def write(file)
+    @doc['window.feedback'] = 'False'
+    
     # Sort the search items
     @search['all'].sort_by! { |e| e['name'] }
     @search['block'].sort_by! { |e| e['name'] }
