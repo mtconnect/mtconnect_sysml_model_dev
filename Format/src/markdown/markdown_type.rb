@@ -4,7 +4,7 @@ require 'type'
 require 'diagrams'
 
 class MarkdownType < Type
-  include Diagram
+  include Diagrams
   include Document
 
   def generate_types(f)

@@ -5,6 +5,7 @@ EnumLiteralIcon = 'images/enum_literal_icon.png'.freeze
 PackageIcon = 'images/package_icon.png'.freeze
 BlockIcon = 'images/block_class_icon.png'.freeze
 OperationIcon = 'images/operation_icon.png'.freeze
+DiagramIcon = 'images/diagram_icon.png'.freeze
 
 module PortalHelpers
   def convert_markdown_to_html(content)
@@ -108,6 +109,9 @@ module PortalHelpers
 
     when Operation
       icon = OperationIcon
+
+    when PortalDiagram
+      icon = DiagramIcon
 
     else
       $logger.error "!!!! Unknown type: #{obj.class}"

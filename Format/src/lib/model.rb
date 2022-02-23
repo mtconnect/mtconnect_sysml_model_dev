@@ -3,11 +3,12 @@ $: << File.dirname(__FILE__)
 require 'type'
 require 'stereotype'
 require 'lazy_pointer'
+require 'diagram'
 
 class Model
   include Extensions
   
-  attr_reader :name, :documentation, :types, :xmi, :parent_name, :stereotypes, :children, :parent
+  attr_reader :name, :documentation, :types, :xmi, :parent_name, :stereotypes, :children, :parent, :diagrams
 
   @@skip_models = {}
   @@models = {}
@@ -19,6 +20,10 @@ class Model
   end
   
   def self.type_class
+    raise "Must use subtype"
+  end
+
+  def self.diagram_class
     raise "Must use subtype"
   end
 
@@ -46,6 +51,7 @@ class Model
     @xmi = e
     @types = []
     @children = []
+    @diagrams = []
 
     @parent = @parent
     if @parent
@@ -105,6 +111,11 @@ class Model
     @xmi.xpath('./packagedElement[@xmi:type="uml:Class" or @xmi:type="uml:Object" or @xmi:type="uml:Stereotype" or @xmi:type="uml:AssociationClass" or @xmi:type="uml:InstanceSpecification"]', $namespaces).each do |e|
       $logger.debug "#{'  ' * depth}#{@name}::#{e['name']} #{e['xmi:type']}"
       self.class.type_class.new(self, e)
+    end
+
+    @xmi.xpath('./xmi:Extension//ownedDiagram').each do |e|
+      $logger.debug "#{'  ' * depth}#{@name}::#{e['name']} #{e['xmi:type']}"
+      @diagrams << self.class.diagram_class.new(self, e)
     end
 
     @xmi.xpath('./packagedElement[@xmi:type="uml:Package" or @xmi:type="uml:Profile"]').each do |e|

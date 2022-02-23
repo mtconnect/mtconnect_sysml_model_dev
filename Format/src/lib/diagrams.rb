@@ -1,5 +1,5 @@
 
-module Diagram
+module Diagrams
   def png_diagram_name
     "./diagrams/types/#{short_name}.png"
   end

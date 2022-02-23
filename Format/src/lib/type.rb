@@ -5,6 +5,7 @@ require 'relation'
 require 'extensions'
 require 'operation'
 require 'lazy_pointer'
+require 'diagram'
 
 class Type
   include Extensions

@@ -2,6 +2,7 @@ require 'model'
 require 'portal/portal_type'
 require 'portal/helpers'
 require 'pp'
+require 'portal/portal_diagram'
 
 class PortalModel < Model
   include Document
@@ -19,6 +20,10 @@ class PortalModel < Model
 
   def self.type_class
     PortalType
+  end
+
+  def self.diagram_class
+    PortalDiagram
   end
 
   @@models_by_pid = Hash.new
@@ -42,8 +47,12 @@ class PortalModel < Model
 
     if node.include?('children')
       node['children'].each do |child|
-        if child['qtitle'] =~ /^(Structure|Package)_/
-          cp = path.dup << child['text']
+        if child['qtitle'] =~ /^(Structure|Package|Diagrams)_/
+          if child['qtitle'].start_with?('Diagrams_')
+            cp = path.dup << "Diagram-#{child['text']}"
+          else
+            cp = path.dup << child['text']
+          end
           v = @@model_paths[cp]
           if v
             v.associate_content(doc, child, path)
@@ -70,6 +79,15 @@ class PortalModel < Model
         if t.type != 'uml:Association'
           pth = @path.dup << t.name
           @@model_paths[pth] = t
+        end
+      end
+
+      @diagrams.each do |d|
+        pth = @path.dup << "Diagram-#{d.name}"
+        if @@model_paths.include?(pth)
+          puts "!!!!! Duplicate #{pth}"
+        else
+          @@model_paths[pth] = d
         end
       end
     end
@@ -123,6 +141,7 @@ class PortalModel < Model
     $logger.info "Documenting models"
     @@models.each do |k, m|
       m.document_model
+      m.diagrams.each  { |d| d.document_diagram }
     end
   end
 
