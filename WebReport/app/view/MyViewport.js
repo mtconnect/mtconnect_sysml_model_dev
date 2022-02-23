@@ -808,7 +808,7 @@ function createHelpButtonPanel()
     {
         helpButtonPanel.add({
                                 xtype: 'button',
-                         	text: "Add Review Comment",
+                         	text: "Submit Comment",
                                 title: window.resource.help_panel.commentText,
                                 listeners: {
                                     render: function ()
