@@ -39,6 +39,7 @@ class Type
 
   @@types_by_id = {}
   @@types_by_name = {}
+  @@terms_by_name = {}
 
   def self.clear
     @@types_by_id.clear
@@ -51,6 +52,10 @@ class Type
 
   def self.type_for_name(name)
     @@types_by_name[name]
+  end
+
+  def self.term_for_name(name)
+    @@terms_by_name[name]
   end
 
   def self.add_free_association(model, assoc)
@@ -172,7 +177,12 @@ class Type
 
     # puts "Adding type #{@name} for id #{@id}"
     @@types_by_id[@id] = self
-    @@types_by_name[@name] = self
+
+    if @model.root.name == 'Glossary'
+      @@terms_by_name[@name] = self
+    else
+      @@types_by_name[@name] = self
+    end
 
     LazyPointer.register(@id, self)
     

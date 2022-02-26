@@ -10,7 +10,7 @@ DiagramIcon = 'images/diagram_icon.png'.freeze
 module PortalHelpers
   def convert_markdown_to_html(content)
     data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
-    kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true})
+    kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex})
     kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
   end
 
@@ -20,9 +20,8 @@ module PortalHelpers
   end
 
   def format_name_html(name, icon, text = name)
-    "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
-      "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
-      "</span> #{text}</div></br>"
+    "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
+      "</span> #{text}"
   end
 
   def deprecated_format_name_html(name, icon)
@@ -30,10 +29,9 @@ module PortalHelpers
   end
 
   def format_target_html(id, name, icon, text = name)
-    "<div title=\"#{name}\" style=\"display: inline !important; white-space: nowrap !important; height: 20px;\">" \
-      "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
+    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
       "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
-      "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> #{text}</a></div>"            
+      "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> #{text}</a>" 
   end
 
   def deprecated_format_target(id, name, icon)
@@ -56,9 +54,7 @@ module PortalHelpers
 
   def format_block(block)
     if b = find_block(block)
-      "<a><span style=\"vertical-align: middle;\">" \
-      "<img src='#{BlockIcon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span>" \
-      "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{b.pid}');return false;\"> #{block}</a>"            
+      b.format_target(false)
     else
       "<code>#{block}</code>"                
     end                    
@@ -66,9 +62,7 @@ module PortalHelpers
 
   def format_package(package)
     if b = PortalModel.model_for_name(package)
-      "<a><span style=\"vertical-align: middle;\">" \
-        "<img src='#{PackageIcon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span>" \
-        "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{b.pid}');return false;\"> #{package}</a>"            
+      b.format_target(false)
     else
       "<em>#{package}</em>"                
     end                    
@@ -85,7 +79,7 @@ module PortalHelpers
 
     op = type.operations.find { |o| o.name == operation } if type
     if op
-      op.format_target
+      op.format_target(false)
     else
       "<code>#{block}::#{operation}</code>"
     end
@@ -119,40 +113,55 @@ module PortalHelpers
     icon
   end
 
-  def decorated(text = @name)
+  def decorated(text = @name, title = true)
     text = (respond_to?(:abstract?) and abstract?) ? "<em>&lt;&lt;abstract&gt;&gt</em> <em>#{text}</em>" : text
     text = deprecated ? "<strike>#{text}</strike>" : text
     if @stereotypes
       sts = @stereotypes.select { |s| s.name != 'normative' and s.name != 'deprecated' }.map { |s| s.html }
     end
-    if sts.nil? or sts.empty?
-      text
-    else
-      "<em>#{sts.join(' ')}</em> #{text}"
+    text = if sts.nil? or sts.empty?
+             text
+           else
+             "<em>#{sts.join(' ')}</em> #{text}"
+           end
+
+    if not title
+      text = case self
+             when PortalType, Operation
+               "<code> #{text}</code>"
+               
+             when PortalModel
+               "<em> #{text}</em>"
+
+             else
+               text
+             end
     end
+
+    text
   end
 
-  def format_target_obj(obj)
+  def format_target_obj(obj, title = true)
     return obj if String === obj
     icon = icon_for_obj(obj)
     pid = obj.pid
-    text = decorated(obj.name)
+    text = decorated(obj.name, title)
     pid ? format_target_html(pid, obj.name, icon, text) : format_name_html(obj.name, icon, text)
   end
   
-  def format_name_obj(obj)    
+  def format_name_obj(obj, title = true)
     return obj if String === obj
     icon = icon_for_obj(obj)
-    text = decorated(obj.name)
+    text = decorated(obj.name, title)
     format_name_html(obj.name, icon, text)
   end
 
-  def format_target
-    format_target_obj(self)
+  def format_target(title = true)
+    format_target_obj(self, title)
   end
 
-  def format_name
-    format_name_obj(self)
+  def format_name(title = true)
+    format_name_obj(self, title)
   end
 
   def create_panel(title, columns, rows, hide: false, collapse: true)
@@ -186,8 +195,8 @@ module PortalHelpers
   
   def gen_characteristics
     rows = []
-    rows << ['Parent', get_parent.format_target ] if respond_to? :get_parent and get_parent
-    rows << ['Name', format_name]
+    rows << ['Parent', get_parent.format_target(true) ] if respond_to? :get_parent and get_parent
+    rows << ['Name', format_name(true)]
     if @documentation and !@documentation.empty?
       rows << ['Documentation', convert_markdown_to_html(@documentation)]
     end

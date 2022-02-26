@@ -11,3 +11,4 @@ gem 'activesupport'
 
 gem 'redcarpet'
 gem 'kramdown'
+gem 'kramdown-math-katex'

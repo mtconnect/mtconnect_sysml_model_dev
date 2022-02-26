@@ -8,7 +8,7 @@ class WebReport
     @doc = js_to_json(file)
     @content = @doc['window.content_data_json']
     @search = @doc['window.search_data_json']
-    @tree = @doc.path('window.navigation_json')
+    @tree = @doc['window.navigation_json']
     @struct = find_section('Structure')
   end
 
@@ -30,21 +30,31 @@ class WebReport
   end
 
   def update_index(index)
-    text = File.open(index).read
-    text.sub!(/src="data\.js"/, 'src="data.formatted.js"')
-    text.sub!(/src="resource\.js"/, 'src="resource.formatted.js"')
-    File.open(index, 'w') { |f| f.write(text) }
+    text = File.open(index).read.split("\n")
+
+    loc = text.index { |l| l =~ /katex_style/ }
+    unless loc
+      loc = text.index { |l| l =~ /<script/ }
+      text.insert(loc, %{    <link   rel="stylesheet"       href="css/katex.min.css" id="katex_style">})
+    end
+    loc = text.index { |l| l =~ /src="data\.js/ }
+    text[loc] = %{    <script type="text/javascript" src="data.formatted.js"></script>} if loc
+    loc = text.index { |l| l =~ /src="resource\.js/ }
+    text[loc] = %{    <script type="text/javascript" src="resource.formatted.js"></script>} if loc
+
+    
+    File.open(index, 'w') { |f| f.write(text.join("\n")) }
   end
 
   def update_resources(resource, res_formatted)
     data = File.read(resource).sub(/^window\.resource =/, '').gsub(/^([ \t]+[a-z_]+)[ ]+:/, '\1:')
     res = eval(data)
-    lp = res.path(:logo_panel, :logo)
+    lp = res.dig(:logo_panel, :logo)
     lp[:src] = "images/logo.png"
     lp[:height] = '60px'
     lp[:width] = '205px'
 
-    ver = res.path(:logo_panel, :banner)
+    ver = res.dig(:logo_panel, :banner)
     ver[:src] = 'images/version_number.png'
     ver[:height] = '60px'
     ver[:width] = '249px'
@@ -158,7 +168,7 @@ class WebReport
     legal = convert_markdown_to_html(comment)
     
     # Add the legal docs to the landing page
-    panel = @doc.path('window.index_page_json', 'html_panel', 0)
+    panel = @doc.dig('window.index_page_json', 'html_panel', 0)
     
     # Clean up the styling
     panel['html'].sub!(%r{margin-top:300px}, 'margin-top:100px')
@@ -197,9 +207,9 @@ class WebReport
         # Scan the grid panel looking for content
         panels = v['grid_panel']
         panels.each do |panel|
-          if panel['hideHeaders'] and panel.path('data_store', 'fields').length == 2
+          if panel['hideHeaders'] and panel.dig('data_store', 'fields').length == 2
             # Look for documentation
-            panel.path('data_store', 'data').each do |row|
+            panel.dig('data_store', 'data').each do |row|
               if row['col0'].start_with?('Documentation')
                 row['col1'] = convert_markdown_to_html(row['col1'])
                 deprecated ||= row['col1'] =~ /DEPRECATED/
@@ -213,7 +223,7 @@ class WebReport
             dc = desc['dataIndex'] if desc
             nc = name['dataIndex'] if name
             tc = type['dataIndex'] if type
-            panel.path('data_store', 'data').each do |row|
+            panel.dig('data_store', 'data').each do |row|
               if dc and row[dc] != " </br>"
                 row[dc] = convert_markdown_to_html(row[dc])
                 if nc and row[dc] =~ /deprecated/i

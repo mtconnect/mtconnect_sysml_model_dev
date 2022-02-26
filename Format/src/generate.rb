@@ -18,6 +18,8 @@ require 'generate_schema'
 require 'generate_portal'
 require 'type'
 require 'model'
+require 'kramdown'
+require 'kramdown-math-katex'
 
 Options = {}
 parser = OptionParser.new do |opts|
@@ -72,7 +74,7 @@ operations.each do |op|
     Glossary = XMIParser.new
     schema_generator = SchemaGenerator.new
 
-  when 'report'
+  when 'portal'
     portal_generator = PortalGenerator.new xmi_node.at('//uml:Model')
     portal_generator.generate()
   

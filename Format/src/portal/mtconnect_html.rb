@@ -44,7 +44,7 @@ module Kramdown
       def convert_img(el, indent)
         "<blockquote>See <em>#{el.attr['alt']} Diagram</em></blockquote>"
       end
-      
+
       def convert_macro(el, _opts)
         if el.value =~ /\{\{([a-zA-Z0-9_]+)(\(([^\)]+)\))?\}\}/
           command = $1
@@ -68,7 +68,7 @@ module Kramdown
             format_package(args)
 
           when 'def'
-            @@definitions.path(*args.split(':')) || "<code>#{args}</code>"
+            @@definitions.dig(*args.split(':')) || "<code>#{args}</code>"
 
           when 'latex'
             args
@@ -119,8 +119,7 @@ module Kramdown
             end
             
           when 'markdown'
-            kd = ::Kramdown::Document.new(args.gsub(/<br\/?>/, "\n"), input: 'MtcHtmlKramdown')
-            kd.to_mtc_html
+            convert_markdown_to_html(args)
             
           else
             args

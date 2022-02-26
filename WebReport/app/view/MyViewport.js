@@ -192,7 +192,7 @@ function createGridPanel(grid_panel_json)
     if (getColumnsCount(grid_panel_json.columns) > 4)
     {
         grid.setWidth(calculateTableWidth(grid_panel_json.columns));
-        gridPanelHolder.setHeight(grid.getStore().getRange().length * 35 + 75);
+        gridPanelHolder.setHeight(grid.getStore().getRange().length * 43 + 75);
 
         gridPanelHolder.setAutoScroll(true);
     }

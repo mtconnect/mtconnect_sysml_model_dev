@@ -6,23 +6,6 @@ require 'portal/portal_model'
 require 'portal/helpers'
 require 'portal/web_report'
 
-class Hash
-  def path(*args)
-    o = self
-    args.each do |v|
-      if Hash === o or (Array === o and Integer === v)
-        o = o[v]
-      else
-        return nil
-      end
-      
-      return nil if o.nil?
-    end
-
-    return o
-  end
-end
-
 class PortalGenerator
 
   def initialize(xmi)
@@ -51,23 +34,21 @@ class PortalGenerator
     output = File.expand_path("#{dir}/data.formatted.js", File.dirname(__FILE__))
     logo = File.expand_path("#{dir}/images/logo.png", File.dirname(__FILE__))
     mtconnect = File.expand_path('../MTConnect.png', File.dirname(__FILE__))
-    src_images = File.expand_path('../images', File.dirname(__FILE__))
-    dest_images = File.expand_path("#{dir}/images", File.dirname(__FILE__))
-    src_app = File.expand_path('../app', File.dirname(__FILE__))
-    dest_app = File.expand_path("#{dir}/app/view", File.dirname(__FILE__))
     
     # Install our logo
     FileUtils.cp(mtconnect, logo)
-    
-    $logger.info "Copying images to #{dest_images}"
-    FileUtils.cp_r(Dir.glob("#{src_images}/*"), dest_images)
 
-    $logger.info "Copying JavaScript to #{dest_app}"
-    FileUtils.cp_r(Dir.glob("#{src_app}/*"), dest_app)
-
+    # Copy resources
+    %w{images app css}.each do |loc|
+      src = File.expand_path("../#{loc}", File.dirname(__FILE__))
+      dest = File.expand_path("#{dir}/#{loc}", File.dirname(__FILE__))
+      
+      $logger.info "Copying #{src} to #{dest}"
+      FileUtils.cp_r(Dir.glob("#{src}/*"), dest)
+    end
     
     @doc = WebReport.new(file)
-    @doc.update_index(index)
+    @doc.update_index(index)    
     @doc.merge_diagrams
     
     PortalModel.generator_class = self

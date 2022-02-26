@@ -79,7 +79,7 @@ class PortalType < Type
 
   def add_characteristics
     if @content
-      data = @content.path('grid_panel', 0, 'data_store', 'data')
+      data = @content.dig('grid_panel', 0, 'data_store', 'data')
 
       if data
         data.unshift({ col0: 'Parent', col1: @parent.format_target }) if @parent
@@ -111,7 +111,7 @@ class PortalType < Type
     grid.each do |panel|
       next if panel['title'].nil? or panel['title'].start_with?('Characteristics')
 
-      rows = panel.path('data_store', 'data')
+      rows = panel.dig('data_store', 'data')
 
       columns = panel['columns']
       nc = columns.detect { |col| col['text'].start_with?('Name') }
@@ -123,7 +123,7 @@ class PortalType < Type
       end
 
       ind = nc['dataIndex']
-      fields = panel.path('data_store', 'fields')
+      fields = panel.dig('data_store', 'fields')
       pos = fields.index(ind) + 1
       fields.insert(pos, :int, :dep)
       columns.insert(pos,
@@ -177,7 +177,7 @@ class PortalType < Type
     @@types_by_pid[@pid] = self
     icon = icon_for_obj(self)
 
-    n = decorated(@name)
+    n = decorated(@name, true)
     @content = { title: n, path: formatted_path, html_panel: [], grid_panel: panels, image_panel: [] }
     @doc.content[@pid] = @content
     @model.tree['children'] << { text: n, qtitle: @pid, icon: icon, expanded: false, leaf: true }

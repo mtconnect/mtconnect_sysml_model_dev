@@ -53,7 +53,7 @@ class Model
     @children = []
     @diagrams = []
 
-    @parent = @parent
+    @parent = parent
     if @parent
       @parent_name = @parent.name
       @parent.children << self
@@ -67,7 +67,11 @@ class Model
   end
 
   def root
-    parent.nil? ? self : parent.root
+    if parent.nil? or parent.name == 'MTConnect'
+      self
+    else
+      parent.root
+    end
   end
 
   def model
@@ -96,7 +100,7 @@ class Model
 
     @xmi.xpath('./packagedElement[@xmi:type="uml:Package" or @xmi:type="uml:Profile"]').each do |e|
       unless @@skip_models.include?(e['name'])
-        $logger.debug "Recursing model for enumerations: #{e['name']}"
+        $logger.debug "#{'  ' * depth}Recursing model for enumerations: #{e['name']}"
         model = self.class.new(self, e)
         model.find_data_types(depth + 1)
       else
@@ -120,7 +124,7 @@ class Model
 
     @xmi.xpath('./packagedElement[@xmi:type="uml:Package" or @xmi:type="uml:Profile"]').each do |e|
       unless @@skip_models.include?(e['name'])
-        $logger.debug "Recursing model: #{e['name']}"
+        $logger.debug "#{'  ' * depth}Recursing model: #{e['name']}"
         model = @@models[e['name']]
         model.find_definitions(depth + 1)
       else
