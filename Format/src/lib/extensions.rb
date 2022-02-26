@@ -38,10 +38,11 @@ module Extensions
   end
   
   def xmi_documentation(e)
-    recurse = lambda { |v| [ v['body'], v.xpath('./ownedComment').map { |c| [ c['body'], recurse.call(c) ] } ] }
-    e.xpath('./ownedComment').map do |c1|
+    recurse = lambda { |v| [ v['body'], v.xpath('./ownedComment').map { |c| recurse.call(c) } ] }
+    doc = e.xpath('./ownedComment').map do |c1|
       recurse.call(c1)
     end.flatten.compact.join("\n\n")
+    doc
   end
 
   def get_multiplicity(r)
