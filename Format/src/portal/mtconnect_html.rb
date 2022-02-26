@@ -42,9 +42,9 @@ module Kramdown
       end
 
       def convert_img(el, indent)
-        p el
         el.attr['width'] = "#{(el.attr['width'].to_f * 100.0).to_i}%"
-        super
+        img = super
+        %{<p style="text-align: center">#{img}<br/><em>Figure: #{el.attr['title']}</em></p>}
       end
 
       def convert_table(el, indent)
