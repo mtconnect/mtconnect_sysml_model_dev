@@ -2,3 +2,23 @@
 .hoverterm {
   border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
 }
+
+table.doctable {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+table.doctable th, td {
+    border: 1px solid black;
+    padding: 5px 5px;
+}
+
+table.doctable th {
+    background-color: #D0D0D0;
+}
+
+table.doctable tr:nth-child(even) {
+    background-color: #E8E8E8;
+}
+    
+

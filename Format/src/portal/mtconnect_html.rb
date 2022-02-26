@@ -45,6 +45,11 @@ module Kramdown
         "<blockquote>See <em>#{el.attr['alt']} Diagram</em></blockquote>"
       end
 
+      def convert_table(el, indent)
+        el.attr['class'] = 'doctable'
+        super
+      end
+
       def convert_macro(el, _opts)
         if el.value =~ /\{\{([a-zA-Z0-9_]+)(\(([^\)]+)\))?\}\}/
           command = $1
