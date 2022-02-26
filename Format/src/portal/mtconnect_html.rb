@@ -39,7 +39,6 @@ module Kramdown
       
       def initialize(root, options)
         super
-        @top = options[:top]
       end
 
       def convert_img(el, indent)
@@ -53,11 +52,11 @@ module Kramdown
           
           case command         
           when 'term'
-            format_term(args, @top)
+            format_term(args)
             
           when 'termplural'
             plural = ActiveSupport::Inflector.pluralize(args)
-            format_term(args, @top, plural)
+            format_term(args, plural)
 
           when 'operation'
             format_operation(args)

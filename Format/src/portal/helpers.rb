@@ -9,9 +9,9 @@ OperationIcon = 'images/operation_icon.png'.freeze
 DiagramIcon = 'images/diagram_icon.png'.freeze
 
 module PortalHelpers
-  def convert_markdown_to_html(content, top = true)
+  def convert_markdown_to_html(content)
     data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
-    kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex, top: top})
+    kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex})
     kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
   end
 
@@ -69,8 +69,8 @@ module PortalHelpers
     end                    
   end
 
-  def format_term(term, top, text = term)
-    if top and t = PortalType.term_for_name(term) and d = t.documentation and not d.empty?
+  def format_term(term, text = term)
+    if t = PortalType.term_for_name(term) and d = t.documentation and not d.empty?
       title = d.gsub(/\{\{(term(plural)?|cite)\(([^)]+)\)\}\}/) do |m|
         t = $3
         if $2
