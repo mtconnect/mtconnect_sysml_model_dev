@@ -35,8 +35,8 @@ class WebReport
     loc = text.index { |l| l =~ /katex_style/ }
     unless loc
       loc = text.index { |l| l =~ /<script/ }
-      text.insert(loc, %{    <link   rel="stylesheet"       href="css/katex.min.css" id="katex_style">})
-      text.insert(loc, %{    <link   rel="stylesheet"       href="css/tooltip.css" id="tooltip_style">})
+      text.insert(loc, %{        <link   rel="stylesheet"  href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.css" integrity="sha384-NFGicHNcq1l2DafLerXQeI3h3jJY3dCcDQF+29rtRBHW7P7ti+/XIRY7ALbJOaeh" crossorigin="anonymous" id="katex_style">})
+      text.insert(loc, %{    <link   rel="stylesheet" href="css/tooltip.css" id="tooltip_style">})
     end
     loc = text.index { |l| l =~ /katex_style/ }
     loc = text.index { |l| l =~ /src="data\.js/ }

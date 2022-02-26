@@ -39,7 +39,7 @@ class PortalGenerator
     FileUtils.cp(mtconnect, logo)
 
     # Copy resources
-    %w{images app css}.each do |loc|
+    %w{images app css figures}.each do |loc|
       src = File.expand_path("../#{loc}", File.dirname(__FILE__))
       dest = File.expand_path("#{dir}/#{loc}", File.dirname(__FILE__))
       

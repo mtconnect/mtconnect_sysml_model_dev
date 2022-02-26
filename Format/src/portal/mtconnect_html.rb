@@ -42,7 +42,9 @@ module Kramdown
       end
 
       def convert_img(el, indent)
-        "<blockquote>See <em>#{el.attr['alt']} Diagram</em></blockquote>"
+        p el
+        el.attr['width'] = "#{(el.attr['width'].to_f * 100.0).to_i}%"
+        super
       end
 
       def convert_table(el, indent)
