@@ -36,7 +36,9 @@ class WebReport
     unless loc
       loc = text.index { |l| l =~ /<script/ }
       text.insert(loc, %{    <link   rel="stylesheet"       href="css/katex.min.css" id="katex_style">})
+      text.insert(loc, %{    <link   rel="stylesheet"       href="css/tooltip.css" id="tooltip_style">})
     end
+    loc = text.index { |l| l =~ /katex_style/ }
     loc = text.index { |l| l =~ /src="data\.js/ }
     text[loc] = %{    <script type="text/javascript" src="data.formatted.js"></script>} if loc
     loc = text.index { |l| l =~ /src="resource\.js/ }

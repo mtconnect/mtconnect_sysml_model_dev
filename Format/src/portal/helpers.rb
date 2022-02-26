@@ -1,3 +1,4 @@
+require 'active_support/inflector'
 
 # Icon constants here
 EnumTypeIcon = 'images/enum_type_icon.png'.freeze
@@ -8,9 +9,9 @@ OperationIcon = 'images/operation_icon.png'.freeze
 DiagramIcon = 'images/diagram_icon.png'.freeze
 
 module PortalHelpers
-  def convert_markdown_to_html(content)
+  def convert_markdown_to_html(content, top = true)
     data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
-    kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex})
+    kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex, top: top})
     kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
   end
 
@@ -67,6 +68,22 @@ module PortalHelpers
       "<em>#{package}</em>"                
     end                    
   end
+
+  def format_term(term, top, text = term)
+    if top and t = PortalType.term_for_name(term) and d = t.documentation and not d.empty?
+      title = d.gsub(/\{\{(term(plural)?|cite)\(([^)]+)\)\}\}/) do |m|
+        t = $3
+        if $2
+          ActiveSupport::Inflector.pluralize(t)
+        else
+          t
+        end
+      end
+      %{<span class="hoverterm" title="#{title}">#{text}</span>}
+    else
+      "<em>#{text}</em>"
+    end
+  end    
 
   def format_operation(name)
     operation, block, package = name.split('::').reverse

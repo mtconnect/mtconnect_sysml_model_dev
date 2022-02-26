@@ -1,0 +1,4 @@
+/* Tooltip container */
+.hoverterm {
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}

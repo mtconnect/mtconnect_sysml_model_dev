@@ -28,7 +28,7 @@ module Kramdown
       include PortalHelpers
       
       @@definitions = Hash.new
-      
+
       def self.add_definitions(name, values)
         @@definitions[name] = values
       end
@@ -39,6 +39,7 @@ module Kramdown
       
       def initialize(root, options)
         super
+        @top = options[:top]
       end
 
       def convert_img(el, indent)
@@ -52,11 +53,11 @@ module Kramdown
           
           case command         
           when 'term'
-            "<em>#{args}</em>"
+            format_term(args, @top)
             
           when 'termplural'
             plural = ActiveSupport::Inflector.pluralize(args)
-            "<em>#{plural}</em>"
+            format_term(args, @top, plural)
 
           when 'operation'
             format_operation(args)
