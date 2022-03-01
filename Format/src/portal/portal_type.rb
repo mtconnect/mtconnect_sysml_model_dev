@@ -177,7 +177,7 @@ class PortalType < Type
       unless grid
         $logger.warning "Missing grid panel for #{@name}"
       else
-        rows = @children.map.with_index do |child, i|
+        rows = @children.sort_by(&:name).map.with_index do |child, i|
           [ i + 1, child.format_target, child.introduced, child.deprecated ]
         end
         grid << create_panel('Children', { '#': 50, Name: 300, Int: 64, Dep: 64 }, rows)
