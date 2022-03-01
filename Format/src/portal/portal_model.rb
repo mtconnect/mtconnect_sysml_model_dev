@@ -203,6 +203,14 @@ class PortalModel < Model
     end
   end
 
+  def self.generate_children
+    $logger.info "Adding Children"
+
+    @@models.each do |k, m|
+      m.types.each { |t| t.generate_children_panel }
+    end
+  end  
+
   def collect_versioned(version)
     rows = @xmi.parent.xpath("./Profile:normative[@version='#{version}']|./Profile:deprecated[@version='#{version}']").map do |n|
       o = LazyPointer.new(n['base_Element'])

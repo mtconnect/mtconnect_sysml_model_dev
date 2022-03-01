@@ -42,6 +42,8 @@ class PortalGenerator
     %w{images app css figures}.each do |loc|
       src = File.expand_path("../#{loc}", File.dirname(__FILE__))
       dest = File.expand_path("#{dir}/#{loc}", File.dirname(__FILE__))
+
+      FileUtils.mkdir_p(dest)
       
       $logger.info "Copying #{src} to #{dest}"
       FileUtils.cp_r(Dir.glob("#{src}/*"), dest)
@@ -72,6 +74,7 @@ class PortalGenerator
     PortalModel.add_constraints
     PortalModel.add_version_to_attributes
     PortalModel.generate_operations
+    PortalModel.generate_children
     @top.collect_versioned('2.0')
 
     @doc.write(output)

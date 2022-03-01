@@ -170,6 +170,21 @@ class PortalType < Type
     end
   end
 
+  def generate_children_panel
+    if @content and not @children.empty?
+      
+      grid = @content['grid_panel'] || @content[:grid_panel]
+      unless grid
+        $logger.warning "Missing grid panel for #{@name}"
+      else
+        rows = @children.map.with_index do |child, i|
+          [ i + 1, child.format_target, child.introduced, child.deprecated ]
+        end
+        grid << create_panel('Children', { '#': 50, Name: 300, Int: 64, Dep: 64 }, rows)
+      end
+    end
+  end
+
   def add_tree_node(panels)
     _, pre = @type.split(':')
     @pid = "#{pre}__#{@id}"
