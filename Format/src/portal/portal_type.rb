@@ -125,13 +125,11 @@ class PortalType < Type
         $logger.error "Cannot find Documentaiton for relation"
       end
 
-      dc = dc.to_sym
-      
       ind = nc[:dataIndex]
       fields = panel.dig(:data_store, :fields)
       pos = fields.index(ind) + 1
       fields.insert(pos, :int, :dep)
-      ind = ind.to_sym
+      
       columns.insert(pos,
                      { text: "Int", dataIndex: 'int', flex: 0, width: 64 },
                      { text: "Dep", dataIndex: 'dep', flex: 0, width: 64 })
@@ -140,12 +138,17 @@ class PortalType < Type
       resize(columns, 'Multiplicity', 100)
       resize(columns, 'Default Value', 200)
 
+      # Get sumbolic versions for data index
+      dc = dc.to_sym      
+      ind = ind.to_sym
       rows.each do |row|
+        # Use nokogiri to parse the html and grab the CDATA.
         html = Nokogiri::HTML(row[ind])
         name, type = html.text.split(':').map { |s| s.strip }
 
         ints, deps = [], []
 
+        # Get relationss by name
         rel = relation(name)
         if rel
           ints << rel.introduced
@@ -161,6 +164,7 @@ class PortalType < Type
               row[dc] = convert_markdown_to_html(doc)
             end
           end
+          
           if rel.target
             ints << rel.target.introduced
             deps << rel.target.deprecated
@@ -173,6 +177,7 @@ class PortalType < Type
           row[ind] = deprecate_html(row[ind])
         end
 
+        # Add Versions
         row[:int] = int || introduced
         row[:dep] = dep || deprecated
       end      
