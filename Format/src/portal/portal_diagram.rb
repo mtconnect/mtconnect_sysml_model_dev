@@ -15,7 +15,7 @@ class PortalDiagram < Diagram
 
     $logger.info "Documenting diagram: #{name}"
 
-    grid = @content['grid_panel'] if @content
+    grid = @content[:grid_panel] if @content
     if grid
       grid.unshift gen_characteristics
     end
@@ -23,13 +23,13 @@ class PortalDiagram < Diagram
 
 
   def associate_content(doc, node, path)
-    @path = (path.dup << node['text']).freeze
+    @path = (path.dup << node[:text]).freeze
     @doc = doc
     @tree = node
-    @pid = node['qtitle']
+    @pid = node[:qtitle].to_sym
     @content = @doc.content[@pid]
 
-    @tree['text'] = @content['title'] = decorated
+    @tree[:text] = @content[:title] = decorated
 
     @@diagrams_by_id[@pid] = self
   end

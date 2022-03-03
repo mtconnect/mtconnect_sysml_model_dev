@@ -19,12 +19,13 @@ class PortalType < Type
   @@types_by_pid = Hash.new
 
   def self.type_for_pid(id)
-    @@types_by_pid[id]
+    @@types_by_pid[id.to_sym]
   end
 
   def initialize(model, e)
     super
 
+    @generated = false
     lits = literals
     unless lits.empty?
       definitions = Hash.new
@@ -37,13 +38,13 @@ class PortalType < Type
   end
   
   def associate_content(doc, node, path)
-    @path = (path.dup << node['text']).freeze
+    @path = (path.dup << node[:text]).freeze
     @doc = doc
     @tree = node
-    @pid = node['qtitle']
+    @pid = node[:qtitle].to_sym
     @content = @doc.content[@pid]
 
-    @tree['text'] = @content['title'] = decorated
+    @tree[:text] = @content[:title] = decorated
 
     @@types_by_pid[@pid] = self
   end
@@ -61,6 +62,8 @@ class PortalType < Type
 
   def generate_enumeration
     return unless enumeration?
+
+    @generated = true
     
     characteristics = gen_characteristics
     literals = create_panel('Enumeration Literals',
@@ -73,13 +76,15 @@ class PortalType < Type
   def generate_stereotype
     return unless @type == 'uml:Stereotype'
 
+    @generated = true
+
     characteristics = gen_characteristics
     add_tree_node([characteristics])
   end
 
   def add_characteristics
-    if @content
-      data = @content.dig('grid_panel', 0, 'data_store', 'data')
+    if not @generated and @content
+      data = @content.dig(:grid_panel, 0, :data_store, :data)
 
       if data
         data.unshift({ col0: 'Parent', col1: @parent.format_target }) if @parent
@@ -99,33 +104,34 @@ class PortalType < Type
     end
 
     # Add to the end of the grid
-    @content['grid_panel'] << create_panel('Constraints', { 'Error Message': 400, 'OCL Expression': -1 }, rows)
+    @content[:grid_panel] << create_panel('Constraints', { 'Error Message': 400, 'OCL Expression': -1 }, rows)
   end
 
   def add_version_to_attributes
-    return if @content.nil? or !@content.include?('grid_panel')
+    return if @generated or @content.nil? or !@content.include?(:grid_panel)
     
-    $logger.debug "Adding version to #{@name}"
-
-    grid = @content['grid_panel']
+    grid = @content[:grid_panel]    
     grid.each do |panel|
-      next if panel['title'].nil? or panel['title'].start_with?('Characteristics')
+      next if panel[:title].nil? or panel[:title].start_with?('Characteristics')
 
-      rows = panel.dig('data_store', 'data')
+      rows = panel.dig(:data_store, :data)
 
-      columns = panel['columns']
-      nc = columns.detect { |col| col['text'].start_with?('Name') }
-      next unless nc and nc.include?('dataIndex')
+      columns = panel[:columns]
+      nc = columns.detect { |col| col[:text].start_with?('Name') }
+      next unless nc and nc.include?(:dataIndex)
 
-      dc = columns.detect { |col| col['text'].start_with?('Documentation') }['dataIndex']
+      dc = columns.detect { |col| col[:text].start_with?('Documentation') }[:dataIndex]
       unless dc
         $logger.error "Cannot find Documentaiton for relation"
       end
 
-      ind = nc['dataIndex']
-      fields = panel.dig('data_store', 'fields')
+      dc = dc.to_sym
+      
+      ind = nc[:dataIndex]
+      fields = panel.dig(:data_store, :fields)
       pos = fields.index(ind) + 1
       fields.insert(pos, :int, :dep)
+      ind = ind.to_sym
       columns.insert(pos,
                      { text: "Int", dataIndex: 'int', flex: 0, width: 64 },
                      { text: "Dep", dataIndex: 'dep', flex: 0, width: 64 })
@@ -144,6 +150,7 @@ class PortalType < Type
         if rel
           ints << rel.introduced
           deps << rel.deprecated
+          
           if Relation::Association === rel
             assoc = rel.association
             ints << assoc.introduced
@@ -154,8 +161,10 @@ class PortalType < Type
               row[dc] = convert_markdown_to_html(doc)
             end
           end
-          ints << rel.target.introduced
-          deps << rel.target.deprecated
+          if rel.target
+            ints << rel.target.introduced
+            deps << rel.target.deprecated
+          end
         end
         int = ints.compact.max
         dep = deps.compact.max
@@ -173,7 +182,7 @@ class PortalType < Type
   def generate_children_panel
     if @content and not @children.empty?
       
-      grid = @content['grid_panel'] || @content[:grid_panel]
+      grid = @content[:grid_panel]
       unless grid
         $logger.warning "Missing grid panel for #{@name}"
       else
@@ -195,7 +204,7 @@ class PortalType < Type
     n = decorated(@name, true)
     @content = { title: n, path: formatted_path, html_panel: [], grid_panel: panels, image_panel: [] }
     @doc.content[@pid] = @content
-    @model.tree['children'] << { text: n, qtitle: @pid, icon: icon, expanded: false, leaf: true }
+    @model.tree[:children] << { text: n, qtitle: @pid, icon: icon, expanded: false, leaf: true }
 
     add_entry(pre.downcase)
   end
@@ -203,8 +212,8 @@ class PortalType < Type
   def generate_operations
     return if @operations.empty?
 
-    @tree['leaf'] = false
-    children = @tree['children'] = []
+    @tree[:leaf] = false
+    children = @tree[:children] = []
     op_rows = []
     
     path = formatted_path
@@ -237,14 +246,14 @@ class PortalType < Type
       @doc.content[op.pid] = content
       children << { text: op.name, qtitle: op.pid, icon: OperationIcon, expanded: false, leaf: true }
 
-      entry = { id: op.pid, 'name' => "#{op.name} : <i>Opeeration</i>", type: 'operation' }
+      entry = { id: op.pid, name: "#{op.name} : <i>Opeeration</i>", type: 'operation' }
 
       op_rows << [ i + 1, op.format_target, op.introduced, op.deprecated, ret, convert_markdown_to_html(op.documentation) ]
       
-      @doc.search['all'] << entry
-      @doc.search['block'] << entry    
+      @doc.search[:all] << entry
+      @doc.search[:block] << entry    
     end
 
-    @content['grid_panel'] << create_panel('Operatiuons', { '#': 50, Name: 200, Int: 64, Dep: 64, Result: 150, Documentation: -1 }, op_rows)    
+    @content[:grid_panel] << create_panel('Operatiuons', { '#': 50, Name: 200, Int: 64, Dep: 64, Result: 150, Documentation: -1 }, op_rows)    
   end
 end

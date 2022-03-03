@@ -29,7 +29,7 @@ class PortalModel < Model
   @@models_by_pid = Hash.new
 
   def self.model_for_pid(id)
-    @@models_by_pid[id]
+    @@models_by_pid[id.to_sym]
   end
 
   def initialize(p, e)
@@ -37,21 +37,21 @@ class PortalModel < Model
   end
 
   def associate_content(doc, node, path = [])
-    path = (path.dup << node['text']).freeze
+    path = (path.dup << node[:text]).freeze
     @doc = doc
-    @pid = node['qtitle']
+    @pid = node[:qtitle].to_sym
     @content = @doc.content[@pid]
     @tree = node
 
-    @tree['text'] = @content['title'] = decorated
+    @tree[:text] = @content[:title] = decorated
 
-    if node.include?('children')
-      node['children'].each do |child|
-        if child['qtitle'] =~ /^(Structure|Package|Diagrams)_/
-          if child['qtitle'].start_with?('Diagrams_')
-            cp = path.dup << "Diagram-#{child['text']}"
+    if node.include?(:children)
+      node[:children].each do |child|
+        if child[:qtitle] =~ /^(Structure|Package|Diagrams)_/
+          if child[:qtitle].start_with?('Diagrams_')
+            cp = path.dup << "Diagram-#{child[:text]}"
           else
-            cp = path.dup << child['text']
+            cp = path.dup << child[:text]
           end
           v = @@model_paths[cp]
           if v
@@ -102,11 +102,11 @@ class PortalModel < Model
       m.cache_path
     end
 
-    @content = @doc.doc['window.index_page_json']
+    @content = @doc.doc[:'window.index_page_json']
     @pid = nil
 
     @doc.struct.each do |node|
-      model = @@models[node['text']]
+      model = @@models[node[:text]]
       model.associate_content(@doc, node) if model
     end
   end
@@ -118,10 +118,10 @@ class PortalModel < Model
 
     if @content and @documentation and !@documentation.empty?
       html = "<div style='margin: 5px;'>#{convert_markdown_to_html(@documentation)}</div>"
-      @content['html_panel'] << { title: 'Documentation', html: html }
+      @content[:html_panel] << { title: 'Documentation', html: html }
     end       
 
-    grid = @content['grid_panel'] if @content
+    grid = @content[:grid_panel] if @content
     if grid and grid.empty?
       # Create documentation w/ characteristics section
       grid << gen_characteristics

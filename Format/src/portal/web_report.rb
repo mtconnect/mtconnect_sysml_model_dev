@@ -6,9 +6,9 @@ class WebReport
     
   def initialize(file)
     @doc = js_to_json(file)
-    @content = @doc['window.content_data_json']
-    @search = @doc['window.search_data_json']
-    @tree = @doc['window.navigation_json']
+    @content = @doc[:'window.content_data_json']
+    @search = @doc[:'window.search_data_json']
+    @tree = @doc[:'window.navigation_json']
     @struct = find_section('Structure')
   end
 
@@ -26,7 +26,7 @@ class WebReport
     data.sub!(/,\Z/, "}\n")
     
     $logger.info "Parsing #{file}"
-    JSON.parse(data)
+    JSON.parse(data, { symbolize_names: true })
   end
 
   def update_index(index)
@@ -69,11 +69,11 @@ class WebReport
   end
 
   def write(file)
-    @doc['window.feedback'] = 'False'
+    @doc[:'window.feedback'] = 'False'
     
     # Sort the search items
-    @search['all'].sort_by! { |e| e['name'] }
-    @search['block'].sort_by! { |e| e['name'] }
+    @search[:all].sort_by! { |e| e[:name] }
+    @search[:block].sort_by! { |e| e[:name] }
     
     order = [ 'Fundamentals',
               'Device Information Model',
@@ -82,7 +82,7 @@ class WebReport
               'Interface Interaction Model',
               'Profile',
               'Glossary' ]
-    @struct.sort_by! { |node| order.index(node['text']) || (order.length + 1) }
+    @struct.sort_by! { |node| order.index(node[:text]) || (order.length + 1) }
     
     $logger.info "Writing out #{file}"
     File.open(file, 'w') do |f|
@@ -96,38 +96,38 @@ class WebReport
 
   def merge(list1, list2, indent = 0)
     list1.each do |node1|
-      text = node1['text']
+      text = node1[:text]
       space = '  ' * indent
-      node2 = list2.detect { |n| n['text'] == text }
+      node2 = list2.detect { |n| n[:text] == text }
       # puts "#{space}Node: #{text}"
       if node2
         # If the nodes entities don't match, then append this node to the parent
-        t1, = node1['qtitle'].split('_', 2)
-        t2, = node2['qtitle'].split('_', 2)
+        t1, = node1[:qtitle].split('_', 2)
+        t2, = node2[:qtitle].split('_', 2)
 
         if t1 != t2
           list2 << node1 if t1 != 'EmptyContent'
-        elsif node1['qtitle'] != node2['qtitle']
+        elsif node1[:qtitle] != node2[:qtitle]
           # First check if these are the same types, don't merge a diagram to a Structure
           # See if we can merge the grids and children
-          qn1, qn2 = @content[node1['qtitle']], @content[node2['qtitle']]
-          gp1, gp2 = qn1['grid_panel'], qn2['grid_panel']
+          qn1, qn2 = @content[node1[:qtitle]], @content[node2[:qtitle]]
+          gp1, gp2 = qn1[:grid_panel], qn2[:grid_panel]
 
           if !gp1.empty? and gp2.empty?
             # puts "#{space}  Replace grid: #{text}"            
-            qn2['grid_panel'] = gp1
+            qn2[:grid_panel] = gp1
           elsif !gp1.empty? and !gp2.empty?
             # puts "#{space}  Merging grids: #{text}"
-            qn2['grid_panel'].concat(qn1['grid_panel'])
+            qn2[:grid_panel].concat(qn1[:grid_panel])
           end
         end
 
         # Recurse if there are children of both trees
-        c1, c2 = node1['children'], node2['children']
+        c1, c2 = node1[:children], node2[:children]
         if c1 and c2.nil?
           # puts "#{space}  Children in only one branch: #{text}"
-          node2['leaf'] = false
-          node2['children'] = c1
+          node2[:leaf] = false
+          node2[:children] = c1
         elsif c1 and c2
           # puts "#{space}  Merging children: #{text}"
           merge(c1, c2, indent + 1)
@@ -155,15 +155,15 @@ class WebReport
     merge(behavior, structure)
     merge(constraints, structure)
 
-    @tree.delete_if { |node| node['title'] == 'Diagrams' } 
-    @tree.delete_if { |node| node['title'] == 'Interfaces' } 
-    @tree.delete_if { |node| node['title'] == 'Behavior' }
-    @tree.delete_if { |node| node['title'] == 'Constraints' }
+    @tree.delete_if { |node| node[:title] == 'Diagrams' } 
+    @tree.delete_if { |node| node[:title] == 'Interfaces' } 
+    @tree.delete_if { |node| node[:title] == 'Behavior' }
+    @tree.delete_if { |node| node[:title] == 'Constraints' }
   end
 
   def find_section(sect)
-    tree = @tree.detect { |n| n['title'] == sect }
-    tree['data'] if tree
+    tree = @tree.detect { |n| n[:title] == sect }
+    tree[:data] if tree
   end
 
   def add_license(comment)
@@ -173,25 +173,25 @@ class WebReport
     end
     
     # Add the legal docs to the landing page
-    panel = @doc.dig('window.index_page_json', 'html_panel', 0)
+    panel = @doc.dig(:'window.index_page_json', :html_panel, 0)
     
     # Clean up the styling
-    panel['html'].sub!(%r{margin-top:300px}, 'margin-top:100px')
-    panel['html'].sub!(%r{height: 500px}, 'height: 800px')
+    panel[:html].sub!(%r{margin-top:300px}, 'margin-top:100px')
+    panel[:html].sub!(%r{height: 500px}, 'height: 800px')
     # Add the legal content
-    panel['html'].
+    panel[:html].
       sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal}</div></div>")
   end
 
   def deprecate_tree
     recurse = lambda do |node|
-      pid = node['qtitle']
+      pid = node[:qtitle]
       obj = PortalType.type_for_pid(pid) || PortalModel.model_for_pid(pid)
       if obj and obj.deprecated
-        node['text'] = "<strike>#{node['text']}</strike>"
+        node[:text] = "<strike>#{node[:text]}</strike>"
       end
 
-      if chld = node['children']
+      if chld = node[:children]
         chld.each { |c| recurse.call(c) }
       end
     end
@@ -204,31 +204,31 @@ class WebReport
   def convert_markdown
     @content.each do |k, v|
       if k =~ /^(Glossary|Diagram|Structure)/
-        title = v['title']
+        title = v[:title]
         obj = PortalType.type_for_pid(k) || PortalModel.model_for_pid(k)
-        
         deprecated = obj && obj.deprecated
         
         # Scan the grid panel looking for content
-        panels = v['grid_panel']
+        panels = v[:grid_panel]
         panels.each do |panel|
-          if panel['hideHeaders'] and panel.dig('data_store', 'fields').length == 2
+          if panel[:hideHeaders] and panel.dig(:data_store, :fields).length == 2
             # Look for documentation
-            panel.dig('data_store', 'data').each do |row|
-              if row['col0'].start_with?('Documentation')
-                row['col1'] = convert_markdown_to_html(row['col1'])
-                deprecated ||= row['col1'] =~ /DEPRECATED/
+            panel.dig(:data_store, :data).each do |row|
+              if row[:col0].start_with?('Documentation')
+                row[:col1] = convert_markdown_to_html(row[:col1])
+                deprecated ||= row[:col1] =~ /DEPRECATED/
               end
             end
           else
-            desc = panel['columns'].detect { |col| col['text'].start_with?('Documentation') or col['text'].start_with?('Description') }
-            name = panel['columns'].detect { |col| col['text'].start_with?('Name') }
-            type = panel['columns'].detect { |col| col['text'].start_with?('Type') }
+            desc = panel[:columns].detect { |col| col[:text].start_with?('Documentation') or col[:text].start_with?('Description') }
+            name = panel[:columns].detect { |col| col[:text].start_with?('Name') }
+            type = panel[:columns].detect { |col| col[:text].start_with?('Type') }
             
-            dc = desc['dataIndex'] if desc
-            nc = name['dataIndex'] if name
-            tc = type['dataIndex'] if type
-            panel.dig('data_store', 'data').each do |row|
+            dc = desc[:dataIndex].to_sym if desc
+            nc = name[:dataIndex].to_sym if name
+            tc = type[:dataIndex].to_sym if type
+
+            panel.dig(:data_store, :data).each do |row|
               if dc and row[dc] != " </br>"
                 row[dc] = convert_markdown_to_html(row[dc])
                 if nc and row[dc] =~ /deprecated/i
@@ -244,7 +244,7 @@ class WebReport
         end
         
         if deprecated
-          v['title'] = "<strike>#{title}</strike>"
+          v[:title] = "<strike>#{title}</strike>"
         end
       end
     end

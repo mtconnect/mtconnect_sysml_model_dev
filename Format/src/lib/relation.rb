@@ -299,7 +299,7 @@ module Relation
       $logger.debug "  Searching for docs for #{owner.name}::#{name}"
 
       type = a['type']
-      @target = Connection.new('type', LazyPointer.new(type))
+      @target = Connection.new('Target', LazyPointer.new(type))
 
     rescue
       $logger.error "Error creating relation: #{a.to_s}"

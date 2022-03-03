@@ -16,8 +16,8 @@ module PortalHelpers
   end
 
   def resize(columns, name, width)
-    col = columns.detect { |c| c['text'] and c['text'].start_with?(name) }
-    col['width'] = width if col
+    col = columns.detect { |c| c[:text] and c[:text].start_with?(name) }
+    col[:width] = width if col
   end
 
   def format_name_html(name, icon, text = name)
@@ -224,8 +224,8 @@ module PortalHelpers
   end
 
   def add_entry(type = 'block')
-    entry = { id: @pid, 'name' => "#{@name} : <i>#{type.capitalize}</i>", type: type }
-    @doc.search['all'] << entry
-    @doc.search['block'] << entry
+    entry = { id: @pid, name: "#{@name} : <i>#{type.capitalize}</i>", type: type }
+    @doc.search[:all] << entry
+    @doc.search[:block] << entry
   end
 end
