@@ -76,7 +76,6 @@ window.onhashchange = function(e)
     {
         setContent(window.index_page_json);
     }
-  $(window).trigger('resize');  
 };
 
 function idFromHash(hash)

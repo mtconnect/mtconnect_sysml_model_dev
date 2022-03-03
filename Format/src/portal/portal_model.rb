@@ -116,6 +116,11 @@ class PortalModel < Model
 
     $logger.debug "Documenting model: #{name}"
 
+    if @content and @documentation and !@documentation.empty?
+      html = "<div style='margin: 5px;'>#{convert_markdown_to_html(@documentation)}</div>"
+      @content['html_panel'] << { title: 'Documentation', html: html }
+    end       
+
     grid = @content['grid_panel'] if @content
     if grid and grid.empty?
       # Create documentation w/ characteristics section

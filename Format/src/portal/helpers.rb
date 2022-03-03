@@ -214,12 +214,12 @@ module PortalHelpers
     rows = []
     rows << ['Parent', get_parent.format_target(true) ] if respond_to? :get_parent and get_parent
     rows << ['Name', format_name(true)]
-    if @documentation and !@documentation.empty?
+    if not self.is_a?(Model) and @documentation and !@documentation.empty?
       rows << ['Documentation', convert_markdown_to_html(@documentation)]
     end
     rows << ['Introduced', introduced] if introduced
     rows << ['Deprecated', deprecated] if deprecated
-    
+
     create_panel('Characteristics', { name: 192, text: -1 }, rows, hide: true)
   end
 
