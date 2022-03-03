@@ -31,6 +31,9 @@ parser = OptionParser.new do |opts|
   opts.on('-v', '--version VERSION_NUM', 'MTConnect Version') do |ver|
     Options[:version] = ver
   end
+  opts.on('-m', '--model MODEL_VERSION', 'Model Version Number') do |ver|
+    Options[:model_version] = ver
+  end
 end
 parser.parse!
 

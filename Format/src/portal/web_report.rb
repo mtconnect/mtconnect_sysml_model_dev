@@ -168,6 +168,9 @@ class WebReport
 
   def add_license(comment)
     legal = convert_markdown_to_html(comment)
+    if Options[:model_version]
+      legal << "<hr/><p style='font-size:75%; font-style: italic;'>Generated from version #{Options[:model_version]} of the MTConnect SysML Model</p>"
+    end
     
     # Add the legal docs to the landing page
     panel = @doc.dig('window.index_page_json', 'html_panel', 0)
