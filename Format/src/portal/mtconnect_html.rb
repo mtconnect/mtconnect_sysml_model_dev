@@ -127,6 +127,17 @@ module Kramdown
             
           when 'markdown'
             convert_markdown_to_html(args)
+
+          when 'url'
+            if cp = args.index(':')
+              ref = args
+              text = args[(cp + 1)..]
+            else
+              ref = "https://#{args}"
+              text = args
+            end
+            
+            "<a href='#{ref}'>#{text}</a>"
             
           else
             args
