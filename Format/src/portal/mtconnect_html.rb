@@ -38,18 +38,30 @@ module Kramdown
       end
       
       def initialize(root, options)
+        @figure_num = 0
+        @figure_nums = Hash.new { |h, k| h[k] = (@figure_num += 1) }
+
+        @table_num = 0
+        @table_nums = Hash.new { |h, k| h[k] = (@table_num += 1) }
         super
       end
 
       def convert_img(el, indent)
+        num = @figure_nums[el.attr['title']]
+        # puts "Image #{el.attr['title']} = #{num}"
+
         el.attr['width'] = "#{(el.attr['width'].to_f * 100.0).to_i}%"
-        img = super
-        %{<p style="text-align: center">#{img}<br/><em>Figure: #{el.attr['title']}</em></p>}
+        caption = el.attr['alt'] || el.attr['title']
+        %{<p style="text-align: center">#{super}<br/><em>Figure #{num}: #{caption}</em></p>}
       end
 
       def convert_table(el, indent)
+        num = @table_nums[el.attr['label']]
+        # puts "Table #{el.attr['title']} = #{num}"
+
         el.attr['class'] = 'doctable'
-        super
+        caption = el.attr['caption'] || el.attr['title']
+        %{<div style="margin: auto; width: 50%;">#{super}<br/><em>Table #{num}: #{caption}</em></div>}
       end
 
       def convert_macro(el, _opts)
@@ -81,10 +93,15 @@ module Kramdown
             args
 
           when 'table'
-            "<em>Table #{args}</em>"
+            num = @table_nums[args]
+            # puts "Table Reference #{args} = #{num}"
+
+            "<em>Table #{num}</em>"
 
           when 'figure'
-            "<em>Figure #{args}</em>"
+            num = @figure_nums[args]
+            # puts "Image Reference #{args} = #{num}"            
+            "<em>Figure #{num}</em>"
 
           when "span", "colspan"
             ''
