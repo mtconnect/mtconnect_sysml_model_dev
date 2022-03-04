@@ -62,7 +62,8 @@ module Kramdown
 
         el.attr['class'] = 'doctable'
         caption = el.attr['caption'] || el.attr['title']
-        %{<div style="margin: auto; width: 50%;">#{super}<br/><em>Table #{num}: #{caption}</em></div>}
+        %{<div style="display: flex; align-items: center; justify-content: center;">#{super}</div>\
+          <p style="text-align: center; margin-top: 5px;"><em>Table #{num}: #{caption}</em></p>}
       end
 
       def convert_macro(el, _opts)
