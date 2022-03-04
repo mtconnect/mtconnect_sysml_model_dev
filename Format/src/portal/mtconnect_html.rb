@@ -50,10 +50,10 @@ module Kramdown
         num = @figure_nums[el.attr['title']]
         # puts "Image #{el.attr['title']} = #{num}"
 
-        el.attr['max-width'] = "#{(el.attr['width'].to_f * 100.0).to_i}% !important;"
-        el.attr.delete('width')
+        el.attr['style'] = "max-width: #{(el.attr['width'].to_f * 100.0).to_i}%;"
+        el.attr.delete('width');
         caption = el.attr['alt'] || el.attr['title']
-        %{<p style="text-align: center">#{super}<br/><em>Figure #{num}: #{caption}</em></p>}
+        %{<p style="width=100vw; text-align: center">#{super}<br/><em>Figure #{num}: #{caption}</em></p>}
       end
 
       def convert_table(el, indent)
