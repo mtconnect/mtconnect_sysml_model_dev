@@ -177,7 +177,7 @@ class WebReport
     
     # Clean up the styling
     panel[:html].sub!(%r{margin-top:300px}, 'margin-top:100px')
-    panel[:html].sub!(%r{height: 500px}, 'height: 800px')
+    panel[:html].sub!(%r{height: 500px}, 'height: 1000px')
     # Add the legal content
     panel[:html].
       sub!(%r{</div>}, "<div style=\"text-align: left; margin-left: 50px; margin-right: 50px;\">#{legal}</div></div>")
