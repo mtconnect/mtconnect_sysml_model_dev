@@ -22,7 +22,7 @@ module PortalHelpers
 
   def format_name_html(name, icon, text = name)
     "<span style=\"vertical-align: middle;\"><img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\">" \
-      "</span> #{text}"
+      "</span>&nbsp;#{text}"
   end
 
   def deprecated_format_name_html(name, icon)
@@ -32,7 +32,7 @@ module PortalHelpers
   def format_target_html(id, name, icon, text = name)
     "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
       "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
-      "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"> #{text}</a>" 
+      "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\">&nbsp;#{text}</a>" 
   end
 
   def deprecated_format_target(id, name, icon)
@@ -40,7 +40,7 @@ module PortalHelpers
   end
   
   def deprecate_html(text)
-    text.sub(%r{> (.+?)</div></br>$}, '> <strike>\1</strike>\2</div>')
+    text.sub(%r{> (.+?)</div></br>$}, '>&nbsp;<strike>\1</strike>\2</div>')
   end
 
   def find_block(name)
@@ -131,7 +131,7 @@ module PortalHelpers
   end
 
   def decorated(text = @name, title = true)
-    text = (respond_to?(:abstract?) and abstract?) ? "<em>&lt;&lt;abstract&gt;&gt</em> <em>#{text}</em>" : text
+    text = (respond_to?(:abstract?) and abstract?) ? "<em>&lt;&lt;abstract&gt;&gt&nbsp;#{text}</em>" : text
     text = deprecated ? "<strike>#{text}</strike>" : text
     if @stereotypes
       sts = @stereotypes.select { |s| s.name != 'normative' and s.name != 'deprecated' }.map { |s| s.html }
@@ -139,16 +139,16 @@ module PortalHelpers
     text = if sts.nil? or sts.empty?
              text
            else
-             "<em>#{sts.join(' ')}</em> #{text}"
+             "<em>#{sts.join(' ')}</em>&nbsp;#{text}"
            end
 
     if not title
       text = case self
              when PortalType, Operation
-               "<code> #{text}</code>"
+               "<code>#{text}</code>"
                
              when PortalModel
-               "<em> #{text}</em>"
+               "<em>#{text}</em>"
 
              else
                text
