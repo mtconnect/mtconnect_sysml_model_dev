@@ -211,15 +211,7 @@ class WebReport
         # Scan the grid panel looking for content
         panels = v[:grid_panel]
         panels.each do |panel|
-          if panel[:hideHeaders] and panel.dig(:data_store, :fields).length == 2
-            # Look for documentation
-            panel.dig(:data_store, :data).each do |row|
-              if row[:col0].start_with?('Documentation')
-                row[:col1] = convert_markdown_to_html(row[:col1])
-                deprecated ||= row[:col1] =~ /DEPRECATED/
-              end
-            end
-          else
+          unless panel[:title] == 'Characterists'
             desc = panel[:columns].detect { |col| col[:text].start_with?('Documentation') or col[:text].start_with?('Description') }
             name = panel[:columns].detect { |col| col[:text].start_with?('Name') }
             type = panel[:columns].detect { |col| col[:text].start_with?('Type') }

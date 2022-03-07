@@ -2,6 +2,7 @@ $: << File.dirname(__FILE__)
 
 require 'constraint'
 require 'stereotype'
+require 'documentation'
 
 module Extensions
   def xmi_stereotype(e)
@@ -38,11 +39,7 @@ module Extensions
   end
   
   def xmi_documentation(e)
-    recurse = lambda { |v| [ v['body'], v.xpath('./ownedComment').map { |c| recurse.call(c) } ] }
-    doc = e.xpath('./ownedComment').map do |c1|
-      recurse.call(c1)
-    end.flatten.compact.join("\n\n")
-    doc
+    Documentation.new(e)
   end
 
   def get_multiplicity(r)

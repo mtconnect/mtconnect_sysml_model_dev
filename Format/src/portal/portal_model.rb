@@ -116,9 +116,11 @@ class PortalModel < Model
 
     $logger.debug "Documenting model: #{name}"
 
-    if @content and @documentation and !@documentation.empty?
-      html = "<div style='margin: 1em;'>#{convert_markdown_to_html(@documentation)}</div>"
-      @content[:html_panel] << { title: 'Documentation', html: html }
+    if @content and !@documentation.empty?
+      @documentation.sections.each do |section|
+        html = "<div style='margin: 1em;'>#{convert_markdown_to_html(section.text)}</div>"
+        @content[:html_panel] << { title: section.title, html: html }
+      end
     end       
 
     grid = @content[:grid_panel] if @content

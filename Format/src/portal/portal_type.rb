@@ -30,7 +30,7 @@ class PortalType < Type
     unless lits.empty?
       definitions = Hash.new
       lits.sort_by { |lit| lit.name }.each do |lit|
-        definitions[lit.name] = convert_markdown_to_html(lit.description)
+        definitions[lit.name] = convert_markdown_to_html(lit.description.definition)
       end
 
       Kramdown::Converter::MtcHtml.add_definitions(@name, definitions)
@@ -56,7 +56,7 @@ class PortalType < Type
   def enumeration_rows
     i = 0
     literals.sort_by { |lit| lit.name }.map.with_index do |lit, i|
-      [ i + 1, lit.format_name, lit.introduced, lit.deprecated, convert_markdown_to_html(lit.description) ]
+      [ i + 1, lit.format_name, lit.introduced, lit.deprecated, convert_markdown_to_html(lit.description.definition) ]
     end
   end
 
@@ -86,11 +86,19 @@ class PortalType < Type
     if not @generated and @content
       data = @content.dig(:grid_panel, 0, :data_store, :data)
 
+      unless @documentation.empty?
+        data.delete_if { |r| r[:col0].start_with?('Documentation') }
+        @documentation.sections.each do |section|
+          data << { col0: section.title, col1: convert_markdown_to_html(section.text) }
+        end
+      end
+            
       if data
         data.unshift({ col0: 'Parent', col1: @parent.format_target }) if @parent
         data << { col0: 'Introduced', col1: introduced } if introduced
         data << { col0: 'Deprecated', col1: deprecated } if deprecated
       end
+      
     end
   end
 
@@ -230,18 +238,18 @@ class PortalType < Type
         type = Type.type_for_id(par.type) || par.type || 'string'
 
         if par.direction == 'return' 
-          results << [ 'Result', type.format_target, convert_markdown_to_html(par.documentation) ]
+          results << [ 'Result', type.format_target, convert_markdown_to_html(par.documentation.definition) ]
           ret = type.format_target
           nil
         elsif par.direction == 'out'
-          results << [ par.name, type.format_target, convert_markdown_to_html(par.documentation) ]
+          results << [ par.name, type.format_target, convert_markdown_to_html(par.documentation.definition) ]
           nil
         else
           dflt = par.default ? convert_markdown_to_html("`#{par.default}`") : ''
           int = par.introduced || op.introduced
           dep = par.deprecated || op.deprecated
           pn = dep ? "<strike>#{par.name}</strike>" : par.name
-          [ i + 1, pn, int, dep, type.format_target, par.multiplicity, dflt, convert_markdown_to_html(par.documentation) ]
+          [ i + 1, pn, int, dep, type.format_target, par.multiplicity, dflt, convert_markdown_to_html(par.documentation.definition) ]
         end
       end.compact
       panels << create_panel('Parameters', { '#': 50, Name: 200, Int: 64, Dep: 64, Type: 150, Multiplicity: 84, 'Default Value': 100, Documentation: -1 }, rows)
@@ -253,7 +261,7 @@ class PortalType < Type
 
       entry = { id: op.pid, name: "#{op.name} : <i>Opeeration</i>", type: 'operation' }
 
-      op_rows << [ i + 1, op.format_target, op.introduced, op.deprecated, ret, convert_markdown_to_html(op.documentation) ]
+      op_rows << [ i + 1, op.format_target, op.introduced, op.deprecated, ret, convert_markdown_to_html(op.documentation.definition) ]
       
       @doc.search[:all] << entry
       @doc.search[:block] << entry    

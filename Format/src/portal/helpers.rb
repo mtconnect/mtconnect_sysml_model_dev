@@ -10,7 +10,7 @@ DiagramIcon = 'images/diagram_icon.png'.freeze
 
 module PortalHelpers
   def convert_markdown_to_html(content)
-    data = content.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
+    data = content.to_s.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
     kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex})
     kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
   end
@@ -70,8 +70,9 @@ module PortalHelpers
   end
 
   def format_term(term, text = term)
-    if t = PortalType.term_for_name(term) and d = t.documentation and not d.empty?
-      title = d.gsub(/\{\{(term(plural)?|cite)\(([^)]+)\)\}\}/) do |m|
+    if t = PortalType.term_for_name(term) and not t.documentation.empty?
+      d = t.documentation.definition
+      title = d.to_s.gsub(/\{\{(term(plural)?|cite)\(([^)]+)\)\}\}/) do |m|
         t = $3
         if $2
           ActiveSupport::Inflector.pluralize(t)
@@ -215,7 +216,9 @@ module PortalHelpers
     rows << ['Parent', get_parent.format_target(true) ] if respond_to? :get_parent and get_parent
     rows << ['Name', format_name(true)]
     if not self.is_a?(Model) and @documentation and !@documentation.empty?
-      rows << ['Documentation', convert_markdown_to_html(@documentation)]
+      @documentation.sections.each do |section|
+        rows << [section.title, convert_markdown_to_html(section.text)]
+      end
     end
     rows << ['Introduced', introduced] if introduced
     rows << ['Deprecated', deprecated] if deprecated
