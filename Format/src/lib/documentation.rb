@@ -23,7 +23,7 @@ class Documentation
     end
 
     def to_s
-      "## #{@title}\n\n#{@text}"
+      "#{@title}: #{@text}"
     end
   end
   
