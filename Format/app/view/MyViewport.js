@@ -147,7 +147,7 @@ function createGridPanel(grid_panel_json)
             var columnWidth = columns[index].width;
             if (columnWidth === -1)
             {
-                tableWidth += 350;
+                tableWidth += 500;
             }
             else
             {
@@ -189,13 +189,14 @@ function createGridPanel(grid_panel_json)
             ]
         });
 
-    if (getColumnsCount(grid_panel_json.columns) > 4)
-    {
-        grid.setWidth(calculateTableWidth(grid_panel_json.columns));
-        gridPanelHolder.setHeight(grid.getStore().getRange().length * 43 + 75);
-
-        gridPanelHolder.setAutoScroll(true);
-    }
+     if (getColumnsCount(grid_panel_json.columns) > 2)
+     {
+         grid.setWidth(window.innerWidth - 80);
+         //grid.setWidth(calculateTableWidth(grid_panel_json.columns));
+         gridPanelHolder.setHeight(grid.getStore().getRange().length * 43 + 75);
+  
+         gridPanelHolder.setAutoScroll(true);
+     }
 
     return gridPanelHolder;
 }
