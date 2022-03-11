@@ -67,7 +67,7 @@ module Relation
     
     attr_reader :id, :name, :type, :xmi, :multiplicity, 
                 :source, :target, :owner, :stereotypes, :visibility, :association_name,
-                :constraints, :assoc, :redefinesProperty, :default, :association_doc
+                :constraints, :assoc, :redefinesProperty, :default, :association_doc, :read_only
     attr_accessor :documentation
 
     class Connection
@@ -104,6 +104,7 @@ module Relation
       @type = r['xmi:type']
       @xmi = r
       @constraints = {}
+      @read_only = false
       
       @multiplicity, @optional = get_multiplicity(r)
       @assoc = r['association']
@@ -292,6 +293,7 @@ module Relation
       @default = get_value(a, 'defaultValue')
 
       @redefinesProperty = a.at('./redefinedProperty') ? true : false
+      @read_only = a['isReadOnly']
       
       @stereotypes = xmi_stereotype(a)
       @documentation = xmi_documentation(a)
@@ -300,6 +302,10 @@ module Relation
 
       type = a['type']
       @target = Connection.new('Target', LazyPointer.new(type))
+
+      #if @read_only and (@name == 'type' || @name == 'unit')
+      #  puts "#{owner.name}::#{@name}"
+      #end
 
     rescue
       $logger.error "Error creating relation: #{a.to_s}"

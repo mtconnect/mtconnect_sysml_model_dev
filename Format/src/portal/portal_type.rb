@@ -115,6 +115,8 @@ class PortalType < Type
     @content[:grid_panel] << create_panel('Constraints', { 'Error Message': 400, 'OCL Expression': -1 }, rows)
   end
 
+  BLANK = ' </br>'
+  
   def add_version_to_attributes
     return if @generated or @content.nil? or !@content.include?(:grid_panel)
     
@@ -128,13 +130,19 @@ class PortalType < Type
       nc = columns.detect { |col| col[:text].start_with?('Name') }
       next unless nc and nc.include?(:dataIndex)
 
+      mc = columns.detect { |col| col[:text].start_with?('Multiplicity') }[:dataIndex]
       dc = columns.detect { |col| col[:text].start_with?('Documentation') }[:dataIndex]
       unless dc
         $logger.error "Cannot find Documentaiton for relation"
       end
 
-      ind = nc[:dataIndex]
       fields = panel.dig(:data_store, :fields)
+
+      resize(columns, 'Type', 200)
+      resize(columns, 'Multiplicity', 100)
+      resize(columns, 'Default Value', 200)
+      
+      ind = nc[:dataIndex]
       pos = fields.index(ind) + 1
       fields.insert(pos, :int, :dep)
       
@@ -142,13 +150,19 @@ class PortalType < Type
                      { text: "Int", dataIndex: 'int', flex: 0, width: 64 },
                      { text: "Dep", dataIndex: 'dep', flex: 0, width: 64 })
 
-      resize(columns, 'Type', 150)
-      resize(columns, 'Multiplicity', 100)
-      resize(columns, 'Default Value', 200)
+      if panel[:title].start_with?("Value Properties")
+        ro = :ro
+        pos = fields.index(mc) + 1
+        fields.insert(pos, ro)
 
+        columns.insert(pos,
+                       { text: "Read Only", dataIndex: 'ro', flex: 0, width: 84 })
+      end
+      
       # Get sumbolic versions for data index
       dc = dc.to_sym      
       ind = ind.to_sym
+      mc = mc.to_sym
       rows.each do |row|
         # Use nokogiri to parse the html and grab the CDATA.
         html = Nokogiri::HTML(row[ind])
@@ -168,7 +182,7 @@ class PortalType < Type
             deps << assoc.deprecated
 
             doc = assoc.documentation
-            if doc and row[dc] == ' </br>'
+            if doc and row[dc] == BLANK
               row[dc] = convert_markdown_to_html(doc)
             end
           end
@@ -176,6 +190,24 @@ class PortalType < Type
           if rel.target
             ints << rel.target.introduced
             deps << rel.target.deprecated
+          end
+
+          if row[mc] == BLANK
+            row[mc] = 1
+          end
+
+          if ro
+            row[ro] = (rel.read_only || "False").to_s.capitalize
+
+            if rel.name == 'subType' or rel.name == 'type' and not rel.read_only
+              text = row[dc] == BLANK ? '' : "#{row[dc]}<br/><br/>"
+              if rel.default
+                text << "If <code>#{rel.name}</code> is not speciﬁed, the value <b>MUST</b> default to #{rel.default}."
+              else
+                text << "The <code>#{rel.name}</code> <b>MUST</b> be specified"
+              end
+              row[dc] = text
+            end
           end
         end
         int = ints.compact.max

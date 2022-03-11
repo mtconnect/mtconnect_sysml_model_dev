@@ -46,11 +46,13 @@ module PortalHelpers
   def find_block(name)
     if name.include?('::')
       package, name = name.split('::')
-      model = PortalModel.model_for_name(package)
-      return model.types.find { |t| t.name == name } if model
+      model = PortalModel.model_for_name(package)      
+      block =  model.types.find { |t| t.name == name } if model
+    else
+      block = PortalType.type_for_name(name)
     end
 
-    PortalType.type_for_name(name)
+    return block
   end
 
   def format_block(block)
@@ -163,6 +165,7 @@ module PortalHelpers
     return obj if String === obj
     icon = icon_for_obj(obj)
     pid = obj.pid
+    puts "!!! No PID: #{obj.model.name}::#{obj.name}" unless pid
     text = decorated(obj.name, title)
     pid ? format_target_html(pid, obj.name, icon, text) : format_name_html(obj.name, icon, text)
   end

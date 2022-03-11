@@ -178,10 +178,12 @@ class Type
     # puts "Adding type #{@name} for id #{@id}"
     @@types_by_id[@id] = self
 
-    if @model.root.name == 'Glossary'
-      @@terms_by_name[@name] = self
-    else
-      @@types_by_name[@name] = self
+    if @type == 'uml:Class'
+      if @model.root.name == 'Glossary'
+        @@terms_by_name[@name] = self
+      else
+        @@types_by_name[@name] = self
+      end
     end
 
     LazyPointer.register(@id, self)
