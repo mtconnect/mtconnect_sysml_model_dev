@@ -30,7 +30,7 @@ module PortalHelpers
   end
 
   def format_target_html(id, name, icon, text = name)
-    "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
+    "<a title=\"#{name}\" href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\"><span style=\"vertical-align: middle;\">" \
       "<img src='#{icon}' width='16' height='16' title='' style=\"vertical-align: bottom;\"></span></a>" \
       "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\">&nbsp;#{text}</a>" 
   end
