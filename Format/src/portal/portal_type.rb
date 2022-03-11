@@ -202,7 +202,7 @@ class PortalType < Type
             if rel.name == 'subType' or rel.name == 'type' and not rel.read_only
               text = row[dc] == BLANK ? '' : "#{row[dc]}<br/><br/>"
               if rel.default
-                text << "If <code>#{rel.name}</code> is not speciﬁed, the value <b>MUST</b> default to #{rel.default}."
+                text << "An unspecified <code>#{rel.name}</code> <b>MUST</b> default to <code>#{rel.default}<code>."
               else
                 text << "The <code>#{rel.name}</code> <b>MUST</b> be specified"
               end

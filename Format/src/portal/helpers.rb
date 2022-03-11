@@ -165,7 +165,7 @@ module PortalHelpers
     return obj if String === obj
     icon = icon_for_obj(obj)
     pid = obj.pid
-    puts "!!! No PID: #{obj.model.name}::#{obj.name}" unless pid
+    $logger.warn "!!! No PID: #{obj.model.name}::#{obj.name}" unless pid
     text = decorated(obj.name, title)
     pid ? format_target_html(pid, obj.name, icon, text) : format_name_html(obj.name, icon, text)
   end
