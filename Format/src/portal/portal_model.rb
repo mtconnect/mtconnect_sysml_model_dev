@@ -111,6 +111,15 @@ class PortalModel < Model
     end
   end
 
+  def build_panel(grid, name, list)
+    unless list.empty?
+      rows = list.select { |e| e.content }.sort_by { |e| e.name }.map do |e|
+        [ e.format_target, e.introduced, e.deprecated ]
+      end
+      grid << create_panel(name, { Name: 400, Introduced: 84, Deprecated: 84 }, rows) unless rows.empty?
+    end
+  end
+
   def document_model
     return if @content.nil? or @name == 'MTConnect'
 
@@ -128,17 +137,8 @@ class PortalModel < Model
       # Create documentation w/ characteristics section
       grid << gen_characteristics
 
-      if not @children.empty?
-        rows = @children.sort_by { |model| model.name }.map do |model|
-          [ model.format_target, model.introduced, model.deprecated ]
-        end
-        grid << create_panel('Packages', { Name: 300, Introduced: 84, Deprecated: 84 }, rows) unless rows.empty?
-      end
-
-      rows = @types.select { |type| type.content }.sort_by { |type| type.name }.map do |type|
-        [ type.format_target, type.introduced, type.deprecated ]
-      end
-      grid << create_panel('Blocks', { Name: 300, Introduced: 84, Deprecated: 84 }, rows) unless rows.empty?
+      build_panel(grid, 'Packages', @children)
+      build_panel(grid, 'Blocks', @types)
     end
   end
 
