@@ -154,7 +154,7 @@ function createGridPanel(grid_panel_json)
                 tableWidth += columnWidth;
             }
         }
-        return tableWidth;
+        return Math.max(tableWidth, window.innerWidth - 80);
     }
 
     var grid =  Ext.create('Ext.grid.Panel',
@@ -189,16 +189,20 @@ function createGridPanel(grid_panel_json)
             ]
         });
 
-     if (getColumnsCount(grid_panel_json.columns) > 2)
-     {
-         grid.setWidth(window.innerWidth - 80);
-         //grid.setWidth(calculateTableWidth(grid_panel_json.columns));
-         gridPanelHolder.setHeight(grid.getStore().getRange().length * 43 + 75);
+  if (getColumnsCount(grid_panel_json.columns) > 2)
+  {
+    grid.setWidth(calculateTableWidth(grid_panel_json.columns));
+    gridPanelHolder.setHeight(Math.max(grid.getStore().getRange().length * 43 + 75, 180));
+  }
+  else
+  {
+    if (grid.getStore().getRange().length == 1)
+      gridPanelHolder.setHeight(100);
+  }
   
-         gridPanelHolder.setAutoScroll(true);
-     }
-
-    return gridPanelHolder;
+  gridPanelHolder.setAutoScroll(true);    
+  
+  return gridPanelHolder;
 }
 
 function createGridPanels(json)
