@@ -182,10 +182,14 @@ function createGridPanel(grid_panel_json)
                 overflowY: 'hidden'
             },
             items:[
-                {
-                    layout: 'fit'
-                },
-                grid
+              {
+                layout: 'fit'
+              },
+              grid,
+	      {
+                layout: 'fit',
+                style: { overflow: 'auto', paddingBottom: '20px' }
+	      }
             ]
         });
 
