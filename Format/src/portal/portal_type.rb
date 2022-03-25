@@ -94,7 +94,7 @@ class PortalType < Type
       end
             
       if data
-        data.unshift({ col0: 'Parent', col1: @parent.format_target }) if @parent
+        data.unshift({ col0: 'Superclass (is-a)', col1: @parent.format_target }) if @parent
         data << { col0: 'Introduced', col1: introduced } if introduced
         data << { col0: 'Deprecated', col1: deprecated } if deprecated
       end
@@ -234,7 +234,7 @@ class PortalType < Type
         rows = @children.sort_by(&:name).map.with_index do |child, i|
           [ i + 1, child.format_target, child.introduced, child.deprecated ]
         end
-        grid << create_panel('Children', { '#': 50, Name: 300, Int: 64, Dep: 64 }, rows)
+        grid << create_panel('Subclasses', { '#': 50, Name: 300, Int: 64, Dep: 64 }, rows)
       end
     end
   end
