@@ -200,7 +200,7 @@ module Relation
     class End < Connection
       include Extensions
       
-      attr_accessor :name, :optional, :navigable, :xmi
+      attr_accessor :name, :optional, :navigable, :xmi, :id
       
       def initialize(e, type)
         super(e['name'], type)
@@ -208,6 +208,7 @@ module Relation
         @multiplicity, @optional = get_multiplicity(e)
         @navigable = false
         @xmi = e
+        @id = e['xmi:id']
       end
 
       def is_navigable?
@@ -228,7 +229,7 @@ module Relation
         @name = e['name']
         @type = e['xmi:type']
         @documentation = xmi_documentation(e)
-        @stereotypes=  xmi_stereotype(e)
+        @stereotypes=  xmi_stereotype(e)      
       end
     end
     
@@ -237,26 +238,40 @@ module Relation
 
       tid = r['type']
       @final_target = @target = End.new(r, LazyPointer.new(tid))
+      @thru =false
       
       aid = r['association']
-      assoc = r.document.at("//packagedElement[@xmi:id='#{aid}']")      
-      @association = Assoc.new(assoc)
-      @redefinesProperty = r.at('./redefinedProperty') ? true : false    
+      @association = LazyPointer.new(aid)
       
-      src = assoc.at('./ownedEnd')
-      return if not src
-      
-      @source = End.new(src, owner)
+      @redefinesProperty = r.at('./redefinedProperty') ? true : false
 
-      if @association.type == 'uml:AssociationClass'
-        @target = End.new(r, LazyPointer.new(aid))
+      @association.lazy(self) do
+        src = @association.xmi.at('./ownedEnd') || r
+        @source = End.new(src, owner)
+        
+        if @association.type == 'uml:AssociationClass'
+          @target = End.new(r, @association.obj)
+          @thru = true
+          # puts "******** Association class #{owner.name}::#{r['name']}: #{@source.type.name} -> #{@target.type.name} -> #{@final_target.type.name} #{tid}"
+        end
+        
+        @name = @target.name || @name || @source.name
+        
+        @constraints = collect_constraints(@association.xmi)
       end
 
-      @name = @target.name || @name || @source.name
+      @association.unresolved(self) do
+        assoc = r.document.at("//packagedElement[@xmi:id='#{aid}']")
+        @association = Assoc.new(assoc)
+        
+        src = assoc.at('./ownedEnd') || r
+        @source = End.new(src, owner)
+        @name = @target.name || @name || @source.name
+        @constraints = collect_constraints(assoc)
+      end
+      
       @multiplicity = @target.multiplicity
       @optional = @target.optional
-
-      @constraints = collect_constraints(assoc)
     end
 
     def final_target
@@ -265,6 +280,10 @@ module Relation
 
     def is_reference?
       true
+    end
+
+    def thru?
+      @thru
     end
 
     def link_target(reference, type)

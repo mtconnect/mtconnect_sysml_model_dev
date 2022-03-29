@@ -197,6 +197,14 @@ class PortalModel < Model
     end    
   end
   
+  def self.add_part_of
+    $logger.info "Adding part-of types"
+
+    @@models.each do |k, m|
+      m.types.each { |t| t.add_part_of }
+    end    
+  end
+  
   def self.add_versions_to_relations
     $logger.info "Adding version numbers to properties and relations"
   end

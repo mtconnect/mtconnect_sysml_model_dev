@@ -115,6 +115,24 @@ class PortalType < Type
     @content[:grid_panel] << create_panel('Constraints', { 'Error Message': 400, 'OCL Expression': -1 }, rows)
   end
 
+  def add_part_of
+    return unless @content 
+    
+    $logger.debug "Checking parts of to #{@name}"
+
+    rows = part_of.map.with_index do |part, i|
+      # puts "#{part.name}: #{part.source.type.name} -> #{part.target.type.name} #{part.final_target.type.name}"
+      [ i + 1, format_name, part.name, part.final_target.type.format_target ]
+    end
+
+    return if rows.empty?
+    $logger.info "Adding part of to #{@name}"
+
+    # Add to the end of the grid
+    @content[:grid_panel] << create_panel('Parts Of', { '#': 64, Type: 300, Relation: 300, Target: -1 }, rows)
+  end
+
+
   BLANK = ' </br>'
   
   def add_version_to_attributes
@@ -143,10 +161,10 @@ class PortalType < Type
       resize(columns, 'Default Value', 200)
       
       ind = nc[:dataIndex]
-      pos = fields.index(ind) + 1
-      fields.insert(pos, :int, :dep)
+      ind_pos = fields.index(ind) + 1
+      fields.insert(ind_pos, :int, :dep)
       
-      columns.insert(pos,
+      columns.insert(ind_pos,
                      { text: "Int", dataIndex: 'int', flex: 0, width: 64 },
                      { text: "Dep", dataIndex: 'dep', flex: 0, width: 64 })
 
@@ -160,6 +178,7 @@ class PortalType < Type
       end
       
       # Get sumbolic versions for data index
+      has_parts = false
       dc = dc.to_sym      
       ind = ind.to_sym
       mc = mc.to_sym
@@ -185,6 +204,10 @@ class PortalType < Type
             if doc and row[dc] == BLANK
               row[dc] = convert_markdown_to_html(doc)
             end
+
+            if rel.thru?
+              inter = rel.target.type
+            end
           end
           
           if rel.target
@@ -209,6 +232,7 @@ class PortalType < Type
               row[dc] = text
             end
           end
+
         end
         int = ints.compact.max
         dep = deps.compact.max
@@ -220,7 +244,20 @@ class PortalType < Type
         # Add Versions
         row[:int] = int || introduced
         row[:dep] = dep || deprecated
-      end      
+
+        if inter
+          row[:thru] = inter.format_target
+          has_parts = true
+        end    
+      end
+
+      if has_parts
+        fields.insert(ind_pos + 2, :thru) 
+        columns.insert(ind_pos + 2, { text: "Thru", dataIndex: 'thru', flex: 0, width: 250 })
+        
+        tc = columns.detect { |col| col[:text].start_with?('Type') }
+        tc[:text] = 'Target'
+      end
     end
   end
 

@@ -1,7 +1,7 @@
 
 
 class LazyPointer
-  attr_reader :obj
+  attr_reader :obj, :id
   
   @@pointers = []
   @@objects = Hash.new
@@ -28,6 +28,7 @@ class LazyPointer
   def initialize(obj)
     @id = @obj = nil
     @lazy_lambdas = []
+    @unresolved = nil
     
     case obj
     when String
@@ -45,17 +46,22 @@ class LazyPointer
       raise "Pointer created for unknown type: #{obj.class} '#{@tid}' '#{@type}'"
     end
   end
-  
-  def lazy(&block)
-    if @obj
-      @obj.instance_eval(&block)
-    else
-      @lazy_lambdas << block
-    end
+
+  def eval_lambda(target, block)
+    target = @obj unless target
+    target.instance_eval(&block)
   end
   
-  def id
-    @id
+  def lazy(target = nil, &block)
+    if @obj
+      eval_lambda(target, block)
+    else
+      @lazy_lambdas << [target, block]
+    end
+  end
+
+  def unresolved(target, &block)
+    @unresolved = [target, block]
   end
   
   def resolved?
@@ -66,11 +72,15 @@ class LazyPointer
     unless @obj
       @obj = @@objects[@id]
       if @obj
-        @lazy_lambdas.each do |block|
-          @obj.instance_eval(&block)
+        @lazy_lambdas.each do |target, block|
+          eval_lambda(target, block)
         end
       else
-        $logger.warn "Cannot find object for #{@id}"
+        if @unresolved
+          eval_lambda(*@unresolved)
+        else
+          $logger.warn "Cannot find object for #{@id}"
+        end
       end
     end
     

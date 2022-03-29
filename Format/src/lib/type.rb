@@ -64,7 +64,7 @@ class Type
       $logger.debug "Adding free association: #{assoc['name'].inspect} for #{assoc['xmi:id']}"
 
       if assoc['name'] and !assoc['name'].empty?
-        model.class.type_class.new(model, assoc)        
+        model.class.type_class.new(model, assoc)      
       else
         comment = assoc.at('./ownedComment')
         doc = comment['body'].gsub(/<[\/]?[a-z]+>/, '') if comment and comment.key?('body')
@@ -388,6 +388,12 @@ class Type
     @relations.select { |r| r.class == Relation::Realization }
   end
 
+  def part_of
+    @relations.select do |r|
+      Relation::Association === r and r.name and r.name =~ /^is/
+    end
+  end
+
   def derive_version(stereo, properties)
     properties.split(',').map { |s| s.strip }.map do |s|
       prop = relation(s)
@@ -424,7 +430,5 @@ class Type
 
   def add_operations
     return if @operations.empty?
-
-    
   end
 end
