@@ -116,6 +116,8 @@ class PortalType < Type
   end
 
   def add_part_of
+    return
+    
     return unless @content 
     
     $logger.debug "Checking parts of to #{@name}"
