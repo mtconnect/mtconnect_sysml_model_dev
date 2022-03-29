@@ -115,25 +115,31 @@ class PortalType < Type
     @content[:grid_panel] << create_panel('Constraints', { 'Error Message': 400, 'OCL Expression': -1 }, rows)
   end
 
-  def add_part_of
-    return
-    
-    return unless @content 
-    
-    $logger.debug "Checking parts of to #{@name}"
+  def add_inversions
+    return unless @content
 
-    rows = part_of.map.with_index do |part, i|
-      # puts "#{part.name}: #{part.source.type.name} -> #{part.target.type.name} #{part.final_target.type.name}"
-      [ i + 1, format_name, part.name, part.final_target.type.format_target ]
+    has_thru = false
+    rows = @relations.select do |rel|
+      Relation::Association === rel and rel.inversion
+    end
+    
+    return if rows.empty?
+
+    thru = rows.any?(&:thru?)
+    rows = rows.map.with_index do |rel, i|
+      if thru
+        [ i + 1, rel.name, rel.target.type.format_target, rel.final_target.type.format_target ]
+      else
+        [ i + 1, rel.name, rel.final_target.type.format_target ]
+      end
     end
 
-    return if rows.empty?
-    $logger.info "Adding part of to #{@name}"
-
-    # Add to the end of the grid
-    @content[:grid_panel] << create_panel('Parts Of', { '#': 64, Type: 300, Relation: 300, Target: -1 }, rows)
+    if thru
+      @content[:grid_panel] << create_panel('Part Of', { '#': 64, 'Name': 200, 'Thru': 250, 'Type': 250 }, rows)    
+    else
+      @content[:grid_panel] << create_panel('Part Of', { '#': 64, 'Name': 200,  'Type': 250 }, rows)    
+    end
   end
-
 
   BLANK = ' </br>'
   
@@ -180,7 +186,7 @@ class PortalType < Type
       end
       
       # Get sumbolic versions for data index
-      has_parts = false
+      has_thru = false
       dc = dc.to_sym      
       ind = ind.to_sym
       mc = mc.to_sym
@@ -249,11 +255,11 @@ class PortalType < Type
 
         if inter
           row[:thru] = inter.format_target
-          has_parts = true
+          has_thru = true
         end    
       end
 
-      if has_parts
+      if has_thru
         fields.insert(ind_pos + 2, :thru) 
         columns.insert(ind_pos + 2, { text: "Thru", dataIndex: 'thru', flex: 0, width: 250 })
         

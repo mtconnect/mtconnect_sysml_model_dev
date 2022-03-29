@@ -388,12 +388,6 @@ class Type
     @relations.select { |r| r.class == Relation::Realization }
   end
 
-  def part_of
-    @relations.select do |r|
-      Relation::Association === r and r.name and r.name =~ /^is/
-    end
-  end
-
   def derive_version(stereo, properties)
     properties.split(',').map { |s| s.strip }.map do |s|
       prop = relation(s)

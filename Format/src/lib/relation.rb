@@ -195,7 +195,7 @@ module Relation
   end
   
   class Association < Relation
-    attr_reader :final_target, :association, :assoc_type
+    attr_reader :final_target, :association, :assoc_type, :inversion
     
     class End < Connection
       include Extensions
@@ -239,6 +239,7 @@ module Relation
       tid = r['type']
       @final_target = @target = End.new(r, LazyPointer.new(tid))
       @thru =false
+      @inversion = false
       
       aid = r['association']
       @association = LazyPointer.new(aid)
@@ -258,6 +259,8 @@ module Relation
         @name = @target.name || @name || @source.name
         
         @constraints = collect_constraints(@association.xmi)
+
+        invert
       end
 
       @association.unresolved(self) do
@@ -272,6 +275,7 @@ module Relation
       
       @multiplicity = @target.multiplicity
       @optional = @target.optional
+
     end
 
     def final_target
@@ -284,6 +288,22 @@ module Relation
 
     def thru?
       @thru
+    end
+
+    def _invert(name)
+      @source, @final_target = @final_target, @source
+      @owner = @source.type
+      @name = "is#{name}Of"
+      @multiplicity = @source.multiplicity
+      @inversion = true
+
+      @source.type.add_relation(self)
+    end
+
+    def invert
+      if @name =~ /has([A-Za-z]+)/
+        self.dup._invert($1)
+      end
     end
 
     def link_target(reference, type)

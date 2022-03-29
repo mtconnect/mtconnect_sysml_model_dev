@@ -196,15 +196,15 @@ class PortalModel < Model
       m.types.each { |t| t.add_constraints }
     end    
   end
-  
-  def self.add_part_of
-    $logger.info "Adding part-of types"
+
+  def self.add_inversions
+    $logger.info "Adding inversions to types"
 
     @@models.each do |k, m|
-      m.types.each { |t| t.add_part_of }
+      m.types.each { |t| t.add_inversions }
     end    
   end
-  
+
   def self.add_versions_to_relations
     $logger.info "Adding version numbers to properties and relations"
   end

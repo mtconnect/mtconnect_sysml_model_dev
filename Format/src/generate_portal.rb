@@ -73,7 +73,7 @@ class PortalGenerator
     PortalModel.add_characteristics    
     PortalModel.add_constraints
     PortalModel.add_version_to_attributes
-    PortalModel.add_part_of
+    PortalModel.add_inversions
     PortalModel.generate_operations
     PortalModel.generate_children
     @top.collect_versioned('2.0')
