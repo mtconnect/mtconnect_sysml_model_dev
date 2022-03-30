@@ -261,7 +261,7 @@ class PortalType < Type
 
       if has_thru
         fields.insert(ind_pos + 2, :thru) 
-        columns.insert(ind_pos + 2, { text: "Organizes", dataIndex: 'thru', flex: 0, width: 250 })
+        columns.insert(ind_pos + 2, { text: "Organized By", dataIndex: 'thru', flex: 0, width: 250 })
       end
     end
   end
