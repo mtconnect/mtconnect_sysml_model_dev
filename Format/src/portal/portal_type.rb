@@ -119,9 +119,7 @@ class PortalType < Type
     return unless @content
 
     has_thru = false
-    rows = @relations.select do |rel|
-      Relation::Association === rel and rel.inversion
-    end
+    rows = inversions    
     
     return if rows.empty?
 

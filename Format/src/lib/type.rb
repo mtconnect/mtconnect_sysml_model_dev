@@ -141,6 +141,16 @@ class Type
       #type.check_mixin
     end
   end
+
+  def inversions
+    rows = @relations.select do |rel|
+      Relation::Association === rel and rel.inversion
+    end
+    if @parent
+      rows.concat(@parent.inversions)
+    end
+    rows
+  end
   
   def initialize(model, e)
     @model = model
