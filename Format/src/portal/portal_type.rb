@@ -135,7 +135,7 @@ class PortalType < Type
     end
 
     if thru
-      @content[:grid_panel] << create_panel('Part Of', { '#': 64, 'Name': 200, 'Thru': 250, 'Type': 250 }, rows)    
+      @content[:grid_panel] << create_panel('Part Of', { '#': 64, 'Name': 200, 'Organized By': 250, 'Type': 250 }, rows)    
     else
       @content[:grid_panel] << create_panel('Part Of', { '#': 64, 'Name': 200,  'Type': 250 }, rows)    
     end
@@ -261,10 +261,7 @@ class PortalType < Type
 
       if has_thru
         fields.insert(ind_pos + 2, :thru) 
-        columns.insert(ind_pos + 2, { text: "Thru", dataIndex: 'thru', flex: 0, width: 250 })
-        
-        tc = columns.detect { |col| col[:text].start_with?('Type') }
-        tc[:text] = 'Target'
+        columns.insert(ind_pos + 2, { text: "Organizes", dataIndex: 'thru', flex: 0, width: 250 })
       end
     end
   end
