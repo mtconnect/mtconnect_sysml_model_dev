@@ -253,7 +253,9 @@ module Relation
         if @association.type == 'uml:AssociationClass'
           @target = End.new(r, @association.obj)
           @thru = true
-          # puts "******** Association class #{owner.name}::#{r['name']}: #{@source.type.name} -> #{@target.type.name} -> #{@final_target.type.name} #{tid}"
+          @association.relation = self
+            
+          # puts "******** Association class #{owner.name}::#{r['name']}: #{@source.type.name} -> #{@target.type.name} -> #{@final_target.type.name} #{tid} -- #{@association.obj.class}"
         end
         
         @name = @target.name || @name || @source.name

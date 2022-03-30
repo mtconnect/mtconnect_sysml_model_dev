@@ -107,12 +107,12 @@ class PortalType < Type
 
     $logger.debug "Adding constraints to #{@name}"
 
-    rows = @constraints.map do |const|
-      [ convert_markdown_to_html(const.documentation), convert_markdown_to_html("~~~~\n#{const.ocl}\n~~~~") ]
+    rows = @constraints.map.with_index do |const, i|
+      [ i + 1, convert_markdown_to_html(const.documentation), convert_markdown_to_html("~~~~\n#{const.ocl}\n~~~~") ]
     end
 
     # Add to the end of the grid
-    @content[:grid_panel] << create_panel('Constraints', { 'Error Message': 400, 'OCL Expression': -1 }, rows)
+    @content[:grid_panel] << create_panel('Constraints', { '#': 50, 'Error Message': 400, 'OCL Expression': -1 }, rows)
   end
 
   def add_inversions
@@ -267,16 +267,27 @@ class PortalType < Type
   end
 
   def generate_children_panel
-    if @content and not @children.empty?
-      
+    if @content      
       grid = @content[:grid_panel]
       unless grid
         $logger.warning "Missing grid panel for #{@name}"
       else
-        rows = @children.sort_by(&:name).map.with_index do |child, i|
-          [ i + 1, child.format_target, child.introduced, child.deprecated ]
+        if @relation && @type == 'uml:AssociationClass'
+          puts "**** Organizes for: #{@name} #{@type} #{@relation.name}"
+          rows = [@relation.source.type].concat(@relation.source.type.children.sort_by(&:name)).
+                   map.with_index do |t, i|
+            
+            [ i + 1, t.format_target, t.introduced, t.deprecated ]
+          end
+          grid << create_panel('Organizes', { '#': 50, Name: 300, Int: 64, Dep: 64 }, rows)        
         end
-        grid << create_panel('Subclasses', { '#': 50, Name: 300, Int: 64, Dep: 64 }, rows)
+
+        if not @children.empty?
+          rows = @children.sort_by(&:name).map.with_index do |child, i|
+            [ i + 1, child.format_target, child.introduced, child.deprecated ]
+          end
+          grid << create_panel('Subclasses', { '#': 50, Name: 300, Int: 64, Dep: 64 }, rows)
+        end
       end
     end
   end

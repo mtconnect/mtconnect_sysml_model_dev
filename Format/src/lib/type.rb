@@ -13,7 +13,7 @@ class Type
   attr_reader :name, :id, :type, :model, :parent, :children, :relations, :stereotypes, :is_subtype,
               :constraints, :extended, :literals, :invariants, :classifier, :assoc, :xmi, :subtypes, :multiplicity, :optional,
               :operations
-  attr_accessor :documentation
+  attr_accessor :documentation, :relation
 
   attr_writer :is_subtype
   
@@ -146,7 +146,7 @@ class Type
     @model = model
     @xmi = e
     @id = e['xmi:id']
-
+    @relation = nil
     @name = e['name']
     
     @subtypes = []
