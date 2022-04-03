@@ -1,21 +1,46 @@
 
 class Stereotype
-  @@stereotypes = Hash.new { |h, k| h[k] = [] }
+  @@stereotypes = Hash.new
+
+  def self.add_stereotype(s)
+    unless @@stereotypes[s.profile]
+      @@stereotypes[s.profile] = Hash.new { |h, k| h[k] = [] }              
+    end
+    @@stereotypes[s.profile][s.id] << s
+  end
+
+  def self.collect_stereotypes(xmi)
+    xmi.document.root.elements.each do |m|
+      profile = case m.namespace.prefix
+                when 'Profile'
+                  :mtc
+                  
+                when 'MD_Customization_for_SysML__additional_stereotypes'
+                  :sysml
+                end
+      if profile
+        Stereotype.new(m, profile)
+      end
+    end
+  end
+
 
   def self.clear
     @@stereotypes.clear
   end
 
-  def self.stereotype(id)
-    @@stereotypes[id] if @@stereotypes.include?(id)
+  def self.stereotype(id, profile = :mtc)
+    @@stereotypes[profile][id] if @@stereotypes.include?(profile) and @@stereotypes[profile].include?(id)
   end
 
-  attr_reader :name, :id
+  attr_reader :name, :id, :profile
 
-  def initialize(xmi)
+  def initialize(xmi, profile)
     attr = xmi.attributes.to_a.detect { |k, v| k.start_with?('base_') }
+    
     @id = attr[1].value
     @name = xmi.name
+    @profile = profile
     xmi.attributes.each do |k, v|
       if k != 'id'
         instance_variable_set("@#{k}", v.value)
@@ -23,7 +48,7 @@ class Stereotype
       end
     end
 
-    @@stereotypes[@id] << self
+    self.class.add_stereotype(self)
   end
 
   def to_s

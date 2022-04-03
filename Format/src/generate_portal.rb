@@ -55,10 +55,9 @@ class PortalGenerator
     
     PortalModel.generator_class = self
     PortalModel.skip_models = @skip_models
-    @xmi.document.root.elements.select { |m| m.namespace.prefix == 'Profile' }.each do |m|
-      Stereotype.new(m)
-    end
 
+    Stereotype.collect_stereotypes(@xmi)
+    
     @top = PortalModel.new(nil, @xmi)
     @top.find_data_types
     @top.find_definitions

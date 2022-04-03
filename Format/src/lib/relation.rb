@@ -246,6 +246,11 @@ module Relation
       
       @redefinesProperty = r.at('./redefinedProperty') ? true : false
 
+      stereos = Stereotype.stereotype(@id, :sysml)
+      @part = stereos.any? { |s| s.name == 'PartProperty' } if stereos
+
+      # puts "**** Part #{owner.name}::#{@name}" if @part
+
       @association.lazy(self) do
         src = @association.xmi.at('./ownedEnd') || r
         @source = End.new(src, owner)
@@ -303,8 +308,9 @@ module Relation
     end
 
     def invert
-      if @name =~ /has([A-Za-z]+)/
-        self.dup._invert($1)
+      if @name =~ /^has([A-Za-z]+)/ || @part
+        klass = $1 || @final_target.type.name
+        self.dup._invert(klass)
       end
     end
 

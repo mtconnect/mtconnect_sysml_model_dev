@@ -71,6 +71,15 @@ module PortalHelpers
     end                    
   end
 
+  def column_for(columns, col)
+    columns.detect { |col| col[:text].start_with?(col) }
+  end
+  
+  def column_index(columns, col)
+    col = column_for(columns, col)
+    (col and col.include?(:dataIndex)) ? col[:dataIndex] : nil
+  end
+  
   def format_term(term, text = term)
     if t = PortalType.term_for_name(term) and not t.documentation.empty?
       d = t.documentation.definition
