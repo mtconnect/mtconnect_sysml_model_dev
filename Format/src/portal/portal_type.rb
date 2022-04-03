@@ -151,11 +151,12 @@ class PortalType < Type
       rows = panel.dig(:data_store, :data)
 
       columns = panel[:columns]
-      nc = columns.detect { |col| col[:text].start_with?('Name') }
-      next unless nc and nc.include?(:dataIndex)
+      nc = column_index(columns, 'Name')
+      next unless nc
 
-      mc = columns.detect { |col| col[:text].start_with?('Multiplicity') }[:dataIndex]
-      dc = columns.detect { |col| col[:text].start_with?('Documentation') }[:dataIndex]
+      tc = column_index(columns, 'Type')
+      mc = column_index(columns, 'Multiplicity')
+      dc = column_index(columns, 'Documentation')
       unless dc
         $logger.error "Cannot find Documentaiton for relation"
       end
@@ -166,8 +167,7 @@ class PortalType < Type
       resize(columns, 'Multiplicity', 100)
       resize(columns, 'Default Value', 200)
       
-      ind = nc[:dataIndex]
-      ind_pos = fields.index(ind) + 1
+      ind_pos = fields.index(nc) + 1
       fields.insert(ind_pos, :int, :dep)
       
       columns.insert(ind_pos,
@@ -186,8 +186,9 @@ class PortalType < Type
       # Get sumbolic versions for data index
       has_thru = false
       dc = dc.to_sym      
-      ind = ind.to_sym
+      ind = nc.to_sym
       mc = mc.to_sym
+      tc = tc.to_sym
       rows.each do |row|
         # Use nokogiri to parse the html and grab the CDATA.
         html = Nokogiri::HTML(row[ind])
@@ -238,10 +239,14 @@ class PortalType < Type
               row[dc] = text
             end
           end
-
         end
         int = ints.compact.max
         dep = deps.compact.max
+
+        type = row[tc]
+        if type !~ /navigate/ and type =~ %r{([A-Za-z]+)</div></br>$} and block = find_block($1)
+          row[tc] = block.format_target(false)
+        end
 
         if dep
           row[ind] = deprecate_html(row[ind])

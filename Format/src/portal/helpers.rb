@@ -71,12 +71,12 @@ module PortalHelpers
     end                    
   end
 
-  def column_for(columns, col)
-    columns.detect { |col| col[:text].start_with?(col) }
+  def column_for(columns, name)
+    columns.detect { |col| col[:text].start_with?(name) }
   end
   
-  def column_index(columns, col)
-    col = column_for(columns, col)
+  def column_index(columns, name)
+    col = column_for(columns, name)
     (col and col.include?(:dataIndex)) ? col[:dataIndex] : nil
   end
   

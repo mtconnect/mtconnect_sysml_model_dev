@@ -188,7 +188,7 @@ class Type
     # puts "Adding type #{@name} for id #{@id}"
     @@types_by_id[@id] = self
 
-    if @type == 'uml:Class'
+    if @type == 'uml:Class' or @type == 'uml:Enumeration' or @type == 'uml:AssociationClass'
       if @model.root.name == 'Glossary'
         @@terms_by_name[@name] = self
       else
