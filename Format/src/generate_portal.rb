@@ -77,6 +77,7 @@ class PortalGenerator
     PortalModel.generate_children
     @top.collect_versioned('2.0')
 
+    @doc.contextualize_search
     @doc.write(output)
     @doc.update_resources(resource, res_formatted)
   end

@@ -68,13 +68,30 @@ class WebReport
     end    
   end
 
+  def contextualize_search
+    @search.each do |k, v|
+      v.each do |node|
+        type = PortalType.type_for_pid(node[:id])
+        node[:name] = "#{type.model.name} :: #{node[:name]}" if node[:type] == 'block'
+      end
+    end
+
+      # Sort the search items
+    @search.each do |k, v|
+      v.sort_by! do |e|
+        type = PortalType.type_for_pid(e[:id])
+        if type
+          type.name
+        else
+          e[:name]
+        end
+      end
+    end
+  end
+
   def write(file)
     @doc[:'window.feedback'] = 'False'
-    
-    # Sort the search items
-    @search[:all].sort_by! { |e| e[:name] }
-    @search[:block].sort_by! { |e| e[:name] }
-    
+
     order = [ 'Fundamentals',
               'Device Information Model',
               'Observation Information Model',
