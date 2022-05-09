@@ -69,11 +69,23 @@ class WebReport
   end
 
   def contextualize_search
+    items = @search
+
+    remove = []
     @search.each do |k, v|
       v.each do |node|
         type = PortalType.type_for_pid(node[:id])
-        node[:name] = "#{type.model.name} :: #{node[:name]}" if node[:type] == 'block'
+        if type and node[:type] == 'block'
+          node[:name] = "#{type.model.name} :: #{node[:name]}"
+        elsif type.nil? and node[:type] == 'block'
+          $logger.warn "Cannot find type for #{node[:name]} #{node[:type]}, removing"
+          remove << [k, node[:id]]
+        end
       end
+    end
+
+    remove.each do |k, id|
+      @search[k].delete_if { |n| n[:id] == id }
     end
 
       # Sort the search items
@@ -98,7 +110,8 @@ class WebReport
               'Asset Information Model',
               'Interface Interaction Model',
               'Profile',
-              'Glossary' ]
+              'Glossary',
+              'Examples']
     @struct.sort_by! { |node| order.index(node[:text]) || (order.length + 1) }
     
     $logger.info "Writing out #{file}"
