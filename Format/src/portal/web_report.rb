@@ -129,14 +129,21 @@ class WebReport
       text = node1[:text]
       space = '  ' * indent
       node2 = list2.detect { |n| n[:text] == text }
-      # puts "#{space}Node: #{text}"
+      puts "#{space}Node: #{text}"
       if node2
+        puts "#{space}-found matching node"
+        
         # If the nodes entities don't match, then append this node to the parent
         t1, = node1[:qtitle].split('_', 2)
         t2, = node2[:qtitle].split('_', 2)
 
         if t1 != t2
-          list2 << node1 if t1 != 'EmptyContent'
+          if t1 == 'EmptyContent'
+            puts "#{space}-#{text} has EmptyContent"
+          else
+            list2 << node1
+          end
+
         elsif node1[:qtitle] != node2[:qtitle]
           # First check if these are the same types, don't merge a diagram to a Structure
           # See if we can merge the grids and children
@@ -144,10 +151,10 @@ class WebReport
           gp1, gp2 = qn1[:grid_panel], qn2[:grid_panel]
 
           if !gp1.empty? and gp2.empty?
-            # puts "#{space}  Replace grid: #{text}"            
+            puts "#{space}-Replace grid: #{text}"            
             qn2[:grid_panel] = gp1
           elsif !gp1.empty? and !gp2.empty?
-            # puts "#{space}  Merging grids: #{text}"
+            puts "#{space}-Merging grids: #{text}"
             qn2[:grid_panel].concat(qn1[:grid_panel])
           end
         end
@@ -155,16 +162,16 @@ class WebReport
         # Recurse if there are children of both trees
         c1, c2 = node1[:children], node2[:children]
         if c1 and c2.nil?
-          # puts "#{space}  Children in only one branch: #{text}"
+          puts "#{space}-Children in only one branch: #{text}"
           node2[:leaf] = false
           node2[:children] = c1
         elsif c1 and c2
-          # puts "#{space}  Merging children: #{text}"
+          puts "#{space}-Merging children: #{text}"
           merge(c1, c2, indent + 1)
         end
       else
         # If there is no child, add this child
-        # puts "#{space}  Adding node: #{text}"
+        puts "#{space}-Adding node: #{text}"
         list2 << node1
       end
     end    
@@ -179,11 +186,16 @@ class WebReport
     constraints = find_section('Constraints')
 
     # Parallel recures diagrams and structure combining common nodes
-    # puts "\n----------------------------------"
+    puts "\n----------------------------------"
+    puts "Merging diagrams -> structure"
     merge(diagrams, structure)
-    # puts "\n----------------------------------"
+    puts "\n----------------------------------"
+    puts "Merging behavior -> structure"
     merge(behavior, structure)
+    puts "\n----------------------------------"
+    puts "Merging constraints -> structure"
     merge(constraints, structure)
+    puts "\n----------------------------------"
 
     @tree.delete_if { |node| node[:title] == 'Diagrams' } 
     @tree.delete_if { |node| node[:title] == 'Interfaces' } 
