@@ -233,7 +233,7 @@ class PortalType < Type
               text = row[dc] == BLANK ? '' : "#{row[dc]}<br/><br/>"
               if rel.default
                 text << "An unspecified <code>#{rel.name}</code> <b>MUST</b> default to <code>#{rel.default}<code>."
-              else
+              elsif rel.multiplicity == '1'
                 text << "The <code>#{rel.name}</code> <b>MUST</b> be specified"
               end
               row[dc] = text
