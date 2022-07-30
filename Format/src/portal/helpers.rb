@@ -143,9 +143,9 @@ module PortalHelpers
   end
 
   def decorated(text = @name, title = true)
-    text = (respond_to?(:abstract?) and abstract?) ? "<em>&lt;&lt;abstract&gt;&gt&nbsp;#{text}</em>" : text
-    text = (respond_to?(:leaf?) and leaf?) ? "<em>&lt;&lt;leaf&gt;&gt</em>&nbsp;#{text}" : text
-    text = deprecated ? "<strike>#{text}</strike>" : text
+    text = "<em>&lt;&lt;abstract&gt;&gt&nbsp;#{text}</em>" if respond_to?(:abstract?) and abstract?
+    text = "<em>&lt;&lt;leaf&gt;&gt;</em>&nbsp;#{text}" if respond_to?(:leaf?) and leaf?
+    text = "<strike>#{text}</strike>" if deprecated
     if @stereotypes
       sts = @stereotypes.select { |s| s.name != 'normative' and s.name != 'deprecated' }.map { |s| s.html }
     end
