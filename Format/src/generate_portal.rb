@@ -75,9 +75,21 @@ class PortalGenerator
     PortalModel.add_inversions
     PortalModel.generate_operations
     PortalModel.generate_children
-    @top.collect_versioned('2.0')
 
+    vid = "_Version_Folder"
+    vn = "Version Additions and Deprecations"
+
+    rows = %w{1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 2.0 2.1}.map do |version|
+      [ @top.collect_versioned(version), "Version #{version}" ]
+    end.select { |r| r[0] }
+
+    panel = @top.create_panel("Versions", { Version: -1 }, rows.map { |r| [ r[1] ] } )
+
+    @doc.content[vid] = { title: vn, path: vn, html_panel: [], grid_panel: [ panel ], image_panel: [] }
+    @doc.struct << { text: vn, qtitle: vid, icon: PackageIcon, expanded: false, leaf: false, children: rows.map { |r| r[0]  } }
+    
     @doc.contextualize_search
+    
     @doc.write(output)
     @doc.update_resources(resource, res_formatted)
   end

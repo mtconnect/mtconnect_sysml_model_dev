@@ -234,10 +234,21 @@ class PortalModel < Model
   end  
 
   def collect_versioned(version)
+    puts "Collecting changes for #{version}"
+    
     rows = @xmi.parent.xpath("./Profile:normative[@version='#{version}']|./Profile:deprecated[@version='#{version}']").map do |n|
       o = LazyPointer.new(n['base_Element'])
-      o.obj if o.resolve
-    end.map do |obj|
+      if o.resolve
+        [n, o.obj]
+      else
+        [n, nil]
+      end
+    end.map do |n, obj|
+      unless obj
+        p "Cannot find #{n['version']}: #{n['base_Element']}"        
+        next
+      end
+      
       dep = 'Deprecated ' if obj.deprecated
       row = case obj
             when PortalType
@@ -268,8 +279,8 @@ class PortalModel < Model
               [ 'Literal', "#{dep}#{owner.format_target} <code>#{f}</code>" ]
               
             when Operation
-              name = block.name + obj.name
               block = obj.owner
+              name = block.name + obj.name
               [ 'Operation', "#{dep}#{block.format_target} #{obj.format_target}" ]
               
             when Operation::Parameter
@@ -292,6 +303,6 @@ class PortalModel < Model
     vid = "_Version_#{version}"
     vc = { title: n, path: n, html_panel: [], grid_panel: [ panel ], image_panel: [] }
     @doc.content[vid] = vc
-    @doc.struct << { text: n, qtitle: vid, icon: PackageIcon, expanded: false, leaf: true }
+    { text: n, qtitle: vid, icon: PackageIcon, expanded: false, leaf: true }
   end
 end
