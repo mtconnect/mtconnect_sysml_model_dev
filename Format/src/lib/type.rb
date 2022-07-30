@@ -174,6 +174,9 @@ class Type
     @abstract = e['isAbstract'] || false
     @literals = Hash.new
 
+    @leaf = e['isLeaf'] || false
+    $logger.debug "    Leaf: #{@name}" if @leaf
+    
     @aliased = false
 
     if @type == 'uml:Enumeration' and defined? e.ownedLiteral
@@ -231,6 +234,10 @@ class Type
 
   def abstract?
     @abstract
+  end
+
+  def leaf?
+    @leaf
   end
 
   def collect_enumerations
