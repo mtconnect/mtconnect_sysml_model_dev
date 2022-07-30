@@ -79,13 +79,15 @@ class PortalGenerator
     vid = "_Version_Folder"
     vn = "Version Additions and Deprecations"
 
+    parent = @top.format_target_html(vid, vn, PackageIcon)
+    
     rows = %w{1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 2.0 2.1}.map do |version|
-      [ @top.collect_versioned(version), "Version #{version}" ]
+      [ @top.collect_versioned(parent, version), @top.format_target_html("_Version_#{version}", "Version #{version}", PackageIcon) ]
     end.select { |r| r[0] }
 
     panel = @top.create_panel("Versions", { Version: -1 }, rows.map { |r| [ r[1] ] } )
 
-    @doc.content[vid] = { title: vn, path: vn, html_panel: [], grid_panel: [ panel ], image_panel: [] }
+    @doc.content[vid] = { title: vn, path: @top.format_name_html(vn, PackageIcon), html_panel: [], grid_panel: [ panel ], image_panel: [] }
     @doc.struct << { text: vn, qtitle: vid, icon: PackageIcon, expanded: false, leaf: false, children: rows.map { |r| r[0]  } }
     
     @doc.contextualize_search

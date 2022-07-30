@@ -233,7 +233,7 @@ class PortalModel < Model
     end
   end  
 
-  def collect_versioned(version)
+  def collect_versioned(parent, version)
     puts "Collecting changes for #{version}"
     
     rows = @xmi.parent.xpath("./Profile:normative[@version='#{version}']|./Profile:deprecated[@version='#{version}']").map do |n|
@@ -299,9 +299,9 @@ class PortalModel < Model
 
     panel = create_panel("Version #{version} Entities", { '#': 64, Type: 100, Entity: -1 }, rows)
 
-    n = "Version #{version} Additions and Deprecations"
+    n = "Version #{version}"
     vid = "_Version_#{version}"
-    vc = { title: n, path: n, html_panel: [], grid_panel: [ panel ], image_panel: [] }
+    vc = { title: n, path: "#{parent} / #{ format_name_html(n, PackageIcon) }", html_panel: [], grid_panel: [ panel ], image_panel: [] }
     @doc.content[vid] = vc
     { text: n, qtitle: vid, icon: PackageIcon, expanded: false, leaf: true }
   end
