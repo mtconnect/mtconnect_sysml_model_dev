@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd Format
+
+bundle exec ruby src/generate.rb -m $@ portal
