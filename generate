@@ -2,4 +2,4 @@
 
 cd Format
 
-bundle exec ruby src/generate.rb -m $@ portal
+bundle exec ruby src/generate.rb -v $1 -m $2  portal
