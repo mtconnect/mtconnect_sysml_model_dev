@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [ $# -lt 2 ] ; then
+  echo "Usage: generate <mtc version> <model version>"
+  exit 1
+fi
+
 cd Format
 
 bundle exec ruby src/generate.rb -v $1 -m $2  portal
