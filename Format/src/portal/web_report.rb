@@ -56,10 +56,10 @@ class WebReport
     lp[:height] = '60px'
     lp[:width] = '205px'
 
-    ver = res.dig(:logo_panel, :banner)
-    ver[:src] = 'images/version_number.png'
+    ver = (res[:logo_panel][:version] = Hash.new)
+    ver[:text] = "V#{Options[:version]}"
     ver[:height] = '60px'
-    ver[:width] = '249px'
+    ver[:width] = '100px'
     
     $logger.info "Rewriting the resource file: #{res_formatted}"
     File.open(res_formatted, 'w') do |f|
