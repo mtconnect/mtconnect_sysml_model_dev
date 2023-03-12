@@ -313,6 +313,11 @@ class PortalType < Type
   def generate_operations
     return if @operations.empty?
 
+    unless @tree
+      puts "!!!!! Tree not available for #{@pid}"
+      return
+    end
+
     @tree[:leaf] = false
     children = @tree[:children] = []
     op_rows = []

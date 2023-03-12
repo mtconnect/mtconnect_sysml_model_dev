@@ -53,13 +53,13 @@ class WebReport
     res = eval(data)
     lp = res.dig(:logo_panel, :logo)
     lp[:src] = "images/logo.png"
-    lp[:height] = '60px'
-    lp[:width] = '205px'
+    lp[:height] = 60
+    lp[:width] = 205
 
     ver = (res[:logo_panel][:version] = Hash.new)
     ver[:text] = "V#{Options[:version]}"
-    ver[:height] = '60px'
-    ver[:width] = '100px'
+    ver[:height] = 50
+    ver[:width] = 100
     
     $logger.info "Rewriting the resource file: #{res_formatted}"
     File.open(res_formatted, 'w') do |f|
@@ -129,9 +129,9 @@ class WebReport
       text = node1[:text]
       space = '  ' * indent
       node2 = list2.detect { |n| n[:text] == text }
-      puts "#{space}Node: #{text}"
+      puts "#{space} - Node: #{text}"
       if node2
-        puts "#{space}-found matching node"
+        puts "#{space} - found matching node"
         
         # If the nodes entities don't match, then append this node to the parent
         t1, = node1[:qtitle].split('_', 2)
@@ -139,7 +139,7 @@ class WebReport
 
         if t1 != t2
           if t1 == 'EmptyContent'
-            puts "#{space}-#{text} has EmptyContent"
+            puts "#{space} - #{text} has EmptyContent"
           else
             list2 << node1
           end
@@ -147,14 +147,15 @@ class WebReport
         elsif node1[:qtitle] != node2[:qtitle]
           # First check if these are the same types, don't merge a diagram to a Structure
           # See if we can merge the grids and children
-          qn1, qn2 = @content[node1[:qtitle]], @content[node2[:qtitle]]
+          qt1, qt2 = node1[:qtitle].to_sym, node2[:qtitle].to_sym
+          qn1, qn2 = @content[qt1], @content[qt2]
           gp1, gp2 = qn1[:grid_panel], qn2[:grid_panel]
 
           if !gp1.empty? and gp2.empty?
-            puts "#{space}-Replace grid: #{text}"            
+            puts "#{space} - Replace grid: #{text}"
             qn2[:grid_panel] = gp1
           elsif !gp1.empty? and !gp2.empty?
-            puts "#{space}-Merging grids: #{text}"
+            puts "#{space} - Merging grids: #{text}"
             qn2[:grid_panel].concat(qn1[:grid_panel])
           end
         end
@@ -162,16 +163,16 @@ class WebReport
         # Recurse if there are children of both trees
         c1, c2 = node1[:children], node2[:children]
         if c1 and c2.nil?
-          puts "#{space}-Children in only one branch: #{text}"
+          puts "#{space} - Children in only one branch: #{text}"
           node2[:leaf] = false
           node2[:children] = c1
         elsif c1 and c2
-          puts "#{space}-Merging children: #{text}"
+          puts "#{space} - Merging children: #{text}"
           merge(c1, c2, indent + 1)
         end
       else
         # If there is no child, add this child
-        puts "#{space}-Adding node: #{text}"
+        puts "#{space} - Adding node: #{text}"
         list2 << node1
       end
     end    
