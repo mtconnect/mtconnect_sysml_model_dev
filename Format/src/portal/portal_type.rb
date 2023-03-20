@@ -219,8 +219,11 @@ class PortalType < Type
           
           if rel.target
             ints << rel.target.introduced
+            ints << rel.target.type.introduced
             deps << rel.target.deprecated
+            deps << rel.target.type.deprecated
           end
+
 
           if row[mc] == BLANK
             row[mc] = 1
