@@ -194,7 +194,7 @@ class PortalType < Type
         html = Nokogiri::HTML(row[ind])
         name, type = html.text.split(':').map { |s| s.strip }
 
-        ints, deps = [], []
+        ints, deps = [introduced], [deprecated]
 
         # Get relationss by name
         rel = relation(name)
