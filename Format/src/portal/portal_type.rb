@@ -94,7 +94,7 @@ class PortalType < Type
       end
             
       if data
-        data.unshift({ col0: 'Superclass (is-a)', col1: @parent.format_target }) if @parent
+        data.unshift({ col0: 'Superclass (is-a)', col1: @parents.map { |p| p.format_target }.join(', ') }) if not @parents.empty?
         data << { col0: 'Introduced', col1: introduced } if introduced
         data << { col0: 'Deprecated', col1: deprecated } if deprecated
       end

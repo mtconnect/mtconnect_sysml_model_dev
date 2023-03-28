@@ -10,7 +10,7 @@ require 'diagram'
 class Type
   include Extensions
   
-  attr_reader :name, :id, :type, :model, :parent, :children, :relations, :stereotypes, :is_subtype,
+  attr_reader :name, :id, :type, :model, :parents, :children, :relations, :stereotypes, :is_subtype,
               :constraints, :extended, :literals, :invariants, :classifier, :assoc, :xmi, :subtypes, :multiplicity, :optional,
               :operations
   attr_accessor :documentation, :relation
@@ -129,8 +129,7 @@ class Type
 
   def self.connect_children
     @@types_by_id.each do |id, type|
-      parent = type.get_parent
-      parent.add_child(type) if parent
+      type.get_parents.each { |p| p.add_child(type) }
     end
   end
 
@@ -146,9 +145,7 @@ class Type
     rows = @relations.select do |rel|
       Relation::Association === rel and rel.inversion
     end
-    if @parent
-      rows.concat(@parent.inversions)
-    end
+    rows.concat(@parents.map { |p| p.inversions }.flatten)
     rows
   end
   
@@ -187,6 +184,7 @@ class Type
     @constraints = collect_constraints(@xmi)
     @invariants = {}
     @children = []
+    @parents = []
 
     # puts "Adding type #{@name} for id #{@id}"
     @@types_by_id[@id] = self
@@ -280,7 +278,11 @@ class Type
 
   def relation(name)
     rel, = @relations.find { |a| a.name == name }
-    rel = @parent.relation(name) if rel.nil? and @parent
+    if rel.nil?      
+      @parents.each do |p|
+        break if rel = p.relation(name)
+      end
+    end
     rel
   end
 
@@ -293,7 +295,11 @@ class Type
 
   def relation_by_assoc(id)
     rel, = @relations.find { |a| a.assoc == id }
-    rel = @parent.relation_by_assoc(id) if rel.nil? and @parent
+    if rel.nil?      
+      @parents.each do |p|
+        break if rel = p.relation_by_assoc(id)
+      end
+    end
     rel
   end
 
@@ -362,39 +368,42 @@ class Type
         return a
       end
     end
-    return @parent.get_attribute_like(name, stereo) if @parent
+    @parents.each do |p|
+      v = p.get_attribute_like(name, stereo)
+      return v if v
+    end
     nil
   end
 
-  def get_parent
-    return @parent if defined? @parent
+  def get_parents
+    return @parents if not @parents.empty?
     
-    @parent = nil
+    @parents = []
     glossary = @model.root.name == 'Glossary'
     @relations.each do |r|
       if r.is_a?(Relation::Generalization)
         if r.target
           target_glossary = r.target.type.model.root.name == 'Glossary'
           if glossary == target_glossary
-            @parent = r.target.type
-            break
+            @parents << r.target.type
           end
         end
       end
     end
-    @parent
+    $logger.info "Parents for #{@name}: #{@parents.map { |p| p.name }.join(', ') }"
+    @parents
   end
 
   def root
-    if get_parent.nil?
+    if get_parents.empty?
       self
     else
-      @parent
+      @parents[0].root
     end
   end
 
-  def is_a_type?(type)
-    @name == type or (@parent and @parent.is_a_type?(type))
+  def is_a_type?(type)    
+    @name == type or (@parents.map { |p| p.is_a_type?(type) }.any?)
   end
 
   def dependencies

@@ -226,7 +226,7 @@ module PortalHelpers
   
   def gen_characteristics
     rows = []
-    rows << ['Parent', get_parent.format_target(true) ] if respond_to? :get_parent and get_parent
+    rows << ['Parent', get_parents.map { |p| p.format_target(true) }.join(' ,') ] if respond_to? :get_parents and not get_parents.empty?
     rows << ['Name', format_name(true)]
     if not self.is_a?(Model) and @documentation and !@documentation.empty?
       @documentation.sections.each do |section|
