@@ -315,7 +315,7 @@ class PortalModel < Model
       [name, row] if row
     end.compact.sort_by { |name, row| name }.map.with_index { |v, i| v[1].unshift(i + 1) }
 
-    panel = create_panel("Version #{version} Entities", { '#': 64, Reason: 100, Type: 100, Entity: -1 }, rows)
+    panel = create_panel("Version #{version} Entities", { '#': 64, Change: 90, Type: 90, Entity: -1 }, rows)
 
     n = "Version #{version}"
     vid = "_Version_#{version}"
