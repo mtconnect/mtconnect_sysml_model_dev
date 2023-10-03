@@ -193,7 +193,7 @@ class PortalType < Type
       rows.each do |row|
         # Use nokogiri to parse the html and grab the CDATA.
         html = Nokogiri::HTML(row[ind])
-        name, type = html.text.split(':').map { |s| s.strip }
+        name, type = html.text.delete(" \u{00A0}").split(':').map { |s| s.strip }
 
         ints, deps = [introduced], [deprecated]
 
@@ -243,7 +243,10 @@ class PortalType < Type
               row[dc] = text
             end
           end
+        else
+          $logger.warn "Cannot find relation for #{@name}::#{name}"
         end
+
         int = ints.compact.max
         dep = deps.compact.max
 
