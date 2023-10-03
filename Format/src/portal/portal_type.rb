@@ -56,7 +56,8 @@ class PortalType < Type
   def enumeration_rows
     i = 0
     literals.sort_by { |lit| lit.name }.map.with_index do |lit, i|
-      [ i + 1, lit.format_name, lit.introduced, lit.deprecated, convert_markdown_to_html(lit.description.definition) ]
+      [ i + 1, lit.format_name, lit.introduced, lit.deprecated, lit.updated,
+        convert_markdown_to_html(lit.description.definition) ]
     end
   end
 
@@ -67,7 +68,7 @@ class PortalType < Type
     
     characteristics = gen_characteristics
     literals = create_panel('Enumeration Literals',
-                            { '#': 50, Name: 300, Introduced: 84, Deprecated: 84, Documentation: -1},
+                            { '#': 50, Name: 300, Int: 40, Dep: 40, Upd: 40, Documentation: -1},
                             enumeration_rows)
 
     add_tree_node([characteristics, literals])
