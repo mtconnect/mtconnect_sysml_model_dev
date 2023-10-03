@@ -231,25 +231,43 @@ class PortalModel < Model
     @@models.each do |k, m|
       m.types.each { |t| t.generate_children_panel }
     end
-  end  
+  end
+
+  
 
   def collect_versioned(parent, version)
     puts "Collecting changes for #{version}"
-    
-    rows = @xmi.parent.xpath("./Profile:normative[@version='#{version}']|./Profile:deprecated[@version='#{version}']").map do |n|
-      o = LazyPointer.new(n['base_Element'])
-      if o.resolve
-        [n, o.obj]
-      else
-        [n, nil]
+
+    rows = Stereotype.stereotypes(:mtc).map do |id, sts|
+      sts.find do |st|
+        if st.name == 'normative' or st.name == 'deprecated'
+          reason, = [:introduced, :updated, :deprecated, :version].map do |m|
+            v = st.send(m) if st.respond_to?(m)
+            if v and v.include?(version)
+              if m == :version
+                case st.name
+                when 'normative'
+                  'introduced'
+                when 'deprecated'
+                  'deprecated'
+                end
+              else
+                m.to_s
+              end
+            end
+          end.compact
+          if reason
+            o = LazyPointer.new(st.id)
+            if o.resolve
+              break [st, reason.capitalize, o.obj]
+            else
+              $logger.error "Version resolution: Cannot find object for #{st.id} #{st} #{reason}"
+              nil
+            end
+          end
+        end
       end
-    end.map do |n, obj|
-      unless obj
-        p "Cannot find #{n['version']}: #{n['base_Element']}"        
-        next
-      end
-      
-      dep = 'Deprecated ' if obj.deprecated
+    end.compact.map do |st, reason, obj|
       row = case obj
             when PortalType
               name = obj.name
@@ -263,32 +281,32 @@ class PortalModel < Model
                   else
                     'Block'
                   end
-              [ t, "#{dep}#{obj.format_target}" ]
+              [ reason, t, "#{obj.format_target}" ]
               
             when Relation::Relation
               owner = obj.owner
               name = owner.name + obj.name
               f = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name
               t = Relation::Attribute === obj ? 'Property' : 'Relation'
-              [ t, "#{dep}#{owner.format_target} #{f}" ]
+              [ reason, t, "#{owner.format_target} #{f}" ]
               
             when Type::Literal
               owner = obj.owner
               name = owner.name + obj.name
               f = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name
-              [ 'Literal', "#{dep}#{owner.format_target} <code>#{f}</code>" ]
+              [ reason, 'Literal', "#{owner.format_target} <code>#{f}</code>" ]
               
             when Operation
               block = obj.owner
               name = block.name + obj.name
-              [ 'Operation', "#{dep}#{block.format_target} #{obj.format_target}" ]
+              [ reason, 'Operation', "#{block.format_target} #{obj.format_target}" ]
               
             when Operation::Parameter
               owner = obj.owner
               block = owner.owner
               name = block.name + owner.name + obj.name
               f = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name
-              [ 'Parameter', "#{dep}#{block.format_target} #{owner.format_target}(#{f})" ]
+              [ reason, 'Parameter', "#{block.format_target} #{owner.format_target}(#{f})" ]
               
             else
               $logger.warn "Cannot find info for #{obj.class} #{obj.name}"
@@ -297,7 +315,7 @@ class PortalModel < Model
       [name, row] if row
     end.compact.sort_by { |name, row| name }.map.with_index { |v, i| v[1].unshift(i + 1) }
 
-    panel = create_panel("Version #{version} Entities", { '#': 64, Type: 100, Entity: -1 }, rows)
+    panel = create_panel("Version #{version} Entities", { '#': 64, Reason: 100, Type: 100, Entity: -1 }, rows)
 
     n = "Version #{version}"
     vid = "_Version_#{version}"

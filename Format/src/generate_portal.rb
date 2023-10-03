@@ -81,7 +81,7 @@ class PortalGenerator
 
     parent = @top.format_target_html(vid, vn, PackageIcon)
     
-    rows = %w{1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 2.0 2.1 2.2}.map do |version|
+    rows = %w{1.0 1.1 1.2 1.3 1.4 1.5 1.6 1.7 1.8 2.0 2.1 2.2 2.3}.map do |version|
       [ @top.collect_versioned(parent, version), @top.format_target_html("_Version_#{version}", "Version #{version}", PackageIcon) ]
     end.select { |r| r[0] }
 

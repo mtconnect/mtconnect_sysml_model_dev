@@ -390,7 +390,7 @@ class Type
         end
       end
     end
-    $logger.info "Parents for #{@name}: #{@parents.map { |p| p.name }.join(', ') }"
+    $logger.debug "Parents for #{@name}: #{@parents.map { |p| p.name }.join(', ') }"
     @parents
   end
 
@@ -420,7 +420,7 @@ class Type
       if prop and prop.value and prop.target.type
         lit = prop.target.type.literal(prop.value)
         if lit
-          lit.version_for(stereo)
+          lit.send(stereo)
         end
       end
     end.compact.max
@@ -432,12 +432,11 @@ class Type
     super
     if @introduced and @introduced !~ /^[0-9]/
       @version_properties = @introduced
-      @introduced = derive_version('normative', @version_properties)
+      @introduced = derive_version(:introduced, @version_properties)
       
       # Check for deprecated
       unless @deprecated
-        @deprecated = version_for('deprecated')
-        @deprecated = derive_version('deprecated', @version_properties) unless @deprecated
+        @deprecated = derive_version(:deprecated, @version_properties)
       end
     end
     @introduced

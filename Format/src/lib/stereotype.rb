@@ -24,6 +24,9 @@ class Stereotype
     end
   end
 
+  def self.stereotypes(profile)
+    @@stereotypes[profile]
+  end
 
   def self.clear
     @@stereotypes.clear
@@ -46,6 +49,16 @@ class Stereotype
         instance_variable_set("@#{k}", v.value)
         self.class.attr_reader(k.to_sym)
       end
+    end
+
+    tags = Hash.new { |h, k| h[k] = [] } 
+    xmi.element_children.each do |e|
+      tags[e.name] = e.text
+    end
+
+    tags.each do |k, v|
+      instance_variable_set("@#{k}", v)
+      self.class.attr_reader(k.to_sym)
     end
 
     self.class.add_stereotype(self)

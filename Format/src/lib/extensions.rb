@@ -10,10 +10,21 @@ module Extensions
     Stereotype.stereotype(id)
   end
 
-  def version_for(stereo)
+  def get_versions
+    @introduced = @deprecated = @updated = nil
     if @stereotypes
-      st = @stereotypes.detect { |s| s.name == stereo }
-      st.version if st and st.respond_to? :version
+      @stereotypes.each do |st|
+        case st.name
+        when 'normative'
+          @introduced = st.introduced if st.respond_to? :introduced
+          @introduced = st.version if st.respond_to? :version and @introduced.nil?
+          @deprecated = st.deprecated if st.respond_to? :deprecated and @deprecated.nil?
+          @updated = st.updated if st.respond_to? :updated
+
+        when 'deprecated'
+          @deprecated = st.version if st.respond_to? :version
+        end
+      end
     end
   end
 
@@ -24,15 +35,20 @@ module Extensions
   end
 
   def introduced
-    return @introduced if defined? @introduced
-    @introduced = version_for('normative')
+    get_versions if not defined? @introduced
+    @introduced
   end
 
   def deprecated
-    return @deprecated if defined? @deprecated
-    @deprecated = version_for('deprecated')
+    get_versions if not defined? @deprecated
+    @deprecated
   end
 
+  def updated
+    get_versions if not defined? @updated
+    @updated
+  end
+  
   def informative
     return @informative if defined? @informative
     @informative = @stereotypes.detect { |s| s.name == 'informative' } if @stereotypes
