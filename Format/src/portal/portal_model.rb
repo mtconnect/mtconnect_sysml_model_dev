@@ -114,9 +114,9 @@ class PortalModel < Model
   def build_panel(grid, name, list)
     unless list.empty?
       rows = list.select { |e| e.content }.sort_by { |e| e.name }.map do |e|
-        [ e.format_target, e.introduced, e.deprecated ]
+        [ e.format_target, e.introduced, e.deprecated, e.updated ]
       end
-      grid << create_panel(name, { Name: 400, Introduced: 84, Deprecated: 84 }, rows) unless rows.empty?
+      grid << create_panel(name, { Name: 400, Introduced: 84, Deprecated: 84, Updated: 84 }, rows) unless rows.empty?
     end
   end
 
