@@ -281,38 +281,43 @@ class PortalModel < Model
                   else
                     'Block'
                   end
-              [ reason, t, "#{obj.format_target}" ]
+              [ reason, t, "#{obj.format_target}", obj.pid ]
               
             when Relation::Relation
               owner = obj.owner
               name = owner.name + obj.name
               f = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name
               t = Relation::Attribute === obj ? 'Property' : 'Relation'
-              [ reason, t, "#{owner.format_target} #{f}" ]
+              [ reason, t, "#{owner.format_target} #{f}", owner.pid ]
               
             when Type::Literal
               owner = obj.owner
               name = owner.name + obj.name
               f = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name
-              [ reason, 'Literal', "#{owner.format_target} <code>#{f}</code>" ]
+              [ reason, 'Literal', "#{owner.format_target} <code>#{f}</code>", owner.pid ]
               
             when Operation
               block = obj.owner
               name = block.name + obj.name
-              [ reason, 'Operation', "#{block.format_target} #{obj.format_target}" ]
+              [ reason, 'Operation', "#{block.format_target} #{obj.format_target}", block.pid ]
               
             when Operation::Parameter
               owner = obj.owner
               block = owner.owner
               name = block.name + owner.name + obj.name
               f = obj.deprecated ? "<strike>#{obj.name}</strike>" : obj.name
-              [ reason, 'Parameter', "#{block.format_target} #{owner.format_target}(#{f})" ]
+              [ reason, 'Parameter', "#{block.format_target} #{owner.format_target}(#{f})", block.pid ]
               
             else
               $logger.warn "Cannot find info for #{obj.class} #{obj.name}"
               nil
             end
-      [name, row] if row
+      if row
+        if row[0] == 'Updated' and version > '2.0'and prior = prior_version(version)
+          row[0] = format_version_link(prior, prior, row[0], row.last)
+        end
+        [name, row[0...-1] ]
+      end
     end.compact.sort_by { |name, row| name }.map.with_index { |v, i| v[1].unshift(i + 1) }
 
     panel = create_panel("Version #{version} Entities", { '#': 64, Change: 90, Type: 90, Entity: -1 }, rows)

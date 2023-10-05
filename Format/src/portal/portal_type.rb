@@ -98,7 +98,13 @@ class PortalType < Type
         data.unshift({ col0: 'Superclass (is-a)', col1: @parents.map { |p| p.format_target }.join(', ') }) if not @parents.empty?
         data << { col0: 'Introduced', col1: introduced } if introduced
         data << { col0: 'Deprecated', col1: deprecated } if deprecated
-        data << { col0: 'Updated', col1: updated } if updated
+        if updated
+          text = updated.dup
+          if prior = prior_version(updated)
+            text << " (Previous: #{format_version_link(@name, prior, prior, @pid)})"
+          end
+          data << { col0: 'Updated', col1: text }
+        end
       end
       
     end

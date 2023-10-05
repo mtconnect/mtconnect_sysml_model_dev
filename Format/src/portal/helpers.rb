@@ -35,6 +35,24 @@ module PortalHelpers
       "<a href=\"\" target=\"_blank\" onclick=\"navigate('#{id}');return false;\">&nbsp;#{text}</a>" 
   end
 
+  def prior_version(version)
+    if version > '2.0'
+      maj, min = version.split('.').map { |s| s.to_i }
+      "#{maj}.#{min - 1}"
+    else
+      nil
+    end
+  end
+      
+  def format_version_link(name, version, text = version, id = nil)
+    if version >= '2.0'
+      ref = "##{id}" if id
+      %{<a title='#{name}' target='_blank' href="https://model.mtconnect.org/versions/#{version}/index.html#{ref}">#{text}</a>}
+    else
+      text
+    end
+  end
+
   def deprecated_format_target(id, name, icon)
     format_target_html(id, name, icon, "<strike>#{name}</strike>")
   end
