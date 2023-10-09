@@ -322,7 +322,7 @@ class PortalModel < Model
 
     n = "Version #{version}"
     l = version < $mtconnect_version ? format_version_link(version, version, n, "_Version_#{version}") : n
-    panel = create_panel("#{l} Entities", { '#': 64, Change: 180, Type: 90, Entity: -1 }, rows)
+    panel = create_panel("#{n} Entities", { '#': 64, Change: 180, Type: 90, Entity: -1 }, rows)
 
     vid = "_Version_#{version}"
     vc = { title: l, path: "#{parent} / #{ format_name_html(n, PackageIcon) }", html_panel: [], grid_panel: [ panel ], image_panel: [] }
