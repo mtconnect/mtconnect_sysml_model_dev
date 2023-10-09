@@ -314,7 +314,7 @@ class PortalModel < Model
             end
       if row
         if row[0] == 'Updated' and version > '2.0'and prior = prior_version(version)
-          row[0] = "Updatded (Previous: #{format_version_link(prior, prior, prior, row.last)})"
+          row[0] = "Updated (Previous: #{format_version_link(prior, prior, prior, row.last)})"
         end
         [name, row[0...-1] ]
       end
