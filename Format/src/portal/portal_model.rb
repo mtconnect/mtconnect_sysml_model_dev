@@ -320,11 +320,12 @@ class PortalModel < Model
       end
     end.compact.sort_by { |name, row| name }.map.with_index { |v, i| v[1].unshift(i + 1) }
 
-    panel = create_panel("Version #{version} Entities", { '#': 64, Change: 180, Type: 90, Entity: -1 }, rows)
-
     n = "Version #{version}"
+    l = version < $mtconnect_version ? format_version_link(version, version, n, "_Version_#{version}") : n
+    panel = create_panel("#{l} Entities", { '#': 64, Change: 180, Type: 90, Entity: -1 }, rows)
+
     vid = "_Version_#{version}"
-    vc = { title: n, path: "#{parent} / #{ format_name_html(n, PackageIcon) }", html_panel: [], grid_panel: [ panel ], image_panel: [] }
+    vc = { title: l, path: "#{parent} / #{ format_name_html(n, PackageIcon) }", html_panel: [], grid_panel: [ panel ], image_panel: [] }
     @doc.content[vid] = vc
     { text: n, qtitle: vid, icon: PackageIcon, expanded: false, leaf: true }
   end
