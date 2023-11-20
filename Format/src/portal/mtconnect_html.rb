@@ -82,14 +82,17 @@ module Kramdown
           when 'operation'
             format_operation(args)
 
-          when 'block', 'property'
+          when 'block'
             format_block(args)
+
+          when 'property'
+            format_property(args)
 
           when 'package'
             format_package(args)
 
           when 'def'
-            @@definitions.dig(*args.split(':')) || "<code>#{args}</code>"
+            @@definitions.dig(*args.split('::')) || "<code>#{args}</code>"
 
           when 'latex'
             args

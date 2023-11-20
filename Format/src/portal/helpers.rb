@@ -10,8 +10,9 @@ DiagramIcon = 'images/diagram_icon.png'.freeze
 
 module PortalHelpers
   def convert_markdown_to_html(content)
+    obj = self if Type === self
     data = content.to_s.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
-    kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex})
+    kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex, context: obj})
     kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
   end
 
@@ -62,9 +63,11 @@ module PortalHelpers
   end
 
   def find_block(name)
+    # Handle part property chains
+    
     if name.include?('::')
       package, name = name.split('::')
-      model = PortalModel.model_for_name(package)      
+      model = PortalModel.model_for_name(package)  
       block =  model.types.find { |t| t.name == name } if model
     else
       block = PortalType.type_for_name(name)
@@ -78,6 +81,31 @@ module PortalHelpers
       b.format_target(false)
     else
       "<code>#{block}</code>"                
+    end                    
+  end
+
+  def format_property(property)
+    fields = property.split('::')
+    case fields.size
+    when 1
+      prop = property
+      b = @options[:context]
+    
+    when 2
+      b = find_block(fields[0])
+      b = @options[:context] unless b
+      
+    when 3
+      b = find_block("#{fields[0]}::#{fields[1]}")
+      prop = fields[2]
+      b = @options[:context] unless b
+    end
+    
+    if b
+      "#{b.format_target(false)}<code>::#{prop}</code>"
+    else
+      $logger.warn "Cannot find block for property: #{property}"
+      "<code>#{property}</code>"                
     end                    
   end
 
