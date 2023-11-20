@@ -264,8 +264,8 @@ class WebReport
             tc = type[:dataIndex].to_sym if type
 
             panel.dig(:data_store, :data).each do |row|
-              if dc and row[dc] != " </br>"
-                row[dc] = convert_markdown_to_html(row[dc])
+              if dc and row[dc] != " </br>"                
+                row[dc] = (obj || self).convert_markdown_to_html(row[dc])
                 if nc and row[dc] =~ /deprecated/i
                   row[nc] = deprecate_html(row[nc])
                 end              

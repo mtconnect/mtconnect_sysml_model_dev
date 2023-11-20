@@ -12,8 +12,6 @@ module PortalHelpers
   def convert_markdown_to_html(content)
     if self.respond_to? :pid
       obj = self
-    else
-      p self.class
     end
     data = content.to_s.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
     kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex, context: obj})
