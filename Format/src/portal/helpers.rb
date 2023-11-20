@@ -10,7 +10,11 @@ DiagramIcon = 'images/diagram_icon.png'.freeze
 
 module PortalHelpers
   def convert_markdown_to_html(content)
-    obj = self if Type === self
+    if self.respond_to? :pid
+      obj = self
+    else
+      p self.class
+    end
     data = content.to_s.gsub(%r{<(/)?br[ ]*(/)?>}, "\n").gsub('&gt;', '>')
     kd = ::Kramdown::Document.new(data, {input: 'MTCKramdown', html_to_native: false, parse_block_html: true, math_engine: :katex, context: obj})
     kd.to_mtc_html.sub(/^<p>/, '').sub(/<\/p>\n\z/m, '')     
@@ -85,22 +89,17 @@ module PortalHelpers
   end
 
   def format_property(property)
-    fields = property.split('::')
-    case fields.size
-    when 1
-      prop = property
-      b = @options[:context]
-    
-    when 2
-      b = find_block(fields[0])
-      b = @options[:context] unless b
-      
-    when 3
-      b = find_block("#{fields[0]}::#{fields[1]}")
-      prop = fields[2]
-      b = @options[:context] unless b
+    f1, f2, f3, = property.split('::')
+    b  = nil
+    if f3
+      b, prop = find_block("#{f1}::#{f2}"), f3
+    elsif f2
+      b, prop = find_block(f1), f2
+    else
+      prop = f1
     end
-    
+
+    b = @options[:context] unless b
     if b
       "#{b.format_target(false)}<code>::#{prop}</code>"
     else
