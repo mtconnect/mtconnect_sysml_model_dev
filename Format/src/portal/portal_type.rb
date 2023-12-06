@@ -112,7 +112,7 @@ class PortalType < Type
           if s.name == 'hasFormatSpecificRepresentation'
             s.tags.each do |rep, template|
               v = convert_markdown_to_html("~~~#{rep}\n#{template}\n~~~")
-              data << { col0: "Representatoin: <code>#{rep}</code>", col1: v }
+              data << { col0: "Representation: <code>#{rep}</code>", col1: v }
             end
           end
         end
