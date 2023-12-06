@@ -36,7 +36,7 @@ class Stereotype
     @@stereotypes[profile][id] if @@stereotypes.include?(profile) and @@stereotypes[profile].include?(id)
   end
 
-  attr_reader :name, :id, :profile
+  attr_reader :name, :id, :profile, :tags
 
   def initialize(xmi, profile)
     attr = xmi.attributes.to_a.detect { |k, v| k.start_with?('base_') }
@@ -44,19 +44,21 @@ class Stereotype
     @id = attr[1].value
     @name = xmi.name
     @profile = profile
+    @tags = Hash.new { |h, k| h[k] = [] } 
+
     xmi.attributes.each do |k, v|
-      if k != 'id'
+      if k != 'id' and !k.start_with?('base_')
+        @tags[k] = v.value
         instance_variable_set("@#{k}", v.value)
         self.class.attr_reader(k.to_sym)
       end
     end
 
-    tags = Hash.new { |h, k| h[k] = [] } 
     xmi.element_children.each do |e|
-      tags[e.name] = e.text
+      @tags[e.name] = e.text
     end
 
-    tags.each do |k, v|
+    @tags.each do |k, v|
       instance_variable_set("@#{k}", v)
       self.class.attr_reader(k.to_sym)
     end
