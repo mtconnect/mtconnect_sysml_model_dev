@@ -111,7 +111,7 @@ class PortalType < Type
         @stereotypes.each do |s|
           if s.name == 'hasFormatSpecificRepresentation'
             s.tags.each do |rep, template|
-              v = convert_markdown_to_html("```#{template}```")
+              v = convert_markdown_to_html("~~~#{rep}\n#{template}\n~~~")
               data << { col0: "Representatoin: <code>#{rep}</code>", col1: v }
             end
           end
