@@ -43,6 +43,11 @@ class Stereotype
     
     @id = attr[1].value
     @name = xmi.name
+    if @name == 'hasFormatSpecificRepresentation'
+      @display = 'representations'
+    else
+      @display = @name
+    end
     @profile = profile
     @tags = Hash.new { |h, k| h[k] = [] } 
 
@@ -67,11 +72,11 @@ class Stereotype
   end
 
   def to_s
-    "<<#{@name}>>"
+    "<<#{@display}>>"
   end
 
   def html
-    "&lt;&lt;#{@name}&gt;&gt;"
+    "&lt;&lt;#{@display}&gt;&gt;"
   end
 
   def inspect
