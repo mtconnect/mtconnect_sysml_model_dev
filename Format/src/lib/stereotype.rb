@@ -11,6 +11,11 @@ class Stereotype
 
   def self.collect_stereotypes(xmi)
     xmi.document.root.elements.each do |m|
+      unless m.namespace
+        puts "No namespace found for #{m.node_name} at line #{m.line}"
+        next
+      end
+      
       profile = case m.namespace.prefix
                 when 'Profile'
                   :mtc
