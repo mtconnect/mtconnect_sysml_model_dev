@@ -124,7 +124,7 @@ class WebReport
     end    
   end
 
-  def merge(list1, list2, indent = 0)
+  def merge(list1, list2, skip, indent = 0)
     list1.each do |node1|
       text = node1[:text]
       space = '  ' * indent
@@ -168,9 +168,9 @@ class WebReport
           node2[:children] = c1
         elsif c1 and c2
           puts "#{space} - Merging children: #{text}"
-          merge(c1, c2, indent + 1)
+          merge(c1, c2, skip, indent + 1)
         end
-      else
+      elsif !skip.include?(text)
         # If there is no child, add this child
         puts "#{space} - Adding node: #{text}"
         list2 << node1
@@ -178,30 +178,27 @@ class WebReport
     end    
   end
 
-  def merge_diagrams
-    $logger.info "Merging Diagrams"
-      
-    diagrams = find_section('Diagrams')
-    behavior = find_section('Behavior')
+  def merge_sections(skip)
+    $logger.info "Merging Sections"
+
     structure = find_section('Structure')
-    constraints = find_section('Constraints')
+    unless structure
+      $logger.fatal "Cannot find structure section"
+      exit 1
+    end    
 
-    # Parallel recures diagrams and structure combining common nodes
-    puts "\n----------------------------------"
-    puts "Merging diagrams -> structure"
-    merge(diagrams, structure)
-    puts "\n----------------------------------"
-    puts "Merging behavior -> structure"
-    merge(behavior, structure)
-    puts "\n----------------------------------"
-    puts "Merging constraints -> structure"
-    merge(constraints, structure)
-    puts "\n----------------------------------"
+    ['Diagrams', 'Behavior', 'Constraints', 'Requirements', 'Test Cases'].each do |section|
+      sect = find_section(section)
+      unless sect
+        $logger.fatal "Cannot find #{section} section"
+        exit 1
+      end
+      puts "\n----------------------------------"
+      puts "Merging #{section} -> structure"
+      merge(sect, structure, skip)
 
-    @tree.delete_if { |node| node[:title] == 'Diagrams' } 
-    @tree.delete_if { |node| node[:title] == 'Interfaces' } 
-    @tree.delete_if { |node| node[:title] == 'Behavior' }
-    @tree.delete_if { |node| node[:title] == 'Constraints' }
+      @tree.delete_if { |node| node[:title] == section } 
+    end
   end
 
   def find_section(sect)

@@ -51,7 +51,7 @@ class PortalGenerator
     
     @doc = WebReport.new(file)
     @doc.update_index(index)    
-    @doc.merge_diagrams
+    @doc.merge_sections(@skip_models)
     
     PortalModel.generator_class = self
     PortalModel.skip_models = @skip_models
