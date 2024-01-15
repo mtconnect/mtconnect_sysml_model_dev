@@ -12,7 +12,7 @@ class Type
   
   attr_reader :name, :id, :type, :model, :parents, :children, :relations, :stereotypes, :is_subtype,
               :constraints, :extended, :literals, :invariants, :classifier, :assoc, :xmi, :subtypes, :multiplicity, :optional,
-              :operations
+              :operations, :normative
   attr_accessor :documentation, :relation
 
   attr_writer :is_subtype

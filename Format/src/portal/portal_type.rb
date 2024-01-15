@@ -142,7 +142,9 @@ class PortalType < Type
     return if rows.empty?
 
     thru = rows.any?(&:thru?)
-    rows = rows.map.with_index do |rel, i|
+    rows = rows.select  do |rel|
+      rel.final_target.type.normative
+    end.map.with_index do |rel, i|
       if thru
         [ i + 1, rel.name, rel.target.type.format_target, rel.final_target.type.format_target ]
       else
@@ -310,7 +312,9 @@ class PortalType < Type
         end
 
         if not @children.empty?
-          rows = @children.sort_by(&:name).map.with_index do |child, i|
+          rows = @children.select do |child|
+            child.normative
+          end.sort_by(&:name).map.with_index do |child, i|
             [ i + 1, child.format_target, child.introduced, child.deprecated ]
           end
           grid << create_panel('Subclasses', { '#': 50, Name: 300, Int: 64, Dep: 64 }, rows)

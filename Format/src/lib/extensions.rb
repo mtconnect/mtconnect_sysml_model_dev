@@ -12,6 +12,7 @@ module Extensions
 
   def get_versions
     @introduced = @deprecated = @updated = nil
+    @normative = false
     if @stereotypes
       @stereotypes.each do |st|
         case st.name
@@ -20,6 +21,7 @@ module Extensions
           @introduced = st.version if st.respond_to? :version and @introduced.nil?
           @deprecated = st.deprecated if st.respond_to? :deprecated and @deprecated.nil?
           @updated = st.updated if st.respond_to? :updated
+          @normative = true
 
         when 'deprecated'
           @deprecated = st.version if st.respond_to? :version
