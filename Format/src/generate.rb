@@ -16,6 +16,7 @@ require 'treetop'
 require 'generate_documentation'
 require 'generate_schema'
 require 'generate_portal'
+require 'generate_validation'
 require 'type'
 require 'model'
 require 'kramdown'
@@ -80,6 +81,10 @@ operations.each do |op|
   when 'portal'
     portal_generator = PortalGenerator.new xmi_node.at('//uml:Model')
     portal_generator.generate()
+  
+  when 'validation'
+    validate_generator = ValidationGenerator.new xmi_node.at('//uml:Model')
+    validate_generator.generate()
   
   else
     $logger.error "Invalid option #{op}"

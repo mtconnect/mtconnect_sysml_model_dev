@@ -23,6 +23,10 @@ class Type
     attr_reader :pid, :name, :value, :description, :stereotypes, :owner
 
     @@literals = Hash.new
+
+    def self.literals
+      @@literals
+    end
     
     def self.literal_for_id(id)
       @@literals[id]
