@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?><magicdraw><comment id="_19_0_3_68e0225_1611138301058_238139_81" refElementId="_19_0_3_68e0225_1611138301058_238139_81" humanType="Comment" classType="Comment" requireSort="node" icon="WebReport2_files/icon_comment_1090073068.svg"><documentation humanName="Documentation" mode="s">
+{{block(DataSet)}} for an {{block(Observation)}} is defined by the associated {{property(DataItem::representation)}} as `DATA_SET`.
+
+{{property(DataItem::representation)}} as `DATA_SET` **MUST** have {{property(DataItem::category)}} as `SAMPLE` or `EVENT`.
+
+{{figure(VariableDataSet)}} shows the model for {{block(Variable)}} ({{block(Event)}} type) with a {{block(Representation)}} type of {{block(DataSet)}}. 
+
+![VariableDataSet](figures/VariableDataSet.png "VariableDataSet"){: width="0.8"}
+
+> Note: See {{figure(DataSet Schema)}} for XML schema.
+
+{{block(DataSet)}} reports multiple values as a set of {{term(key-value pair)}} where each {{term(key)}} **MUST** be unique. The representation of the {{term(key-value pair)}} is an {{block(Entry)}}. The value of each {{block(Entry)}} **MUST** have the same constraints and format as the {{block(Observation)}} defined for {{property(DataItem::representation)}} as `VALUE` for the {{block(DataItem)}} type. (See {{block(Value)}}). 
+
+The meaning of each {{block(Entry)}} **MAY** be provided as the {{block(DataItem)}} {{block(EntryDefinition)}}.
+
+{{figure(DataSet Example)}} shows {{block(Event)}} {{block(Observation)}} type {{block(Variable)}} with a {{block(Representation)}} type of `DataSet`.
+
+![DataSet Example](figures/DataSet%20Example.png "DataSet Example"){: width="0.8"}
+
+> Note: See {{lst(dataset-example)}} for the {{term(XML)}} representation of the same example.
+
+#### Management of Data Set Observations
+
+An {{term(agent)}} **MUST** maintain the current state of the {{block(DataSet)}} as described in {{package(Fundamentals)}}.
+
+One or more {{termplural(key-value pair)}} **MAY** be added, removed, or changed in an {{block(Observation)}}. An {{term(agent)}} **MUST** publish the changes to one or more {{termplural(key-value pair)}} as a single {{block(Observation)}}. An {{term(agent)}} **MUST** indicate the removal of a {{term(key-value pair)}} from a {{block(DataSet)}} using the {{property(Entry::removed)}} as `true`.
+
+When the {{property(DataItem::discrete)}} is `false` or is not present, an {{term(agent)}} in response to a {{term(sample request)}} **MUST** only publish the changed {{term(key-value pair)}} since the previous state of the {{block(DataSet)}}.
+
+When the {{property(DataItem::discrete)}} attribute is `true`, an {{term(agent)}}, in response to a {{term(sample request)}}, **MUST** report all {{termplural(key-value pair)}} ignoring the state of the {{block(DataSet)}}.
+
+When an {{term(agent)}} responds to a {{term(current request)}}, the {{term(response document)}} **MUST** include the full set of {{termplural(key-value pair)}}. If the {{term(current request)}} includes an `at` query parameter, the {{term(agent)}} **MUST** provide the set of {{termplural(key-value pair)}} at the  {{term(sequence number)}}.
+
+When an {{block(Observation)}} {{term(reset)}} occurs, the {{block(DataSet)}} **MUST** remove all {{termplural(key-value pair)}} making the set empty. The {{block(Observation)}} **MAY** simultaneously populate the {{block(DataSet)}} with new {{termplural(key-value pair)}}. The previous entries **MUST NOT** be included and **MUST NOT** have {{property(Entry::removed)}} as `true`.
+
+When the {{block(Observation)}}  is `UNAVAILABLE` the {{block(DataSet)}} **MUST** remove all {{termplural(key-value pair)}} making the set empty.</documentation><owningElement refid="_19_0_3_45f01b9_1579566531114_503405_25727" refElementId="_19_0_3_45f01b9_1579566531114_503405_25727" humanType="Block" classType="Class" name="DataSet" icon="WebReport2_files/icon_block_646540261.svg" humanName="Owning Element"/><owner refid="_19_0_3_45f01b9_1579566531114_503405_25727" refElementId="_19_0_3_45f01b9_1579566531114_503405_25727" humanType="Block" classType="Class" name="DataSet" icon="WebReport2_files/icon_block_646540261.svg" humanName="Owner" mode="s,e"/><ownedElement humanName="Owned Element"><comment refid="_19_0_3_68e0225_1611138384642_629340_83" refElementId="_19_0_3_68e0225_1611138384642_629340_83" humanType="Comment" classType="Comment" name=" {{block(DataSet)}} for an {{block(Observation)}} ..." icon="WebReport2_files/icon_comment_895580618.svg"/></ownedElement><ownedComment humanName="Owned Comment"><comment refid="_19_0_3_68e0225_1611138384642_629340_83" refElementId="_19_0_3_68e0225_1611138384642_629340_83" humanType="Comment" classType="Comment" name=" {{block(DataSet)}} for an {{block(Observation)}} ..." icon="WebReport2_files/icon_comment_895580618.svg"/></ownedComment><body humanName="Body" mode="s,e">Description</body><appliedStereotype humanName="Applied Stereotype" mode="s,e"><stereotype refid="_18_0_6_8d40284_1529075556359_481044_4712" refElementId="_18_0_6_8d40284_1529075556359_481044_4712" humanType="Stereotype" classType="Stereotype" name="Literal Annotation" icon="WebReport2_files/icon_stereotype_1363963040.svg"/></appliedStereotype><TO_DO humanName="To Do" mode="s,e"></TO_DO><ActiveHyperlink humanName="Active Hyperlink"></ActiveHyperlink><report_appliedStereotype_tags humanName="Applied Stereotype" requireSort="element" mode="s,e"><stereotype refid="_18_0_6_8d40284_1529075556359_481044_4712" refElementId="_18_0_6_8d40284_1529075556359_481044_4712" humanType="Stereotype" classType="Stereotype" name="Literal Annotation" icon="WebReport2_files/icon_stereotype_1363963040.svg"><property requireSort="name" refid="_18_0_4_8d40284_1446637901611_333092_4293" refElementId="_18_0_4_8d40284_1446637901611_333092_4293" humanType="Property" classType="Property" name="annotationProperty" icon="WebReport2_files/icon_property_415032321.svg" humanName="Annotation Property"/><property requireSort="name" refid="_18_0_6_8d40284_1529075563218_973152_4714" refElementId="_18_0_6_8d40284_1529075563218_973152_4714" humanType="Property" classType="Property" name="base_Comment" icon="WebReport2_files/icon_property_415032321.svg" humanName="Base_ Comment"/><property requireSort="name" refid="_18_0_4_8d40284_1446637851399_224264_4289" refElementId="_18_0_4_8d40284_1446637851399_224264_4289" humanType="Property" classType="Property" name="base_Comment" icon="WebReport2_files/icon_property_415032321.svg" humanName="Base_ Comment"/><property requireSort="name" refid="_18_0_6_8d40284_1525856815617_605073_4892" refElementId="_18_0_6_8d40284_1525856815617_605073_4892" humanType="Property" classType="Property" name="datatype" icon="WebReport2_files/icon_property_415032321.svg" humanName="Datatype"/><property requireSort="name" refid="_18_0_6_17770441_1521589781350_530230_4650" refElementId="_18_0_6_17770441_1521589781350_530230_4650" humanType="Property" classType="Property" name="language" icon="WebReport2_files/icon_property_415032321.svg" humanName="Language"/></stereotype></report_appliedStereotype_tags></comment></magicdraw>

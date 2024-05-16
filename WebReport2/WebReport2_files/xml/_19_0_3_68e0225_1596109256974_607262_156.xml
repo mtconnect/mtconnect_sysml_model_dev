@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?><magicdraw><comment id="_19_0_3_68e0225_1596109256974_607262_156" refElementId="_19_0_3_68e0225_1596109256974_607262_156" humanType="Comment" classType="Comment" requireSort="node" icon="WebReport2_files/icon_comment_1090073068.svg"><documentation humanName="Documentation" mode="s">% 					MTCONNECT DOCUMENT TEMPLATE 							%
+% 	FILENAME: 		mtconnect.tex											%
+%	VERSION:		0.1														%
+% 	DATE:			02/13/2018												%
+%	PORTED BY:		Moneer Helu												%
+%	ADDRESS:		Engineering Laboratory									%
+%					National Institute of Standards and Technology (NIST)	%
+%					100 Bureau Drive										%
+%					Mailstop 8260											%
+%					Gaithersburg, MD 20899									%
+%					United States of America								%
+% 	EMAIL:			moneer.helu@nist.gov									%
+% 	DESCRIPTION:	Template for MTConnect documentation;					%
+% 					Initial attempt for testing and discussion				%
+% 	USAGE:			\documentclass[options]{mtconnect}						%
+
+
+\documentclass{mtconnect}	% Load mtconnect document class
+
+\input{acronyms.tex}
+\input{glossary.tex}
+%\addbibresource{references.bib}
+\addbibresource{mtc.bib}
+
+%\hypersetup{draft} %to test without hyperlinks \hyperref
+\begin{document}			% Begin document here
+
+% REQUIRED INITIAL INPUTS %
+
+\docnum{}							% Document "number"
+\doctitle{}	% Full document title
+\doctitleshort{}				% Shortened document title
+\versionnum{}						% MTConnect version
+\preparedfor{MTConnect Institute}		% Should not change!!!
+\preparedfrom{\href{https://model.mtconnect.org/MTConnectSysMLModel.xml}{\texttt{MTConnectSysMLModel.xml}}}		% Model link
+\preparedon{\today}			% Date prepared
+
+% FRONT MATTER (DO NOT CHANGE!!!) %
+
+\begin{nolinenumbers}
+\maketitle				% Title page
+
+\pagenumbering{roman}
+
+% MTConnect Specification and Material Statement:
+\textbf{\color{mtc1}\Large MTConnect Specification and Materials} \\
+
+\input{legal.tex}
+
+\clearpage
+\tableofcontents
+\thispagestyle{fancy}
+\clearpage
+\iffigures
+   \listoffigures
+\fi
+\thispagestyle{fancy}
+\clearpage
+\iftables
+   \listoftables
+\fi
+\end{nolinenumbers}
+
+\pagenumbering{arabic}
+
+% ENTER DOCUMENT CONTENT BELOW %
+
+\input{introduction.tex}
+
+\input{%MAIN%}
+
+\input{profile.tex}
+
+\input{appendix.tex}
+
+\end{document}
+</documentation><owningElement refid="_19_0_3_68e0225_1596108922525_351463_147" refElementId="_19_0_3_68e0225_1596108922525_351463_147" humanType="Package" classType="Package" name="Common Documents" icon="WebReport2_files/icon_package_315785478.svg" humanName="Owning Element"/><owner refid="_19_0_3_68e0225_1596108922525_351463_147" refElementId="_19_0_3_68e0225_1596108922525_351463_147" humanType="Package" classType="Package" name="Common Documents" icon="WebReport2_files/icon_package_315785478.svg" humanName="Owner" mode="s,e"/><ownedElement humanName="Owned Element"><comment refid="_19_0_3_68e0225_1596109336247_460053_158" refElementId="_19_0_3_68e0225_1596109336247_460053_158" humanType="Comment" classType="Comment" name="% &#x9;&#x9;&#x9;&#x9;&#x9;MTCONNECT DOCUMENT TEMPLATE &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;% % &#x9;FIL..." icon="WebReport2_files/icon_comment_895580618.svg"/></ownedElement><ownedComment humanName="Owned Comment"><comment refid="_19_0_3_68e0225_1596109336247_460053_158" refElementId="_19_0_3_68e0225_1596109336247_460053_158" humanType="Comment" classType="Comment" name="% &#x9;&#x9;&#x9;&#x9;&#x9;MTCONNECT DOCUMENT TEMPLATE &#x9;&#x9;&#x9;&#x9;&#x9;&#x9;&#x9;% % &#x9;FIL..." icon="WebReport2_files/icon_comment_895580618.svg"/></ownedComment><body humanName="Body" mode="s,e">Main Template TEX</body><appliedStereotype humanName="Applied Stereotype" mode="s,e"><stereotype refid="_19_0_3_68e0225_1642762257701_827671_122" refElementId="_19_0_3_68e0225_1642762257701_827671_122" humanType="Stereotype" classType="Stereotype" name="informative" icon="WebReport2_files/icon_stereotype_1363963040.svg"/><stereotype refid="_18_0_6_8d40284_1529075556359_481044_4712" refElementId="_18_0_6_8d40284_1529075556359_481044_4712" humanType="Stereotype" classType="Stereotype" name="Literal Annotation" icon="WebReport2_files/icon_stereotype_1363963040.svg"/></appliedStereotype><TO_DO humanName="To Do" mode="s,e"></TO_DO><ActiveHyperlink humanName="Active Hyperlink"></ActiveHyperlink><report_appliedStereotype_tags humanName="Applied Stereotype" requireSort="element" mode="s,e"><stereotype refid="_19_0_3_68e0225_1642762257701_827671_122" refElementId="_19_0_3_68e0225_1642762257701_827671_122" humanType="Stereotype" classType="Stereotype" name="informative" icon="WebReport2_files/icon_stereotype_1363963040.svg"><property requireSort="name" refid="_19_0_3_68e0225_1643456587426_442589_446" refElementId="_19_0_3_68e0225_1643456587426_442589_446" humanType="Property" classType="Property" name="base_Element" icon="WebReport2_files/icon_property_415032321.svg" humanName="Base_ Element"/></stereotype><stereotype refid="_18_0_6_8d40284_1529075556359_481044_4712" refElementId="_18_0_6_8d40284_1529075556359_481044_4712" humanType="Stereotype" classType="Stereotype" name="Literal Annotation" icon="WebReport2_files/icon_stereotype_1363963040.svg"><property requireSort="name" refid="_18_0_4_8d40284_1446637901611_333092_4293" refElementId="_18_0_4_8d40284_1446637901611_333092_4293" humanType="Property" classType="Property" name="annotationProperty" icon="WebReport2_files/icon_property_415032321.svg" humanName="Annotation Property"/><property requireSort="name" refid="_18_0_6_8d40284_1529075563218_973152_4714" refElementId="_18_0_6_8d40284_1529075563218_973152_4714" humanType="Property" classType="Property" name="base_Comment" icon="WebReport2_files/icon_property_415032321.svg" humanName="Base_ Comment"/><property requireSort="name" refid="_18_0_4_8d40284_1446637851399_224264_4289" refElementId="_18_0_4_8d40284_1446637851399_224264_4289" humanType="Property" classType="Property" name="base_Comment" icon="WebReport2_files/icon_property_415032321.svg" humanName="Base_ Comment"/><property requireSort="name" refid="_18_0_6_8d40284_1525856815617_605073_4892" refElementId="_18_0_6_8d40284_1525856815617_605073_4892" humanType="Property" classType="Property" name="datatype" icon="WebReport2_files/icon_property_415032321.svg" humanName="Datatype"/><property requireSort="name" refid="_18_0_6_17770441_1521589781350_530230_4650" refElementId="_18_0_6_17770441_1521589781350_530230_4650" humanType="Property" classType="Property" name="language" icon="WebReport2_files/icon_property_415032321.svg" humanName="Language"/></stereotype></report_appliedStereotype_tags></comment></magicdraw>
