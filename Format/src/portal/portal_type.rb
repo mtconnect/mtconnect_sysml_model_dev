@@ -388,6 +388,6 @@ class PortalType < Type
       @doc.search[:block] << entry    
     end
 
-    @content[:grid_panel] << create_panel('Operatiuons', { '#': 50, Name: 200, Int: 64, Dep: 64, Result: 150, Documentation: -1 }, op_rows)    
+    @content[:grid_panel] << create_panel('Operations', { '#': 50, Name: 200, Int: 64, Dep: 64, Result: 150, Documentation: -1 }, op_rows)    
   end
 end
