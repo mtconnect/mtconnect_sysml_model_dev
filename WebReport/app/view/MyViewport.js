@@ -147,14 +147,14 @@ function createGridPanel(grid_panel_json)
             var columnWidth = columns[index].width;
             if (columnWidth === -1)
             {
-                tableWidth += 500;
+                tableWidth += 350;
             }
             else
             {
                 tableWidth += columnWidth;
             }
         }
-        return Math.max(tableWidth, window.innerWidth - 80);
+        return tableWidth;
     }
 
     var grid =  Ext.create('Ext.grid.Panel',
@@ -182,37 +182,22 @@ function createGridPanel(grid_panel_json)
                 overflowY: 'hidden'
             },
             items:[
-              {
-                layout: 'fit'
-              },
-              grid,
-	      {
-                layout: 'fit',
-                style: { overflow: 'auto', paddingBottom: '20px' }
-	      }
+                {
+                    layout: 'fit'
+                },
+                grid
             ]
         });
 
-  if (getColumnsCount(grid_panel_json.columns) > 2)
-  {
-    grid.setWidth(calculateTableWidth(grid_panel_json.columns));
-    gridPanelHolder.setHeight(Math.max(grid.getStore().getRange().length * 43 + 75, 180));
-    gridPanelHolder.setAutoScroll(true);
-  }
-  else
-  {
-    if (grid.getStore().getRange().length == 1)
+    if (getColumnsCount(grid_panel_json.columns) > 4)
     {
-      gridPanelHolder.setHeight(75);
-    }
-    else
-    {
-      gridPanelHolder.setAutoScroll(true);
-    }
-  }
+        grid.setWidth(calculateTableWidth(grid_panel_json.columns));
+        gridPanelHolder.setHeight(grid.getStore().getRange().length * 35 + 75);
 
+        gridPanelHolder.setAutoScroll(true);
+    }
 
-  return gridPanelHolder;
+    return gridPanelHolder;
 }
 
 function createGridPanels(json)
@@ -731,6 +716,7 @@ function createHelpButtonPanel()
                                       {
                                           id: 'helpPanel',
                                           itemId: 'helpPanel',
+                                          width: 85,
                                           layout: "hbox",
                                           bodyStyle: 'background:transparent;',
                                           autoRender: true,
@@ -817,13 +803,15 @@ function createHelpButtonPanel()
                             });
     }
 
-    var commentEnabled = "/cameo_comment";
+    var commentEnabled = "NA";
 
     if(commentEnabled !== "" && commentEnabled!== "NA")
     {
         helpButtonPanel.add({
-                                xtype: 'button',
-                         	text: "Submit Comment",
+                                xtype: 'image',
+                                src: 'images/mail_icon.png',
+                                width: imageWidth,
+                                height: imageHeight,
                                 title: window.resource.help_panel.commentText,
                                 listeners: {
                                     render: function ()
@@ -922,7 +910,7 @@ function createCommentPanel()
 
                                                             $.ajax({
                                                                        type: "GET",
-                                                                       url: "/cameo_comment",
+                                                                       url: "NA",
                                                                        data: result[0],
                                                                        success: function()
                                                                        {
@@ -1019,10 +1007,10 @@ function showFeedbackIcon()
 //Default content pane
 window.contentPanel = createContentPanel
 ({
-     "title": "",
-     "html_panel": [],
-     "grid_panel": [],
-     "image_panel": []
+  "title": "",
+  "html_panel": [],
+  "grid_panel": [],
+  "image_panel": []
  });
 
 Ext.override(Ext.grid.View, { enableTextSelection: true });
@@ -1161,29 +1149,19 @@ function createLogoPanel()
         }
     });
 
-    var version = {
-      html: window.resource.logo_panel.version.text,
-      height: window.resource.logo_panel.version.height,
-      width: window.resource.logo_panel.version.width,
-      bodyStyle:
-      {
-        background: 'transparent',
-        fontSize: '40px',
-        color: '#58595B',
-        margin: '10px 7px',
-        cursor: 'pointer'
-      },
-      listeners:
-      {
-        render: function()
+    var bannerImage = Ext.create('Ext.Img', {
+        autoRender: true,
+        autoShow: true,
+        src: window.resource.logo_panel.banner.src,
+        height: window.resource.logo_panel.banner.height,
+        width: window.resource.logo_panel.banner.width,
+        style:
         {
-          this.getEl().on('click', function(e, t, eOpts) {
-            parent.location.href = window.indexPageDir;return false;
-          });
-        }
-      }
-    };
-
+            paddingLeft: '10px',
+            backgroundColor: 'transparent;'
+        },
+        renderTo: Ext.getBody()
+    });
 
     return Ext.create('Ext.panel.Panel',
                       {
@@ -1206,7 +1184,7 @@ function createLogoPanel()
                           },
                           items: [
                               logoImage,
-                              version
+                              bannerImage
                           ]
                       });
 }
