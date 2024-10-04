@@ -380,7 +380,7 @@ class PortalType < Type
       @doc.content[op.pid] = content
       children << { text: op.name, qtitle: op.pid, icon: OperationIcon, expanded: false, leaf: true }
 
-      entry = { id: op.pid, name: "#{op.name} : <i>Opeeration</i>", type: 'operation' }
+      entry = { id: op.pid, name: "#{op.name} : <i>Operation</i>", type: 'operation' }
 
       op_rows << [ i + 1, op.format_target, op.introduced, op.deprecated, ret, convert_markdown_to_html(op.documentation.definition) ]
       
