@@ -263,7 +263,7 @@ class WebReport
             panel.dig(:data_store, :data).each do |row|
               if dc and row[dc] != " </br>"                
                 row[dc] = (obj || self).convert_markdown_to_html(row[dc])
-                if nc and row[dc] =~ /deprecated/i
+                if nc and row[dc] =~ /DEPRECATED/
                   row[nc] = deprecate_html(row[nc])
                 end              
               end
