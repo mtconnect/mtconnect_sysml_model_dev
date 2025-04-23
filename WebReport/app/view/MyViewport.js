@@ -1007,10 +1007,10 @@ function showFeedbackIcon()
 //Default content pane
 window.contentPanel = createContentPanel
 ({
-  "title": "",
-  "html_panel": [],
-  "grid_panel": [],
-  "image_panel": []
+     "title": "",
+     "html_panel": [],
+     "grid_panel": [],
+     "image_panel": []
  });
 
 Ext.override(Ext.grid.View, { enableTextSelection: true });
